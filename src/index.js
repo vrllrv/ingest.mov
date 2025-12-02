@@ -24,7 +24,7 @@ export default {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INGEST.MOV</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Degular:wght@400;700&family=Degular+Display:wght@400;700&family=Degular+Text:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Degular+Mono:wght@400;700&family=Swear+Display:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -70,7 +70,7 @@ canvas {
 }
 
 h1 {
-    font-family: "degular-display", sans-serif;
+    font-family: "degular-mono", sans-serif;
     font-weight: 700;
     font-style: normal;
     font-size: 2rem;
@@ -80,7 +80,7 @@ h1 {
 }
 
 p {
-    font-family: "degular-text", sans-serif;
+    font-family: "swear-display", serif;
     font-weight: 400;
     font-style: normal;
     font-size: 0.65rem;
