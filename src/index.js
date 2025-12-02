@@ -83,6 +83,13 @@ const gridW = Math.floor(canvas.width / 8);
 const gridH = Math.floor(canvas.height / 16);
 
 let time = 0;
+let mouseX = canvas.width / 2;
+let mouseY = canvas.height / 2;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
 
 function noise(x, y, t) {
   return Math.sin(x * 0.1 + t * 0.3) * Math.cos(y * 0.1 + t * 0.2) * 0.5 + 0.5;
@@ -98,19 +105,32 @@ function draw() {
   ctx.font = 'bold 14px Courier New';
   ctx.letterSpacing = '2px';
 
+  // Convert mouse position to grid coords
+  const mouseGridX = Math.floor(mouseX / 8);
+  const mouseGridY = Math.floor(mouseY / 16);
+
   for (let y = 0; y < gridH; y++) {
     for (let x = 0; x < gridW; x++) {
       const n = noise(x, y, time);
-      const wave = Math.sin((x + time * 0.5) * 0.1) * 0.3 + 0.3;
-      const depth = Math.sin((y - time * 0.3) * 0.15) * 0.4 + 0.4;
 
-      let val = (n + wave + depth) / 2;
+      // Direction toward mouse
+      const dx = (mouseGridX - x) * 0.02;
+      const dy = (mouseGridY - y) * 0.02;
+
+      // Distance to mouse creates intensity
+      const distToMouse = Math.sqrt((x - mouseGridX) ** 2 + (y - mouseGridY) ** 2);
+      const mouseInfluence = Math.max(0, 1 - distToMouse * 0.05);
+
+      const wave = Math.sin((x + time * 0.5 + dx * 10) * 0.1) * 0.3 + 0.3;
+      const depth = Math.sin((y - time * 0.3 + dy * 10) * 0.15) * 0.4 + 0.4;
+
+      let val = (n + wave + depth + mouseInfluence * 0.4) / 2;
       val = Math.max(0, Math.min(1, val));
 
       const charIndex = Math.floor(val * (chars.length - 1));
       const char = chars[charIndex];
 
-      const alpha = val * 0.8;
+      const alpha = (val * 0.8) + (mouseInfluence * 0.3);
       ctx.fillStyle = \`rgba(255, 255, 255, \${alpha})\`;
 
       ctx.fillText(char, x * 8, y * 16);
