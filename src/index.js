@@ -110,7 +110,7 @@ let isTouching = false;
 let shuffleChars = false;
 let shaderPattern = 0;
 let lastTapTime = 0;
-const allChars = '░▒▓█▀▄─│╱╲◆◇▪▫■□▌▐▍▎◀▶▲▼◤◥◢◣○●◎◉★✦✧×÷≈≠±∞∑∏√∂∫∮∆∇⊕⊗⊙⊚⊛⊝⊞⊟⊠⊡'.split('');
+const allChars = '░▒▓█▀▄─│╱╲◆◇▪▫■□▌▐▍▎◀▶▲▼◤◥◢◣╔╗╚╝╟╢╡╢═║╬╪╫╤╥╧╨╩╦╤╧╥╩╬─│┌┐└┘├┤┬┴┼'.split('');
 
 document.addEventListener('mousemove', (e) => {
   if (!isTouching) {
