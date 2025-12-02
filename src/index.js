@@ -30,7 +30,7 @@ export default {
 <body>
     <canvas id="canvas"></canvas>
     <div class="overlay">
-        <h1>INGEST</h1>
+        <h1>INGEST<span class="extension">.MOV</span></h1>
         <p>MOVIE NETWORK</p>
     </div>
     <script src="shader.js"><\/script>
@@ -77,6 +77,14 @@ h1 {
     color: #fff;
     margin: 0;
     letter-spacing: 4px;
+}
+
+h1 .extension {
+    font-family: "swear-display", serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.2rem;
+    margin-left: 4px;
 }
 
 p {
