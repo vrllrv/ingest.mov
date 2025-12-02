@@ -166,79 +166,81 @@ function draw() {
   time += 0.016;
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#fff';
   ctx.font = 'bold 14px Courier New';
   ctx.letterSpacing = '2px';
 
   const mouseGridX = Math.floor(mouseX / 8);
   const mouseGridY = Math.floor(mouseY / 16);
+  const pattern = shaderPattern % 5;
+
+  // Pre-calculate pattern-specific constants
+  let speedMultiplier, waveIntensity;
+  if (touchIntensity === 2) {
+    speedMultiplier = 2.5;
+    waveIntensity = 0.5;
+  } else if (touchIntensity === 3) {
+    speedMultiplier = 4;
+    waveIntensity = 0.7;
+  } else {
+    speedMultiplier = 1;
+    waveIntensity = 0.3;
+  }
+
+  // Pattern-specific pre-calculations
+  let fillAmount, blockFill, pulsePhase, timeOffsetX, timeOffsetY;
+  if (pattern === 1) {
+    fillAmount = (time * 0.4 * speedMultiplier) % (gridW * 0.8);
+  } else if (pattern === 3) {
+    blockFill = ((time * 0.6 * speedMultiplier) % 80) / 80;
+  } else if (pattern === 4) {
+    pulsePhase = Math.sin(time * 0.5 * speedMultiplier) * 0.5 + 0.5;
+  }
+
+  const timeX = time * speedMultiplier;
+  const timeY = time * speedMultiplier;
 
   for (let y = 0; y < gridH; y++) {
     for (let x = 0; x < gridW; x++) {
       const n = noise(x, y, time);
       const dx = (mouseGridX - x) * 0.02;
       const dy = (mouseGridY - y) * 0.02;
-      const distToMouse = Math.sqrt((x - mouseGridX) ** 2 + (y - mouseGridY) ** 2);
-      const mouseInfluence = Math.max(0, 1 - distToMouse * 0.05);
 
-      let speedMultiplier = 1;
-      let waveIntensity = 0.3;
-
-      if (touchIntensity === 2) {
-        speedMultiplier = 2.5;
-        waveIntensity = 0.5;
-      } else if (touchIntensity === 3) {
-        speedMultiplier = 4;
-        waveIntensity = 0.7;
-      }
+      // Squared distance (avoid sqrt when possible)
+      const distSq = (x - mouseGridX) ** 2 + (y - mouseGridY) ** 2;
+      const mouseInfluence = Math.max(0, 1 - Math.sqrt(distSq) * 0.05);
 
       let wave, depth;
-      const pattern = shaderPattern % 5; // Cycle through 5 patterns
 
       if (pattern === 0) {
-        // Original spiral pattern - sine/sine diagonal flow
-        wave = Math.sin((x + time * 0.5 * speedMultiplier + dx * 10) * 0.1) * waveIntensity + 0.3;
-        depth = Math.sin((y - time * 0.3 * speedMultiplier + dy * 10) * 0.15) * (waveIntensity + 0.1) + 0.4;
+        wave = Math.sin((x + timeX * 0.5 + dx * 10) * 0.1) * waveIntensity + 0.3;
+        depth = Math.sin((y - timeY * 0.3 + dy * 10) * 0.15) * (waveIntensity + 0.1) + 0.4;
       } else if (pattern === 1) {
-        // CLI horizontal progress bar - left to right filling
-        const fillAmount = (time * 0.4 * speedMultiplier) % (gridW * 0.8);
         const distance = Math.abs(x - (gridW / 2 - gridW * 0.4 + fillAmount));
-        wave = Math.sin(distance * 0.1 + time * 0.3 * speedMultiplier) * waveIntensity + 0.3;
+        wave = Math.sin(distance * 0.1 + timeY * 0.3) * waveIntensity + 0.3;
         depth = (distance < 5) ? 0.8 : 0.2;
       } else if (pattern === 2) {
-        // Vertical scan lines - like old terminal data download
-        const scanLine = Math.floor((y + time * 0.5 * speedMultiplier) % 8);
+        const scanLine = Math.floor((y + timeY * 0.5) % 8);
         const lineIntensity = (scanLine < 2) ? 0.9 : 0.1;
-        wave = Math.sin(x * 0.08 + time * 0.2 * speedMultiplier) * waveIntensity + 0.3;
-        depth = lineIntensity + Math.cos(time * 0.6 * speedMultiplier) * 0.2;
+        wave = Math.sin(x * 0.08 + timeX * 0.2) * waveIntensity + 0.3;
+        depth = lineIntensity + Math.cos(timeX * 0.6) * 0.2;
       } else if (pattern === 3) {
-        // Block progression - chunky download blocks filling from center outward
         const distFromCenter = Math.sqrt((x - gridW/2) ** 2 + (y - gridH/2) ** 2);
-        const blockFill = ((time * 0.6 * speedMultiplier) % 80) / 80;
         const blockThreshold = gridH * blockFill * 0.4;
         wave = (distFromCenter < blockThreshold) ? 0.8 : 0.2;
-        depth = Math.cos(Math.floor(distFromCenter / 4) * 0.5 + time * 0.4 * speedMultiplier) * waveIntensity + 0.4;
+        depth = Math.cos(Math.floor(distFromCenter / 4) * 0.5 + timeX * 0.4) * waveIntensity + 0.4;
       } else {
-        // Pulse fill - like data packets arriving, creates pulsing filled areas
-        const pulsePhase = Math.sin(time * 0.5 * speedMultiplier) * 0.5 + 0.5;
-        const fillFromLeft = (x / gridW) * pulsePhase + (time * 0.2 * speedMultiplier) % 1;
+        const fillFromLeft = (x / gridW) * pulsePhase + (timeX * 0.2) % 1;
         wave = (fillFromLeft % 1 < 0.6) ? 0.85 : 0.25;
-        depth = Math.sin((y + time * 0.3 * speedMultiplier) * 0.15) * waveIntensity + 0.3;
+        depth = Math.sin((y + timeY * 0.3) * 0.15) * waveIntensity + 0.3;
       }
 
       let val = (n + wave + depth + mouseInfluence * (0.4 * touchIntensity)) / 2;
       val = Math.max(0, Math.min(1, val));
 
-      let charIndex = Math.floor(val * (chars.length - 1));
-      let char = chars[charIndex];
-
-      if (shuffleChars) {
-        charIndex = Math.floor(val * (allChars.length - 1));
-        char = allChars[charIndex];
-      }
-
+      let char = shuffleChars ? allChars[Math.floor(val * (allChars.length - 1))] : chars[Math.floor(val * (chars.length - 1))];
       const alpha = ((val * 0.8) + (mouseInfluence * 0.3 * touchIntensity)) * 0.68;
-      ctx.fillStyle = \`rgba(255, 255, 255, \${alpha})\`;
+
+      ctx.fillStyle = \`rgba(255,255,255,\${alpha})\`;
       ctx.fillText(char, x * 8, y * 16);
     }
   }
