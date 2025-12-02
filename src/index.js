@@ -16,7 +16,7 @@ export default {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ingest.mov</title>
-    <link rel="stylesheet" href="https://use.typekit.net/sby2vmx.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Degular:wght@400;700&family=Degular+Display:wght@400;700&family=Degular+Text:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -59,18 +59,19 @@ canvas {
 }
 
 h1 {
-    font-family: "carbona-variable", sans-serif;
-    font-variation-settings: "slnt" 0, "MONO" 0, "wght" 800;
+    font-family: "degular-display", sans-serif;
+    font-weight: 700;
+    font-style: normal;
     font-size: 2rem;
     color: #fff;
     margin: 0;
-    font-weight: 800;
     letter-spacing: 4px;
 }
 
 p {
-    font-family: "carbona-variable", sans-serif;
-    font-variation-settings: "slnt" 0, "MONO" 0, "wght" 400;
+    font-family: "degular-text", sans-serif;
+    font-weight: 400;
+    font-style: normal;
     font-size: 0.65rem;
     color: #fff;
     letter-spacing: 2px;
