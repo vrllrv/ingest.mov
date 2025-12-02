@@ -71,7 +71,7 @@ h1 {
 p {
     font-family: "carbona-variable", sans-serif;
     font-variation-settings: "slnt" 0, "MONO" 0, "wght" 400;
-    font-size: 0.6rem;
+    font-size: 0.9rem;
     color: #fff;
     letter-spacing: 2px;
     text-transform: uppercase;
