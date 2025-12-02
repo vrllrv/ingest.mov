@@ -83,7 +83,7 @@ h1 .extension {
     font-family: "swear-display", serif;
     font-weight: 700;
     font-style: italic;
-    font-size: 3.0rem;
+    font-size: 3.2rem;
     margin-left: -6px;
     letter-spacing: -0.05em;
 }
