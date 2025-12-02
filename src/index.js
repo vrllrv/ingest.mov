@@ -55,17 +55,23 @@ canvas {
     text-align: center;
     pointer-events: none;
     z-index: 10;
+    width: 600px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0) 100%);
+    mix-blend-mode: multiply;
+    border-radius: 50%;
 }
 
 h1 {
     font-size: 3rem;
     color: #fff;
-    margin-bottom: 10px;
+    margin: 0;
     font-weight: 300;
     letter-spacing: 4px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 15px 30px;
-    display: inline-block;
 }
 
 p {
@@ -73,9 +79,7 @@ p {
     color: #fff;
     letter-spacing: 2px;
     text-transform: uppercase;
-    background: rgba(150, 150, 150, 0.7);
-    padding: 8px 20px;
-    display: inline-block;
+    margin: 10px 0 0 0;
 }`,
       '/shader.js': `const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
