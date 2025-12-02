@@ -60,10 +60,18 @@ canvas {
 h1 {
     font-size: 3rem;
     color: #fff;
-    text-shadow: 0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(100,200,255,0.2);
+    text-shadow:
+        0 0 20px rgba(255,255,255,0.3),
+        0 0 40px rgba(100,200,255,0.2),
+        0 0 60px rgba(0,0,0,0.8),
+        -2px -2px 10px rgba(0,0,0,0.9),
+        2px -2px 10px rgba(0,0,0,0.9),
+        -2px 2px 10px rgba(0,0,0,0.9),
+        2px 2px 10px rgba(0,0,0,0.9);
     margin-bottom: 10px;
     font-weight: 300;
     letter-spacing: 4px;
+    mix-blend-mode: screen;
 }
 
 p {
@@ -71,6 +79,13 @@ p {
     color: #888;
     letter-spacing: 2px;
     text-transform: uppercase;
+    text-shadow:
+        0 0 10px rgba(0,0,0,0.9),
+        -1px -1px 5px rgba(0,0,0,0.95),
+        1px -1px 5px rgba(0,0,0,0.95),
+        -1px 1px 5px rgba(0,0,0,0.95),
+        1px 1px 5px rgba(0,0,0,0.95);
+    mix-blend-mode: screen;
 }`,
       '/shader.js': `const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -90,6 +105,31 @@ document.addEventListener('mousemove', (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 });
+
+// Mobile accelerometer support
+if (window.DeviceOrientationEvent) {
+  window.addEventListener('deviceorientation', (event) => {
+    const alpha = event.alpha || 0; // Z axis rotation (-180 to 180)
+    const beta = event.beta || 0;   // X axis rotation (-90 to 90)
+    const gamma = event.gamma || 0; // Y axis rotation (-90 to 90)
+
+    // Map accelerometer data to mouse position
+    // Normalize gamma (-90 to 90) to screen width
+    // Normalize beta (-90 to 90) to screen height
+    mouseX = canvas.width / 2 + (gamma / 90) * (canvas.width / 2);
+    mouseY = canvas.height / 2 + (beta / 90) * (canvas.height / 2);
+
+    // Clamp to canvas boundaries
+    mouseX = Math.max(0, Math.min(canvas.width, mouseX));
+    mouseY = Math.max(0, Math.min(canvas.height, mouseY));
+  }, true);
+
+  // Request permission for iOS 13+
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    // Optional: You could add a button to request permission
+    // For now, the browser will ask when needed
+  }
+}
 
 function noise(x, y, t) {
   return Math.sin(x * 0.1 + t * 0.3) * Math.cos(y * 0.1 + t * 0.2) * 0.5 + 0.5;
