@@ -16,6 +16,7 @@ export default {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ingest.mov</title>
+    <link rel="stylesheet" href="https://use.typekit.net/sby2vmx.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -58,14 +59,18 @@ canvas {
 }
 
 h1 {
+    font-family: "carbona-variable", sans-serif;
+    font-variation-settings: "slnt" 0, "MONO" 0, "wght" 400;
     font-size: 3rem;
     color: #fff;
     margin-bottom: 10px;
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: 4px;
 }
 
 p {
+    font-family: "carbona-variable", sans-serif;
+    font-variation-settings: "slnt" 0, "MONO" 0, "wght" 400;
     font-size: 0.9rem;
     color: #fff;
     letter-spacing: 2px;
@@ -173,7 +178,7 @@ function draw() {
       const charIndex = Math.floor(val * (chars.length - 1));
       const char = chars[charIndex];
 
-      const alpha = ((val * 0.8) + (mouseInfluence * 0.3 * touchIntensity)) * 0.8;
+      const alpha = ((val * 0.8) + (mouseInfluence * 0.3 * touchIntensity)) * 0.5;
       ctx.fillStyle = \`rgba(255, 255, 255, \${alpha})\`;
 
       ctx.fillText(char, x * 8, y * 16);
