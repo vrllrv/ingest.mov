@@ -1,2 +1,7 @@
-# This file is not needed for static Pages
-# Keeping it minimal to avoid build command issues
+name = "ingest-site"
+type = "javascript"
+main = "src/index.js"
+compatibility_date = "2025-12-02"
+
+[[site]]
+bucket = "."
