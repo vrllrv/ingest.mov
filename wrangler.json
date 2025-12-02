@@ -1,8 +1,6 @@
 {
   "name": "ingest-site",
   "type": "javascript",
-  "main": "index.js",
-  "site": {
-    "bucket": "."
-  }
+  "main": "src/index.js",
+  "compatibility_date": "2025-12-02"
 }
