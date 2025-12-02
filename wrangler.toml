@@ -1,3 +1,2 @@
-name = "ingest-site"
-compatibility_date = "2025-12-02"
-pages_build_output_dir = "."
+# This file is not needed for static Pages
+# Keeping it minimal to avoid build command issues
