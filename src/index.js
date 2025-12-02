@@ -30,8 +30,8 @@ export default {
 <body>
     <canvas id="canvas"></canvas>
     <div class="overlay">
-        <h1>INGEST.MOV</h1>
-        <p>motion picture delivery</p>
+        <h1>INGEST</h1>
+        <p>MOVIE NETWORK</p>
     </div>
     <script src="shader.js"><\/script>
 </body>
@@ -193,22 +193,37 @@ function draw() {
       }
 
       let wave, depth;
+      const pattern = shaderPattern % 5; // Cycle through 5 patterns
 
-      if (shaderPattern === 0) {
+      if (pattern === 0) {
         // Original spiral pattern - sine/sine diagonal flow
         wave = Math.sin((x + time * 0.5 * speedMultiplier + dx * 10) * 0.1) * waveIntensity + 0.3;
         depth = Math.sin((y - time * 0.3 * speedMultiplier + dy * 10) * 0.15) * (waveIntensity + 0.1) + 0.4;
-      } else if (shaderPattern === 1) {
-        // Radial burst pattern - concentric circles radiating outward
-        const radialDist = Math.sqrt((x - gridW/2) ** 2 + (y - gridH/2) ** 2);
-        wave = Math.sin(radialDist * 0.05 + time * 0.6 * speedMultiplier) * waveIntensity + 0.3;
-        depth = Math.cos((radialDist - time * 0.4 * speedMultiplier) * 0.08) * (waveIntensity + 0.1) + 0.4;
+      } else if (pattern === 1) {
+        // CLI horizontal progress bar - left to right filling
+        const fillAmount = (time * 0.4 * speedMultiplier) % (gridW * 0.8);
+        const distance = Math.abs(x - (gridW / 2 - gridW * 0.4 + fillAmount));
+        wave = Math.sin(distance * 0.1 + time * 0.3 * speedMultiplier) * waveIntensity + 0.3;
+        depth = (distance < 5) ? 0.8 : 0.2;
+      } else if (pattern === 2) {
+        // Vertical scan lines - like old terminal data download
+        const scanLine = Math.floor((y + time * 0.5 * speedMultiplier) % 8);
+        const lineIntensity = (scanLine < 2) ? 0.9 : 0.1;
+        wave = Math.sin(x * 0.08 + time * 0.2 * speedMultiplier) * waveIntensity + 0.3;
+        depth = lineIntensity + Math.cos(time * 0.6 * speedMultiplier) * 0.2;
+      } else if (pattern === 3) {
+        // Block progression - chunky download blocks filling from center outward
+        const distFromCenter = Math.sqrt((x - gridW/2) ** 2 + (y - gridH/2) ** 2);
+        const blockFill = ((time * 0.6 * speedMultiplier) % 80) / 80;
+        const blockThreshold = gridH * blockFill * 0.4;
+        wave = (distFromCenter < blockThreshold) ? 0.8 : 0.2;
+        depth = Math.cos(Math.floor(distFromCenter / 4) * 0.5 + time * 0.4 * speedMultiplier) * waveIntensity + 0.4;
       } else {
-        // Turbulent vortex pattern - rotational flow from center
-        const angle = Math.atan2(y - gridH/2, x - gridW/2);
-        const radius = Math.sqrt((x - gridW/2) ** 2 + (y - gridH/2) ** 2);
-        wave = Math.sin(angle * 4 + time * 0.7 * speedMultiplier + radius * 0.02) * waveIntensity + 0.3;
-        depth = Math.cos(angle * 3 - time * 0.5 * speedMultiplier) * (waveIntensity + 0.1) + 0.4;
+        // Pulse fill - like data packets arriving, creates pulsing filled areas
+        const pulsePhase = Math.sin(time * 0.5 * speedMultiplier) * 0.5 + 0.5;
+        const fillFromLeft = (x / gridW) * pulsePhase + (time * 0.2 * speedMultiplier) % 1;
+        wave = (fillFromLeft % 1 < 0.6) ? 0.85 : 0.25;
+        depth = Math.sin((y + time * 0.3 * speedMultiplier) * 0.15) * waveIntensity + 0.3;
       }
 
       let val = (n + wave + depth + mouseInfluence * (0.4 * touchIntensity)) / 2;
