@@ -1,4 +1,4 @@
-name = "ingest-website"
+name = "ingest-site"
 main = "index.js"
 compatibility_date = "2025-12-02"
 
