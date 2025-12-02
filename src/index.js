@@ -23,14 +23,14 @@ export default {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INGEST.MOV</title>
+    <title>INGEST.mov</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Degular+Mono:wght@400;700&family=Swear+Display:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas id="canvas"></canvas>
     <div class="overlay">
-        <h1>INGEST<span class="extension">.MOV</span></h1>
+        <h1>INGEST<span class="extension">.mov</span></h1>
         <p>DIGITAL PACKAGE NETWORK</p>
     </div>
     <script src="shader.js"><\/script>
@@ -84,7 +84,6 @@ h1 .extension {
     font-weight: 700;
     font-style: italic;
     font-size: 0.8rem;
-    font-variant: small-caps;
     margin-left: -2px;
 }
 
