@@ -71,12 +71,12 @@ canvas {
 
 h1 {
     font-family: "degular-mono", sans-serif;
-    font-weight: 700;
+    font-weight: 900;
     font-style: normal;
     font-size: 2rem;
     color: #fff;
     margin: 0;
-    letter-spacing: 4px;
+    letter-spacing: 1px;
 }
 
 h1 .extension {
