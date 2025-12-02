@@ -66,7 +66,6 @@ h1 {
     background: rgba(0, 0, 0, 0.6);
     padding: 15px 30px;
     display: inline-block;
-    mix-blend-mode: screen;
 }
 
 p {
@@ -77,7 +76,6 @@ p {
     background: rgba(150, 150, 150, 0.7);
     padding: 8px 20px;
     display: inline-block;
-    mix-blend-mode: screen;
 }`,
       '/shader.js': `const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -92,36 +90,28 @@ const gridH = Math.floor(canvas.height / 16);
 let time = 0;
 let mouseX = canvas.width / 2;
 let mouseY = canvas.height / 2;
+let touchIntensity = 1; // 1 for single touch (fluid), 2+ for multi-touch (chaotic)
 
 document.addEventListener('mousemove', (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 });
 
-// Mobile accelerometer support
-if (window.DeviceOrientationEvent) {
-  window.addEventListener('deviceorientation', (event) => {
-    const alpha = event.alpha || 0; // Z axis rotation (-180 to 180)
-    const beta = event.beta || 0;   // X axis rotation (-90 to 90)
-    const gamma = event.gamma || 0; // Y axis rotation (-90 to 90)
-
-    // Map accelerometer data to mouse position
-    // Normalize gamma (-90 to 90) to screen width
-    // Normalize beta (-90 to 90) to screen height
-    mouseX = canvas.width / 2 + (gamma / 90) * (canvas.width / 2);
-    mouseY = canvas.height / 2 + (beta / 90) * (canvas.height / 2);
-
-    // Clamp to canvas boundaries
-    mouseX = Math.max(0, Math.min(canvas.width, mouseX));
-    mouseY = Math.max(0, Math.min(canvas.height, mouseY));
-  }, true);
-
-  // Request permission for iOS 13+
-  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-    // Optional: You could add a button to request permission
-    // For now, the browser will ask when needed
+// Touch controls
+document.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 1) {
+    // Single finger - fluid flow
+    mouseX = e.touches[0].clientX;
+    mouseY = e.touches[0].clientY;
+    touchIntensity = 1;
+  } else if (e.touches.length >= 2) {
+    // Two or more fingers - chaotic fast
+    mouseX = e.touches[0].clientX;
+    mouseY = e.touches[0].clientY;
+    touchIntensity = 2;
   }
-}
+  e.preventDefault();
+}, { passive: false });
 
 function noise(x, y, t) {
   return Math.sin(x * 0.1 + t * 0.3) * Math.cos(y * 0.1 + t * 0.2) * 0.5 + 0.5;
@@ -153,16 +143,20 @@ function draw() {
       const distToMouse = Math.sqrt((x - mouseGridX) ** 2 + (y - mouseGridY) ** 2);
       const mouseInfluence = Math.max(0, 1 - distToMouse * 0.05);
 
-      const wave = Math.sin((x + time * 0.5 + dx * 10) * 0.1) * 0.3 + 0.3;
-      const depth = Math.sin((y - time * 0.3 + dy * 10) * 0.15) * 0.4 + 0.4;
+      // Two-finger touch: faster, more chaotic
+      const speedMultiplier = touchIntensity === 2 ? 2.5 : 1;
+      const waveIntensity = touchIntensity === 2 ? 0.5 : 0.3;
 
-      let val = (n + wave + depth + mouseInfluence * 0.4) / 2;
+      const wave = Math.sin((x + time * 0.5 * speedMultiplier + dx * 10) * 0.1) * waveIntensity + 0.3;
+      const depth = Math.sin((y - time * 0.3 * speedMultiplier + dy * 10) * 0.15) * (waveIntensity + 0.1) + 0.4;
+
+      let val = (n + wave + depth + mouseInfluence * (0.4 * touchIntensity)) / 2;
       val = Math.max(0, Math.min(1, val));
 
       const charIndex = Math.floor(val * (chars.length - 1));
       const char = chars[charIndex];
 
-      const alpha = (val * 0.8) + (mouseInfluence * 0.3);
+      const alpha = (val * 0.8) + (mouseInfluence * 0.3 * touchIntensity);
       ctx.fillStyle = \`rgba(255, 255, 255, \${alpha})\`;
 
       ctx.fillText(char, x * 8, y * 16);
