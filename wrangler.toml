@@ -2,3 +2,8 @@ name = "site"
 type = "javascript"
 main = "src/index.js"
 compatibility_date = "2025-12-02"
+
+[env.production]
+routes = [
+  { pattern = "site.ingest-mov.workers.dev/*", zone_id = "" }
+]

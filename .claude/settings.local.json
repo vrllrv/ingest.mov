@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(npm run deploy:*)",
+      "Bash(npm install)",
+      "Bash(npx wrangler publish:*)",
+      "Bash(timeout 10 npx wrangler dev:*)",
+      "Bash(npx wrangler deploy --help:*)",
+      "Bash(npx wrangler deploy:*)",
+      "Bash(ren:*)",
+      "Bash(powershell -Command \"Rename-Item -Path ''e:\\INGEST\\my-website'' -NewName ''ingest-mov''\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
