@@ -1,0 +1,9 @@
+{
+  "name": "ingest-site",
+  "version": "1.0.0",
+  "description": "Static website",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "echo 'Static site - no build needed'"
+  }
+}

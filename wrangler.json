@@ -1,0 +1,8 @@
+{
+  "name": "ingest-site",
+  "type": "javascript",
+  "main": "index.js",
+  "site": {
+    "bucket": "."
+  }
+}
