@@ -92,6 +92,8 @@ let mouseX = canvas.width / 2;
 let mouseY = canvas.height / 2;
 let touchIntensity = 1; // 1 for single touch (chaotic), 2+ for multi-touch (ultra chaotic)
 let isTouching = false;
+let shuffleChars = false;
+const allChars = '░▒▓█▀▄─│╱╲abcdefghijklmnopqrstuvwxyz0123456789@#$%&*'.split('');
 
 document.addEventListener('mousemove', (e) => {
   if (!isTouching) {
@@ -117,11 +119,13 @@ document.addEventListener('touchmove', (e) => {
     mouseX = e.touches[0].clientX;
     mouseY = e.touches[0].clientY;
     touchIntensity = 2;
+    shuffleChars = false;
   } else if (e.touches.length >= 2) {
-    // Two or more fingers - ultra intense chaotic
+    // Two or more fingers - ultra intense chaotic + shuffle characters
     mouseX = e.touches[0].clientX;
     mouseY = e.touches[0].clientY;
     touchIntensity = 3;
+    shuffleChars = true;
   }
   e.preventDefault();
 }, { passive: false });
@@ -176,8 +180,14 @@ function draw() {
       let val = (n + wave + depth + mouseInfluence * (0.4 * touchIntensity)) / 2;
       val = Math.max(0, Math.min(1, val));
 
-      const charIndex = Math.floor(val * (chars.length - 1));
-      const char = chars[charIndex];
+      let charIndex = Math.floor(val * (chars.length - 1));
+      let char = chars[charIndex];
+
+      // Shuffle characters when two fingers active
+      if (shuffleChars) {
+        charIndex = Math.floor(val * (allChars.length - 1));
+        char = allChars[charIndex];
+      }
 
       const alpha = ((val * 0.8) + (mouseInfluence * 0.3 * touchIntensity)) * 0.68;
       ctx.fillStyle = \`rgba(255, 255, 255, \${alpha})\`;
