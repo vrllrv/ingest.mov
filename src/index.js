@@ -83,8 +83,9 @@ h1 .extension {
     font-family: "swear-display", serif;
     font-weight: 700;
     font-style: italic;
-    font-size: 1.2rem;
-    margin-left: 4px;
+    font-size: 0.8rem;
+    font-variant: small-caps;
+    margin-left: -2px;
 }
 
 p {
@@ -95,7 +96,7 @@ p {
     color: #fff;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin: 15px 0 0 0;
+    margin: 4px 0 0 0;
 }`,
         type: 'text/css'
       },
