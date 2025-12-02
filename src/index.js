@@ -61,7 +61,7 @@ canvas {
 h1 {
     font-family: "carbona-variable", sans-serif;
     font-variation-settings: "slnt" 0, "MONO" 0, "wght" 800;
-    font-size: 3rem;
+    font-size: 2rem;
     color: #fff;
     margin: 0;
     font-weight: 800;
@@ -71,7 +71,7 @@ h1 {
 p {
     font-family: "carbona-variable", sans-serif;
     font-variation-settings: "slnt" 0, "MONO" 0, "wght" 400;
-    font-size: 0.9rem;
+    font-size: 0.6rem;
     color: #fff;
     letter-spacing: 2px;
     text-transform: uppercase;
