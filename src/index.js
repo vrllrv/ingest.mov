@@ -93,6 +93,8 @@ let mouseY = canvas.height / 2;
 let touchIntensity = 1; // 1 for single touch (chaotic), 2+ for multi-touch (ultra chaotic)
 let isTouching = false;
 let shuffleChars = false;
+let shaderPattern = 0; // 0 = default, 1 = swapped wave/depth, 2 = inverted
+let lastTapTime = 0;
 const allChars = '░▒▓█▀▄─│╱╲◆◇▪▫■□▌▐▍▎◀▶▲▼◤◥◢◣○●◎◉★✦✧×÷≈≠±∞∑∏√∂∫∮∆∇⊕⊗⊙⊚⊛⊝⊞⊟⊠⊡'.split('');
 
 document.addEventListener('mousemove', (e) => {
@@ -105,6 +107,15 @@ document.addEventListener('mousemove', (e) => {
 // Touch controls
 document.addEventListener('touchstart', (e) => {
   isTouching = true;
+
+  // Double tap detection
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTapTime;
+  if (tapLength < 300 && tapLength > 0) {
+    // Double tap detected - cycle shader pattern
+    shaderPattern = (shaderPattern + 1) % 3;
+  }
+  lastTapTime = currentTime;
 });
 
 document.addEventListener('touchend', (e) => {
@@ -174,8 +185,21 @@ function draw() {
         waveIntensity = 0.7;
       }
 
-      const wave = Math.sin((x + time * 0.5 * speedMultiplier + dx * 10) * 0.1) * waveIntensity + 0.3;
-      const depth = Math.sin((y - time * 0.3 * speedMultiplier + dy * 10) * 0.15) * (waveIntensity + 0.1) + 0.4;
+      let wave, depth;
+
+      if (shaderPattern === 0) {
+        // Default pattern
+        wave = Math.sin((x + time * 0.5 * speedMultiplier + dx * 10) * 0.1) * waveIntensity + 0.3;
+        depth = Math.sin((y - time * 0.3 * speedMultiplier + dy * 10) * 0.15) * (waveIntensity + 0.1) + 0.4;
+      } else if (shaderPattern === 1) {
+        // Swapped pattern
+        wave = Math.cos((x - time * 0.3 * speedMultiplier + dx * 10) * 0.15) * waveIntensity + 0.3;
+        depth = Math.cos((y + time * 0.5 * speedMultiplier + dy * 10) * 0.1) * (waveIntensity + 0.1) + 0.4;
+      } else {
+        // Inverted pattern
+        wave = Math.sin((x + time * 0.4 * speedMultiplier + dx * 10) * 0.12) * waveIntensity + 0.3;
+        depth = Math.cos((y - time * 0.4 * speedMultiplier + dy * 10) * 0.12) * (waveIntensity + 0.1) + 0.4;
+      }
 
       let val = (n + wave + depth + mouseInfluence * (0.4 * touchIntensity)) / 2;
       val = Math.max(0, Math.min(1, val));
