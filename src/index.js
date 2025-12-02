@@ -90,25 +90,38 @@ const gridH = Math.floor(canvas.height / 16);
 let time = 0;
 let mouseX = canvas.width / 2;
 let mouseY = canvas.height / 2;
-let touchIntensity = 1; // 1 for single touch (fluid), 2+ for multi-touch (chaotic)
+let touchIntensity = 1; // 1 for single touch (chaotic), 2+ for multi-touch (ultra chaotic)
+let isTouching = false;
 
 document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+  if (!isTouching) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
 });
 
 // Touch controls
+document.addEventListener('touchstart', (e) => {
+  isTouching = true;
+});
+
+document.addEventListener('touchend', (e) => {
+  if (e.touches.length === 0) {
+    isTouching = false;
+  }
+});
+
 document.addEventListener('touchmove', (e) => {
   if (e.touches.length === 1) {
-    // Single finger - fluid flow
-    mouseX = e.touches[0].clientX;
-    mouseY = e.touches[0].clientY;
-    touchIntensity = 1;
-  } else if (e.touches.length >= 2) {
-    // Two or more fingers - chaotic fast
+    // Single finger - chaotic flow (default on mobile)
     mouseX = e.touches[0].clientX;
     mouseY = e.touches[0].clientY;
     touchIntensity = 2;
+  } else if (e.touches.length >= 2) {
+    // Two or more fingers - ultra intense chaotic
+    mouseX = e.touches[0].clientX;
+    mouseY = e.touches[0].clientY;
+    touchIntensity = 3;
   }
   e.preventDefault();
 }, { passive: false });
@@ -143,9 +156,19 @@ function draw() {
       const distToMouse = Math.sqrt((x - mouseGridX) ** 2 + (y - mouseGridY) ** 2);
       const mouseInfluence = Math.max(0, 1 - distToMouse * 0.05);
 
-      // Two-finger touch: faster, more chaotic
-      const speedMultiplier = touchIntensity === 2 ? 2.5 : 1;
-      const waveIntensity = touchIntensity === 2 ? 0.5 : 0.3;
+      // Touch intensity multipliers
+      let speedMultiplier = 1;
+      let waveIntensity = 0.3;
+
+      if (touchIntensity === 2) {
+        // Single finger on mobile - chaotic
+        speedMultiplier = 2.5;
+        waveIntensity = 0.5;
+      } else if (touchIntensity === 3) {
+        // Two fingers - ultra chaotic
+        speedMultiplier = 4;
+        waveIntensity = 0.7;
+      }
 
       const wave = Math.sin((x + time * 0.5 * speedMultiplier + dx * 10) * 0.1) * waveIntensity + 0.3;
       const depth = Math.sin((y - time * 0.3 * speedMultiplier + dy * 10) * 0.15) * (waveIntensity + 0.1) + 0.4;
