@@ -60,11 +60,11 @@ canvas {
 
 h1 {
     font-family: "carbona-variable", sans-serif;
-    font-variation-settings: "slnt" 0, "MONO" 0, "wght" 400;
+    font-variation-settings: "slnt" 0, "MONO" 0, "wght" 800;
     font-size: 3rem;
     color: #fff;
-    margin-bottom: 10px;
-    font-weight: 400;
+    margin: 0;
+    font-weight: 800;
     letter-spacing: 4px;
 }
 
@@ -75,6 +75,7 @@ p {
     color: #fff;
     letter-spacing: 2px;
     text-transform: uppercase;
+    margin: 15px 0 0 0;
 }`,
       '/shader.js': `const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -178,7 +179,7 @@ function draw() {
       const charIndex = Math.floor(val * (chars.length - 1));
       const char = chars[charIndex];
 
-      const alpha = ((val * 0.8) + (mouseInfluence * 0.3 * touchIntensity)) * 0.5;
+      const alpha = ((val * 0.8) + (mouseInfluence * 0.3 * touchIntensity)) * 0.68;
       ctx.fillStyle = \`rgba(255, 255, 255, \${alpha})\`;
 
       ctx.fillText(char, x * 8, y * 16);
