@@ -60,31 +60,23 @@ canvas {
 h1 {
     font-size: 3rem;
     color: #fff;
-    text-shadow:
-        0 0 20px rgba(255,255,255,0.3),
-        0 0 40px rgba(100,200,255,0.2),
-        0 0 60px rgba(0,0,0,0.8),
-        -2px -2px 10px rgba(0,0,0,0.9),
-        2px -2px 10px rgba(0,0,0,0.9),
-        -2px 2px 10px rgba(0,0,0,0.9),
-        2px 2px 10px rgba(0,0,0,0.9);
     margin-bottom: 10px;
     font-weight: 300;
     letter-spacing: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 15px 30px;
+    display: inline-block;
     mix-blend-mode: screen;
 }
 
 p {
     font-size: 0.9rem;
-    color: #888;
+    color: #fff;
     letter-spacing: 2px;
     text-transform: uppercase;
-    text-shadow:
-        0 0 10px rgba(0,0,0,0.9),
-        -1px -1px 5px rgba(0,0,0,0.95),
-        1px -1px 5px rgba(0,0,0,0.95),
-        -1px 1px 5px rgba(0,0,0,0.95),
-        1px 1px 5px rgba(0,0,0,0.95);
+    background: rgba(150, 150, 150, 0.7);
+    padding: 8px 20px;
+    display: inline-block;
     mix-blend-mode: screen;
 }`,
       '/shader.js': `const canvas = document.getElementById('canvas');
