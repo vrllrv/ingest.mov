@@ -31,7 +31,7 @@ export default {
     <canvas id="canvas"></canvas>
     <div class="overlay">
         <h1>INGEST<span class="extension">.MOV</span></h1>
-        <p>MOVIE NETWORK</p>
+        <p>DIGITAL PACKAGE NETWORK</p>
     </div>
     <script src="shader.js"><\/script>
 </body>
