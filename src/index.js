@@ -93,7 +93,7 @@ let mouseY = canvas.height / 2;
 let touchIntensity = 1; // 1 for single touch (chaotic), 2+ for multi-touch (ultra chaotic)
 let isTouching = false;
 let shuffleChars = false;
-const allChars = '░▒▓█▀▄─│╱╲abcdefghijklmnopqrstuvwxyz0123456789@#$%&*'.split('');
+const allChars = '░▒▓█▀▄─│╱╲◆◇▪▫■□▌▐▍▎◀▶▲▼◤◥◢◣○●◎◉★✦✧×÷≈≠±∞∑∏√∂∫∮∆∇⊕⊗⊙⊚⊛⊝⊞⊟⊠⊡'.split('');
 
 document.addEventListener('mousemove', (e) => {
   if (!isTouching) {
