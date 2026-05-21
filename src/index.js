@@ -23,16 +23,12 @@ export default {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INGEST.mov</title>
+    <title>ingest.mov</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Degular+Mono:wght@400;700&family=Swear+Display:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div class="overlay">
-        <h1>INGEST<span class="extension">.mov</span></h1>
-        <p>DIGITAL PACKAGE NETWORK</p>
-    </div>
     <script src="shader.js"><\/script>
 </body>
 </html>`,
@@ -208,6 +204,12 @@ function draw() {
   const timeX = time * speedMultiplier;
   const timeY = time * speedMultiplier;
 
+  // Ingest scan beam — slow vertical sweep, brightens chars in its path
+  const scanCycle = 9;
+  const scanT = ((time % scanCycle) / scanCycle) * 1.2 - 0.1;
+  const scanX = scanT * gridW;
+  const scanWidth = 4;
+
   for (let y = 0; y < gridH; y++) {
     for (let x = 0; x < gridW; x++) {
       const n = noise(x, y, time);
@@ -247,7 +249,9 @@ function draw() {
       val = Math.max(0, Math.min(1, val));
 
       let char = shuffleChars ? allChars[Math.floor(val * (allChars.length - 1))] : chars[Math.floor(val * (chars.length - 1))];
-      const alpha = ((val * 0.8) + (mouseInfluence * 0.3 * touchIntensity)) * 0.68;
+      const scanDist = Math.abs(x - scanX);
+      const scanBoost = scanDist < scanWidth ? (1 - scanDist / scanWidth) * 0.55 : 0;
+      const alpha = ((val * 0.8) + (mouseInfluence * 0.3 * touchIntensity)) * 0.68 + scanBoost;
 
       ctx.fillStyle = \`rgba(255,255,255,\${alpha})\`;
       ctx.fillText(char, x * 8, y * 16);
