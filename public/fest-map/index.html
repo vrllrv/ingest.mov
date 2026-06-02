@@ -353,9 +353,11 @@ function buildRangeOpts(){
 // country dropdown (populated in init(), after data loads)
 const sel=document.getElementById('country');
 function populateCountries(){
-  const countries=[...new Set(DATA.map(f=>f.country))].sort();
+  const counts={};
+  DATA.forEach(f=>{ counts[f.country]=(counts[f.country]||0)+1; });
+  const countries=Object.keys(counts).sort((a,b)=> counts[b]-counts[a] || a.localeCompare(b)); // most festivals first
   sel.innerHTML='<option value="">All countries ('+DATA.length+')</option>'+
-    countries.map(c=>`<option value="${c}">${c} (${DATA.filter(f=>f.country===c).length})</option>`).join('');
+    countries.map(c=>`<option value="${c}">${c} (${counts[c]})</option>`).join('');
 }
 
 function popup(f){
