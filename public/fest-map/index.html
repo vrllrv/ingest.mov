@@ -61,15 +61,24 @@
   .ftoggle[aria-expanded="true"]{background:var(--accent);color:#1a1407;border-color:var(--accent)}
   .count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap}
   .count b{color:var(--accent)}
-  /* share / export actions */
+  /* always-visible toolbar (share / export / copy) + active-filter readout */
+  #hudtools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:8px;pointer-events:auto}
   .actions{display:flex;gap:8px}
   .abtn{background:var(--panel);border:1px solid var(--line2);border-radius:9px;color:var(--txt);
     font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:8px 11px;min-height:34px;cursor:pointer;white-space:nowrap}
   .abtn:hover{background:#1b212b;border-color:var(--accent)}
   .abtn.go{color:var(--accent);border-color:rgba(242,193,78,.4)}
-  /* active-filter readout — stays visible even when the Filters panel is collapsed */
-  #active{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;pointer-events:auto}
+  #active{display:flex;flex-wrap:wrap;gap:6px}
   #active:empty{display:none}
+  /* range presets + centred custom input (input sits in the middle) */
+  .rangeopts{display:flex;align-items:center;gap:5px}
+  .rangeopts .rpreset{appearance:none;background:var(--panel);border:1px solid var(--line2);border-radius:7px;color:var(--muted);
+    font-family:var(--mono);font-size:11px;padding:7px 9px;min-height:34px;min-width:34px;cursor:pointer}
+  .rangeopts .rpreset.on{background:var(--accent);color:#1a1407;font-weight:600;border-color:var(--accent)}
+  .rangenum{width:52px;text-align:center;background:var(--panel);border:1px solid var(--line2);border-radius:7px;color:var(--txt);
+    font-family:var(--mono);font-size:11.5px;padding:7px 6px;min-height:34px;outline:none}
+  .rangenum::placeholder{color:var(--muted)}
+  .rangenum:focus{border-color:var(--accent)}
   .fchip{font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--txt);
     background:var(--panel);border:1px solid var(--line2);border-radius:20px;padding:3px 9px;white-space:nowrap;backdrop-filter:blur(8px)}
   .fchip b{color:var(--accent);font-weight:600}
@@ -139,9 +148,11 @@
     .controls .seg button{flex:1;min-width:0;white-space:normal;line-height:1.2;text-align:center;min-height:38px;padding:8px 6px}
     .controls .ctl,.controls select.ctl{width:100%;max-width:none;min-width:0;min-height:38px}
     .controls .chk{width:100%;min-height:38px}
-    .controls .actions{width:100%}
-    .controls .abtn{flex:1;min-height:40px;text-align:center}
-    #rangeN{width:100%!important}
+    .controls .rangeopts{width:100%}
+    .controls .rangeopts .rpreset{flex:1;min-width:0;min-height:38px}
+    .controls .rangenum{flex:1;min-width:0;min-height:38px}
+    .actions{width:100%}
+    .actions .abtn{flex:1;min-height:38px;text-align:center;padding:8px 6px}
     #legend{left:10px;bottom:10px;padding:9px 11px 10px;max-width:min(280px,82vw)}
     .leaflet-control-zoom{margin:0 8px 8px 0!important}
   }
@@ -178,20 +189,22 @@
         <button data-u="d">Days</button>
         <button data-u="m">Months</button>
       </div>
-      <input id="rangeN" class="ctl" type="number" min="1" step="1" value="3"
-             style="width:64px;display:none" aria-label="range amount"/>
+      <div class="rangeopts" id="rangeOpts" style="display:none"></div>
       <label class="chk"><input type="checkbox" id="showInactive"/> show past / closed</label>
-      <div class="actions">
-        <button id="shareBtn" class="abtn go" title="copy a link to this exact view">Share range</button>
-        <button id="exportBtn" class="abtn" title="download the shown festivals as JSON">Export JSON</button>
-      </div>
     </div>
     <button id="filterToggle" class="ftoggle" aria-expanded="false" aria-controls="controls">
       <span>Filters</span><span class="ar">▾</span>
     </button>
     <div class="count" id="count"></div>
   </div>
-  <div id="active"></div>
+  <div id="hudtools">
+    <div class="actions">
+      <button id="shareBtn" class="abtn go" title="copy a link to this view">Share</button>
+      <button id="exportBtn" class="abtn" title="download the shown festivals as JSON">Export</button>
+      <button id="copyEmailsBtn" class="abtn" title="copy every shown festival’s email (for BCC)">Copy emails</button>
+    </div>
+    <div id="active"></div>
+  </div>
 </div>
 
 <div id="legend">
@@ -288,13 +301,32 @@ function color(f,mode,mx){
 const layer = L.layerGroup().addTo(map);
 let MODE='start';
 let RANGE_UNIT='';            // '' = any time, 'd' = days, 'm' = months
+const RANGE_PRESETS={ d:[7,14,30,60], m:[1,3,6,12] };
+const RANGE_DEFAULT={ d:30, m:3 };
+let RANGE_N=3;                // current range amount (presets set it; custom input overrides)
+function rangeN(){ return Math.max(1, RANGE_N||1); }
 function rangeCutoff(){
   if(!RANGE_UNIT) return null;
-  const n = Math.max(1, parseInt(document.getElementById('rangeN').value,10)||1);
+  const n = rangeN();
   const c = new Date(TODAY.getTime());
   if(RANGE_UNIT==='d') c.setDate(c.getDate()+n);
   else c.setMonth(c.getMonth()+n);    // real calendar months, not n×30
   return c.getTime();
+}
+// preset chips with the custom input centred between them (visually balanced)
+function buildRangeOpts(){
+  const opts=document.getElementById('rangeOpts');
+  if(!RANGE_UNIT){ opts.style.display='none'; opts.innerHTML=''; return; }
+  const presets=RANGE_PRESETS[RANGE_UNIT], mid=Math.ceil(presets.length/2);
+  const isPreset=presets.includes(RANGE_N), unitWord=RANGE_UNIT==='m'?'months':'days';
+  const chip=v=>`<button type="button" class="rpreset${v===RANGE_N?' on':''}" data-v="${v}">${v}</button>`;
+  // custom input sits in the middle; empty (placeholder) while a preset is active, so
+  // the number is never shown twice
+  opts.innerHTML =
+    presets.slice(0,mid).map(chip).join('') +
+    `<input id="rangeN" class="rangenum" type="number" min="1" step="1" value="${isPreset?'':RANGE_N}" placeholder="·" aria-label="custom ${unitWord}"/>` +
+    presets.slice(mid).map(chip).join('');
+  opts.style.display='';
 }
 
 // country dropdown (populated in init(), after data loads)
@@ -361,7 +393,7 @@ function filteredFestivals(){ const ctx=currentCtx(); return DATA.filter(f=>pass
 
 function rangeLabel(){
   if(!RANGE_UNIT) return null;
-  const n=Math.max(1, parseInt(document.getElementById('rangeN').value,10)||1);
+  const n=rangeN();
   const unit = RANGE_UNIT==='d' ? (n===1?'day':'days') : (n===1?'month':'months');
   return `next ${n} ${unit}`;
 }
@@ -408,10 +440,22 @@ document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
 document.querySelectorAll('#rangeUnit button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('#rangeUnit button').forEach(x=>x.classList.remove('on'));
   b.classList.add('on'); RANGE_UNIT=b.dataset.u;
-  document.getElementById('rangeN').style.display = RANGE_UNIT ? '' : 'none';
+  if(RANGE_UNIT) RANGE_N=RANGE_DEFAULT[RANGE_UNIT];
+  buildRangeOpts();
   render();
 });
-document.getElementById('rangeN').oninput=render;
+// preset chips + custom input (delegated; #rangeN is rebuilt when the unit changes)
+const rangeOpts=document.getElementById('rangeOpts');
+rangeOpts.addEventListener('click', e=>{
+  const b=e.target.closest('.rpreset'); if(!b) return;
+  RANGE_N=+b.dataset.v; buildRangeOpts(); render();   // rebuild → input clears to placeholder
+});
+rangeOpts.addEventListener('input', e=>{
+  if(e.target.id!=='rangeN') return;
+  RANGE_N=Math.max(1, parseInt(e.target.value,10)||1);
+  rangeOpts.querySelectorAll('.rpreset').forEach(x=>x.classList.toggle('on', +x.dataset.v===RANGE_N));
+  render();
+});
 document.getElementById('tz').onchange=e=>{ TZ_OFFSET=parseFloat(e.target.value); computeToday(); render(); };
 document.getElementById('q').oninput=render;
 sel.onchange=render;
@@ -436,7 +480,7 @@ function stateToURL(){
   const q=document.getElementById('q').value.trim(); if(q) p.set('q',q);
   if(sel.value) p.set('country',sel.value);
   if(TZ_OFFSET!==-3) p.set('tz',String(TZ_OFFSET));
-  if(RANGE_UNIT){ p.set('ru',RANGE_UNIT); p.set('rn',String(Math.max(1,parseInt(document.getElementById('rangeN').value,10)||1))); }
+  if(RANGE_UNIT){ p.set('ru',RANGE_UNIT); p.set('rn',String(rangeN())); }
   if(document.getElementById('showInactive').checked) p.set('past','1');
   const qs=p.toString();
   return location.origin+location.pathname+(qs?'?'+qs:'');
@@ -452,7 +496,8 @@ function applyStateFromURL(){
   const ru=p.get('ru');
   if(ru==='d'||ru==='m'){ RANGE_UNIT=ru;
     document.querySelectorAll('#rangeUnit button').forEach(b=>b.classList.toggle('on', b.dataset.u===ru));
-    const rn=document.getElementById('rangeN'); if(p.get('rn')) rn.value=p.get('rn'); rn.style.display=''; }
+    RANGE_N = p.get('rn') ? Math.max(1, parseInt(p.get('rn'),10)||RANGE_DEFAULT[ru]) : RANGE_DEFAULT[ru];
+    buildRangeOpts(); }
   if(p.get('past')==='1') document.getElementById('showInactive').checked=true;
 }
 
@@ -477,6 +522,13 @@ document.getElementById('shareBtn').onclick=async()=>{
   const ok=await copyText(url);
   toast(ok?'Link copied — share this view':'Copy failed — URL logged to console');
   if(!ok) console.log(url);
+};
+document.getElementById('copyEmailsBtn').onclick=async()=>{
+  const emails=[...new Set(filteredFestivals().map(f=>f.email).filter(Boolean))];
+  if(!emails.length){ toast('No emails in current view'); return; }
+  const ok=await copyText(emails.join(', '));
+  toast(ok?`Copied ${emails.length} email${emails.length===1?'':'s'} (BCC-ready)`:'copy failed — emails in console');
+  if(!ok) console.log(emails.join(', '));
 };
 document.getElementById('exportBtn').onclick=()=>{
   const list=filteredFestivals();
