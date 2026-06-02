@@ -1,10 +1,12 @@
-// Ingest: read the private "Future Festivals" tab via the Google Sheets API,
-// parse rows, geocode addresses (cached), and write public/fest-map/data.json.
+// Ingest: read the public "Future Festivals" sheet tab as CSV, parse rows,
+// geocode addresses (cached), and write public/fest-map/data.json.
+//
+// The sheet must be shared "Anyone with the link → Viewer" (it only holds
+// public Festhome data). No Google credentials required.
 //
 // Env:
-//   GOOGLE_SERVICE_ACCOUNT_KEY  service-account JSON (string)   [CI]
-//   GOOGLE_APPLICATION_CREDENTIALS  path to that JSON           [local alt]
 //   SHEET_ID    spreadsheet id (defaults to the Festhome sheet)
+//   CSV_URL     full CSV url override (defaults to the gviz export below)
 //   TZ_OFFSET   hours offset for "today" when flagging past events (default -3)
 //
 // A normal run does zero network geocoding: every address already lives in
@@ -12,8 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { google } from 'googleapis';
-import { parseRows } from './parse.mjs';
+import { parseRows, parseCsv } from './parse.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
@@ -22,6 +23,8 @@ const OUT_PATH = path.join(ROOT, 'public/fest-map/data.json');
 
 const SHEET_ID = process.env.SHEET_ID || '1Ie60CKn3zlt5MFB43nt5GM6h6gbAO-p1wDvaTmB27xk';
 const TAB = 'Future Festivals';
+const CSV_URL = process.env.CSV_URL ||
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(TAB)}`;
 const TZ_OFFSET = process.env.TZ_OFFSET != null ? parseFloat(process.env.TZ_OFFSET) : -3;
 const FIELD_ORDER = ['id', 'name', 'country', 'cats', 'start', 'end', 'deadline',
   'opens', 'status', 'url', 'lat', 'lon', 'prec', 'inactive', 'warn'];
@@ -29,28 +32,16 @@ const FIELD_ORDER = ['id', 'name', 'country', 'cats', 'start', 'end', 'deadline'
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const todayISO = () => new Date(Date.now() + TZ_OFFSET * 3600000).toISOString().slice(0, 10);
 
-function loadAuth() {
-  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-  const creds = raw
-    ? JSON.parse(raw)
-    : JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8'));
-  return new google.auth.JWT({
-    email: creds.client_email,
-    key: creds.private_key,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-  });
-}
-
-async function fetchRows(auth) {
-  const sheets = google.sheets({ version: 'v4', auth });
-  const res = await sheets.spreadsheets.values.get({
-    spreadsheetId: SHEET_ID,
-    range: `'${TAB}'!A1:M`,
-    valueRenderOption: 'FORMATTED_VALUE',
-    dateTimeRenderOption: 'FORMATTED_STRING',
-  });
-  if (!res.data.values || res.data.values.length < 2) throw new Error(`empty range '${TAB}'`);
-  return res.data.values;
+async function fetchValues() {
+  const r = await fetch(CSV_URL, { redirect: 'follow' });
+  if (!r.ok) throw new Error(`sheet fetch HTTP ${r.status} — is it shared "Anyone with the link"?`);
+  const text = await r.text();
+  if (/^\s*</.test(text)) {
+    throw new Error('got HTML, not CSV — the sheet is not publicly readable (check link sharing)');
+  }
+  const values = parseCsv(text);
+  if (values.length < 2) throw new Error('CSV had no data rows');
+  return values;
 }
 
 // --- geocoding (Nominatim, cached) ---
@@ -89,7 +80,7 @@ async function geocode(addr, country) {
 }
 
 async function main() {
-  const values = await fetchRows(loadAuth());
+  const values = await fetchValues();
   const today = todayISO();
   const items = parseRows(values, today);
   console.log(`parsed ${items.length} festivals (today=${today}, tz=GMT${TZ_OFFSET >= 0 ? '+' : ''}${TZ_OFFSET})`);

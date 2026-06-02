@@ -25,11 +25,8 @@ jobs:
 
       - run: npm ci
 
-      # Read the private "Future Festivals" sheet, parse + geocode -> data.json
+      # Read the public "Future Festivals" sheet (CSV), parse + geocode -> data.json
       - name: Ingest sheet
-        env:
-          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
-          SHEET_ID: ${{ secrets.SHEET_ID }}
         run: npm run ingest
 
       # Push the regenerated asset live to Cloudflare

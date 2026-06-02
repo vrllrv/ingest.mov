@@ -1,67 +1,63 @@
 # fest-map data ingest
 
-Pulls the **private** "Future Festivals" Google Sheet → parses dates → geocodes
-addresses → writes [`../public/fest-map/data.json`](../public/fest-map/data.json),
+Pulls the **"Future Festivals"** Google Sheet tab (public, CSV) → parses dates →
+geocodes addresses → writes [`../public/fest-map/data.json`](../public/fest-map/data.json),
 which the map fetches at runtime. Runs daily via
 [`.github/workflows/refresh-festmap.yml`](../.github/workflows/refresh-festmap.yml).
 
 ```
-Festhome → (your private sheet, auto-pull) → ingest.mjs
-   → parse "Future Festivals" tab → geocode (cached) → data.json → wrangler deploy
+Festhome → (sheet's Apps Script auto-pull) → Future Festivals tab
+   → ingest.mjs: parse + geocode (cached) → data.json → wrangler deploy
 ```
 
 Only the **`Future Festivals`** tab is read. `Sheet1` (raw/past festivals) is ignored.
+No Google credentials are used — the sheet holds only public Festhome data and is
+read via its public CSV export.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `parse.mjs` | Pure sheet-row → record parser (no I/O). |
-| `ingest.mjs` | Sheets API fetch + geocode + write `data.json`. |
+| `parse.mjs` | Pure CSV + row parser (no I/O). |
+| `ingest.mjs` | Fetch public CSV + geocode + write `data.json`. |
 | `geocache.json` | `Full Address → {lat,lon,prec}` cache. **Committed** so coords are reused; a normal run does zero geocoding. |
-| `test-parse.mjs` | Validates `parse.mjs` against the known-good `data.json`. |
+| `test-parse.mjs`, `test-csv.mjs` | Validate the parser against the known-good `data.json` (0 diffs / 774 records). |
 
 ## One-time setup
 
-### 1. Google service account (keeps the sheet private)
-1. <https://console.cloud.google.com/> → create/select a project.
-2. **APIs & Services → Library → Google Sheets API → Enable.**
-3. **APIs & Services → Credentials → Create credentials → Service account.** Name it e.g. `festmap-ingest`. No roles needed.
-4. Open the service account → **Keys → Add key → Create new key → JSON.** A `.json` file downloads — this is `GOOGLE_SERVICE_ACCOUNT_KEY`.
-5. Copy the service account email (`festmap-ingest@PROJECT.iam.gserviceaccount.com`).
+### 1. Make the sheet readable
+In the sheet: **Share → General access → "Anyone with the link" → Viewer.**
+That's all the ingest needs (it reads the public CSV export). The sheet's own
+Apps Script keeps pulling from Festhome regardless.
 
-### 2. Share + privatise the sheet
-1. In the sheet: **Share** → add the service-account email as **Viewer**.
-2. Remove "Anyone with the link" → the sheet is now **private**; the ingest still reads it via the service account, and its Festhome auto-pull keeps working.
-
-### 3. Cloudflare API token (for CI deploys)
+### 2. Cloudflare API token (for CI deploys)
 1. <https://dash.cloudflare.com/profile/api-tokens> → **Create Token → "Edit Cloudflare Workers"** template → create.
 2. That token = `CLOUDFLARE_API_TOKEN`. Account ID = `9ebadf54c3839f299ce50b02d57a5489`.
 
-### 4. GitHub repo secrets
+### 3. GitHub repo secrets
 `Settings → Secrets and variables → Actions → New repository secret`:
 
 | Secret | Value |
 |--------|-------|
-| `GOOGLE_SERVICE_ACCOUNT_KEY` | full contents of the service-account `.json` |
-| `CLOUDFLARE_API_TOKEN` | the token from step 3 |
+| `CLOUDFLARE_API_TOKEN` | the token from step 2 |
 | `CLOUDFLARE_ACCOUNT_ID` | `9ebadf54c3839f299ce50b02d57a5489` |
-| `SHEET_ID` | `1Ie60CKn3zlt5MFB43nt5GM6h6gbAO-p1wDvaTmB27xk` (optional; defaults in code) |
 
-Then **Actions → Refresh fest-map data → Run workflow** to test, or wait for the daily 06:00 UTC run.
+(Optional) override the source via the `SHEET_ID` / `CSV_URL` env in the workflow.
+
+Then **Actions → Refresh fest-map data → Run workflow** to test, or wait for the
+daily 06:00 UTC run.
 
 ## Run locally
 
 ```bash
-export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
-npm run ingest        # regenerates public/fest-map/data.json
+npm run ingest        # fetch public CSV -> regenerate public/fest-map/data.json
 npx wrangler deploy   # push live
+npm run test:ingest   # parser validation (needs the fixtures in /tmp)
 ```
-
-`npm run test:ingest` re-runs the parser validation (needs the fixture at
-`/tmp/ff_values.json`; regenerate from the sheet export if absent).
 
 ## Notes
 - "Today" for the past-event flag uses **GMT-3** (`TZ_OFFSET`, override via env).
+- Date strings handled: `DD Month YYYY`, `D Mon YYYY` (abbreviated), ISO, serials.
 - Geocoding is OpenStreetMap **Nominatim** (1 req/s, cached). New festivals add a `geocache.json` entry committed on the next run.
+- Source CSV defaults to the sheet's gviz export; override with `CSV_URL`.
 - Change the schedule by editing the `cron` in the workflow.

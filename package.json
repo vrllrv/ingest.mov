@@ -6,10 +6,7 @@
   "scripts": {
     "deploy": "wrangler deploy",
     "ingest": "node ingest/ingest.mjs",
-    "test:ingest": "node ingest/test-parse.mjs"
-  },
-  "dependencies": {
-    "googleapis": "^144.0.0"
+    "test:ingest": "node ingest/test-parse.mjs && node ingest/test-csv.mjs"
   },
   "devDependencies": {
     "wrangler": "latest"

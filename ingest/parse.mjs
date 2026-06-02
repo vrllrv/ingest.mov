@@ -5,7 +5,33 @@
 const MONTHS = {
   January: 1, February: 2, March: 3, April: 4, May: 5, June: 6,
   July: 7, August: 8, September: 9, October: 10, November: 11, December: 12,
+  Jan: 1, Feb: 2, Mar: 3, Apr: 4, Jun: 6, Jul: 7, Aug: 8,
+  Sep: 9, Sept: 9, Oct: 10, Nov: 11, Dec: 12, // May has no abbreviation
 };
+
+// Minimal RFC-4180 CSV parser -> array of rows. Handles quoted fields with
+// embedded commas, quotes ("") and newlines (as Google's CSV export emits).
+export function parseCsv(text) {
+  const rows = [];
+  let row = [], field = '', i = 0, inQ = false;
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  while (i < text.length) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
+        inQ = false; i++; continue;
+      }
+      field += c; i++; continue;
+    }
+    if (c === '"') { inQ = true; i++; continue; }
+    if (c === ',') { row.push(field); field = ''; i++; continue; }
+    if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; i++; continue; }
+    field += c; i++;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
 
 const ymd = (d) => d.toISOString().slice(0, 10);
 
