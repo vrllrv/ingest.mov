@@ -21,7 +21,7 @@ read via its public CSV export.
 | `parse.mjs` | Pure CSV + row parser (no I/O). |
 | `ingest.mjs` | Fetch public CSV + geocode + write `data.json`. |
 | `geocache.json` | `Full Address → {lat,lon,prec}` cache. **Committed** so coords are reused; a normal run does zero geocoding. |
-| `test-parse.mjs`, `test-csv.mjs` | Validate the parser against the known-good `data.json` (0 diffs / 774 records). |
+| `test.mjs` + `fixtures/` | Deterministic parser regression test against a committed sample (`npm run test:ingest`). |
 
 ## One-time setup
 
@@ -52,7 +52,7 @@ daily 06:00 UTC run.
 ```bash
 npm run ingest        # fetch public CSV -> regenerate public/fest-map/data.json
 npx wrangler deploy   # push live
-npm run test:ingest   # parser validation (needs the fixtures in /tmp)
+npm run test:ingest   # deterministic parser regression test
 ```
 
 ## Notes

@@ -6,7 +6,7 @@
   "scripts": {
     "deploy": "wrangler deploy",
     "ingest": "node ingest/ingest.mjs",
-    "test:ingest": "node ingest/test-parse.mjs && node ingest/test-csv.mjs"
+    "test:ingest": "node ingest/test.mjs"
   },
   "devDependencies": {
     "wrangler": "latest"

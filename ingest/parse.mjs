@@ -79,6 +79,10 @@ export function parseRows(values, todayISO) {
     if (m) { start = parseDate(m[1]); end = parseDate(m[2]); }
     else if (/^opens/i.test(fd) && !opens) opens = fd;
 
+    // "Opens …" text can live in Submission Deadline, Festival Dates, or
+    // (in newer sheet rows) only in Status — use whichever carries it.
+    if (!opens && /^opens/i.test(g(row, 'Status'))) opens = g(row, 'Status');
+
     // Derived flags (vs. the run date) — drive greying-out on the map.
     const warn = [];
     if (start && start < todayISO) warn.push('event date in the past');
