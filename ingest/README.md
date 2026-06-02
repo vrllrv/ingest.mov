@@ -56,7 +56,7 @@ npm run test:ingest   # deterministic parser regression test
 ```
 
 ## Notes
-- "Today" for the past-event flag uses **GMT-3** (`TZ_OFFSET`, override via env).
+- **Past-event greying is decided on the map**, not here: a festival greys out once its **end** date passes (festivals running now stay active), judged against the map's live timezone (GMT-3 default, user-toggleable). The ingest only bakes data-integrity flags (`end before start`).
 - Date strings handled: `DD Month YYYY`, `D Mon YYYY` (abbreviated), ISO, serials.
 - Geocoding is OpenStreetMap **Nominatim** (1 req/s, cached). New festivals add a `geocache.json` entry committed on the next run.
 - Source CSV defaults to the sheet's gviz export; override with `CSV_URL`.

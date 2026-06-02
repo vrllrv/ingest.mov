@@ -52,10 +52,9 @@ export function parseDate(v) {
 }
 
 // values: array-of-arrays from Sheets API (row 0 = header).
-// todayISO: "YYYY-MM-DD" used to flag past events (compared lexically).
 // Each record carries a transient `addr` (Full Address) for geocoding;
 // the ingest strips it before writing data.json.
-export function parseRows(values, todayISO) {
+export function parseRows(values) {
   const hdr = values[0].map((h) => String(h).trim());
   const idx = Object.fromEntries(hdr.map((h, i) => [h, i]));
   const g = (row, h) => (idx[h] != null && row[idx[h]] != null ? String(row[idx[h]]).trim() : '');
@@ -83,9 +82,9 @@ export function parseRows(values, todayISO) {
     // (in newer sheet rows) only in Status — use whichever carries it.
     if (!opens && /^opens/i.test(g(row, 'Status'))) opens = g(row, 'Status');
 
-    // Derived flags (vs. the run date) — drive greying-out on the map.
+    // Data-integrity flags only. "Past event" greying is computed live on the
+    // map (end-date based, vs. the user's selected timezone), not baked here.
     const warn = [];
-    if (start && start < todayISO) warn.push('event date in the past');
     if (start && end && end < start) warn.push('end before start');
 
     out.push({

@@ -7,7 +7,9 @@
 // Env:
 //   SHEET_ID    spreadsheet id (defaults to the Festhome sheet)
 //   CSV_URL     full CSV url override (defaults to the gviz export below)
-//   TZ_OFFSET   hours offset for "today" when flagging past events (default -3)
+//
+// "Past event" greying is decided live on the map (end-date based, vs. the
+// user's selected timezone), so no run-date logic lives here.
 //
 // A normal run does zero network geocoding: every address already lives in
 // ingest/geocache.json. Only brand-new festivals hit Nominatim.
@@ -25,12 +27,10 @@ const SHEET_ID = process.env.SHEET_ID || '1Ie60CKn3zlt5MFB43nt5GM6h6gbAO-p1wDvaT
 const TAB = 'Future Festivals';
 const CSV_URL = process.env.CSV_URL ||
   `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(TAB)}`;
-const TZ_OFFSET = process.env.TZ_OFFSET != null ? parseFloat(process.env.TZ_OFFSET) : -3;
 const FIELD_ORDER = ['id', 'name', 'country', 'cats', 'start', 'end', 'deadline',
   'opens', 'status', 'url', 'lat', 'lon', 'prec', 'inactive', 'warn'];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const todayISO = () => new Date(Date.now() + TZ_OFFSET * 3600000).toISOString().slice(0, 10);
 
 async function fetchValues() {
   const r = await fetch(CSV_URL, { redirect: 'follow' });
@@ -81,9 +81,8 @@ async function geocode(addr, country) {
 
 async function main() {
   const values = await fetchValues();
-  const today = todayISO();
-  const items = parseRows(values, today);
-  console.log(`parsed ${items.length} festivals (today=${today}, tz=GMT${TZ_OFFSET >= 0 ? '+' : ''}${TZ_OFFSET})`);
+  const items = parseRows(values);
+  console.log(`parsed ${items.length} festivals`);
 
   const out = [];
   for (const f of items) {

@@ -2,7 +2,7 @@ name: Refresh fest-map data
 
 on:
   schedule:
-    - cron: '0 6 * * *' # daily 06:00 UTC
+    - cron: '0 6,18 * * *' # twice daily, 06:00 & 18:00 UTC
   workflow_dispatch: {} # manual "Run workflow" button
 
 concurrency:

@@ -176,14 +176,28 @@ map.on('zoomend',toggleLabels); toggleLabels();
 // active flag is set in init(), after data.json loads
 
 function dateFor(f,mode){
-  if(!f._active) return null;
   const v = mode==='start' ? f.start : f.deadline;
   return v ? new Date(v+'T00:00:00') : null;
+}
+// "Greyed" = past / closed / unusable, judged against the live TODAY:
+//  - festival-date mode: greyed once the END date (or start, if no end) passes,
+//    so festivals running right now stay active
+//  - deadline mode: greyed once the deadline passes (or is missing)
+//  - always greyed if structurally bad (end-before-start) or missing the mode's date
+function refDate(f){
+  const v = MODE==='start' ? (f.end||f.start) : f.deadline;
+  return v ? new Date(v+'T00:00:00') : null;
+}
+function isPast(f){ const d=refDate(f); return d ? d.getTime() < TODAY.getTime() : false; }
+function greyed(f){
+  if(!f._active) return true;
+  if(MODE==='start' ? !f.start : !f.deadline) return true;
+  return isPast(f);
 }
 // gradient anchor: today -> furthest active date (per mode), stable across filters
 function maxDate(mode){
   let mx = TODAY.getTime();
-  DATA.forEach(f=>{ const d=dateFor(f,mode); if(d) mx=Math.max(mx,d.getTime()); });
+  DATA.forEach(f=>{ if(greyed(f)) return; const d=dateFor(f,mode); if(d) mx=Math.max(mx,d.getTime()); });
   return mx;
 }
 function color(f,mode,mx){
@@ -217,8 +231,12 @@ function populateCountries(){
 function popup(f){
   const ev = f.start ? fmt(f.start)+(f.end&&f.end!==f.start?' – '+fmt(f.end):'') : '—';
   const dl = f.deadline ? fmt(f.deadline) : (f.opens?('opens '+f.opens.replace(/^Opens\s*/i,'')):'—');
-  let days = f.start ? Math.round((new Date(f.start+'T00:00:00')-TODAY)/DAY) : null;
-  const dtxt = days==null? '' : (days<0? `${-days} days ago` : `in ${days} days`);
+  let dtxt='';
+  if(f.start){
+    const ds=Math.round((new Date(f.start+'T00:00:00')-TODAY)/DAY);
+    const ended=new Date((f.end||f.start)+'T00:00:00')<TODAY;
+    dtxt = ds>0 ? `in ${ds} days` : (ended ? `${-ds} days ago` : 'running now');
+  }
   const warn = (f.warn&&f.warn.length)? `<div class="tag warn">⚠ ${f.warn.join(' · ')}</div>`:'';
   const prec = f.prec==='country' ? `<div class="tag">approx · country-level</div>`:'';
   return `<div class="pop"><b class="nm">${f.name}</b>
@@ -247,7 +265,7 @@ function render(){
       const d=dateFor(f,MODE), t=d?d.getTime():null;
       if(t==null || t<TODAY.getTime() || t>cutoff) return;
     }
-    const inactive = !f._active || (MODE==='deadline' && !f.deadline);
+    const inactive = greyed(f);
     if(inactive && !showInact) return;
     shown++;
     const col = inactive ? '#5b6472' : color(f,MODE,mx);

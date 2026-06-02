@@ -100,10 +100,8 @@
     "opens": null,
     "status": "22 hrs Late fee 01 Jun (22 hrs) Deadline 01 Jun 2026",
     "url": "https://filmmakers.festhome.com/festival/9422",
-    "inactive": true,
-    "warn": [
-      "event date in the past"
-    ],
+    "inactive": false,
+    "warn": [],
     "addr": "Koutsomitopoulou 6, 24100, Kalamata, Messinia, Greece"
   },
   {

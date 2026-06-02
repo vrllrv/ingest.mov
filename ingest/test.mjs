@@ -1,6 +1,6 @@
 // Deterministic parser test against a committed fixture (fixtures/sample.csv
-// → fixtures/expected.json), pinned to a fixed "today". Guards parse + CSV
-// logic against regressions. Run: npm run test:ingest
+// → fixtures/expected.json). Guards parse + CSV logic against regressions.
+// Run: npm run test:ingest
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,7 +10,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const csv = fs.readFileSync(path.join(HERE, 'fixtures/sample.csv'), 'utf8');
 const expected = JSON.parse(fs.readFileSync(path.join(HERE, 'fixtures/expected.json'), 'utf8'));
 
-const got = parseRows(parseCsv(csv), '2026-06-02');
+const got = parseRows(parseCsv(csv));
 const a = JSON.stringify(got, null, 2);
 const b = JSON.stringify(expected, null, 2);
 
