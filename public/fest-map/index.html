@@ -29,25 +29,36 @@
   .leaflet-bar a, .leaflet-control-zoom a{background:var(--panel-solid);color:var(--txt);border-color:var(--line)}
   .leaflet-bar a:hover{background:#1b212b}
 
+  /* hide Leaflet attribution flag — map uses embedded GeoJSON, no third-party tiles */
+  .leaflet-control-attribution{display:none!important}
+  .leaflet-control-zoom{margin:0 12px 12px 0!important;border:1px solid var(--line)!important;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+
   /* ---- top console ---- */
   #hud{position:absolute;z-index:1000;top:0;left:0;right:0;
     background:linear-gradient(180deg,rgba(8,10,14,.94),rgba(8,10,14,.62) 70%,transparent);
-    padding:12px 14px 22px;pointer-events:none}
+    padding:10px 12px 22px;pointer-events:none}
   #hud .row{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;pointer-events:auto}
-  .brand{display:flex;flex-direction:column;margin-right:6px}
+  .controls{display:contents} /* desktop: children flow inline; mobile: real collapsible panel */
+  .brand{display:flex;flex-direction:column;margin-right:2px}
   .brand b{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt)}
   .brand span{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em}
   .seg{display:flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden;background:var(--panel)}
   .seg button{appearance:none;border:0;background:transparent;color:var(--muted);font-family:var(--mono);
-    font-size:11px;letter-spacing:.04em;padding:8px 11px;cursor:pointer;white-space:nowrap}
+    font-size:11px;letter-spacing:.04em;padding:8px 11px;cursor:pointer;white-space:nowrap;min-height:34px}
   .seg button.on{background:var(--accent);color:#1a1407;font-weight:600}
   .ctl{background:var(--panel);border:1px solid var(--line2);border-radius:9px;color:var(--txt);
-    font-family:var(--mono);font-size:11.5px;padding:8px 10px;outline:none}
+    font-family:var(--mono);font-size:11.5px;padding:8px 10px;outline:none;min-height:34px}
   .ctl::placeholder{color:var(--muted)}
   select.ctl{max-width:46vw}
   .chk{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line2);
-    border-radius:9px;padding:7px 10px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;user-select:none}
+    border-radius:9px;padding:7px 10px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;user-select:none;min-height:34px}
   .chk input{accent-color:var(--accent);margin:0}
+  .ftoggle{display:none;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line2);
+    border-radius:9px;color:var(--txt);font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+    padding:8px 12px;min-height:34px;cursor:pointer}
+  .ftoggle .ar{font-size:9px;transition:transform .18s}
+  .ftoggle[aria-expanded="true"] .ar{transform:rotate(180deg)}
+  .ftoggle[aria-expanded="true"]{background:var(--accent);color:#1a1407;border-color:var(--accent)}
   .count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap}
   .count b{color:var(--accent)}
 
@@ -78,10 +89,25 @@
     text-align:center;text-transform:uppercase}
   .leaflet-tooltip.ctyhover{background:var(--panel-solid);border:1px solid var(--line2);color:var(--txt);
     font-family:var(--mono);font-size:11px;letter-spacing:.03em;padding:3px 8px}
-  @media (max-width:640px){
+  @media (max-width:720px){
+    #hud{padding:8px 10px 16px}
     .brand{margin-right:0}
-    .count{margin-left:0}
-    select.ctl{max-width:40vw}
+    .brand b{font-size:12px}
+    .brand span{font-size:10px}
+    .ftoggle{display:inline-flex}
+    .count{font-size:10.5px}
+    .hide-sm{display:none}
+    /* collapse the whole filter cluster behind the Filters toggle */
+    .controls{order:5;flex-basis:100%;min-width:0;display:none;flex-direction:column;align-items:stretch;
+      gap:8px;margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
+    .controls.open{display:flex}
+    .controls .seg{width:100%;min-width:0}
+    .controls .seg button{flex:1;min-width:0;white-space:normal;line-height:1.2;text-align:center;min-height:38px;padding:8px 6px}
+    .controls .ctl,.controls select.ctl{width:100%;max-width:none;min-width:0;min-height:38px}
+    .controls .chk{width:100%;min-height:38px}
+    #rangeN{width:100%!important}
+    #legend{left:10px;bottom:10px;padding:9px 11px 10px;max-width:min(280px,82vw)}
+    .leaflet-control-zoom{margin:0 8px 8px 0!important}
   }
 </style>
 </head>
@@ -91,33 +117,38 @@
 <div id="hud">
   <div class="row">
     <div class="brand"><b>Future Festivals</b><span id="sub">global submission map</span></div>
-    <div class="seg" id="mode">
-      <button data-m="start" class="on">Festival date</button>
-      <button data-m="deadline">Submission deadline</button>
+    <div class="controls" id="controls">
+      <div class="seg" id="mode">
+        <button data-m="start" class="on">Festival date</button>
+        <button data-m="deadline">Submission deadline</button>
+      </div>
+      <input id="q" class="ctl" placeholder="search name…" autocomplete="off"/>
+      <select id="country" class="ctl"></select>
+      <select id="tz" class="ctl" title="reference timezone for ‘today’ (gradient + range anchor)">
+        <option value="-8">GMT-8 · PST</option>
+        <option value="-7">GMT-7 · MST</option>
+        <option value="-6">GMT-6 · CST</option>
+        <option value="-5">GMT-5 · EST</option>
+        <option value="-3" selected>GMT-3 · BRT</option>
+        <option value="0">GMT+0 · UTC</option>
+        <option value="1">GMT+1 · CET</option>
+        <option value="3">GMT+3 · MSK</option>
+        <option value="5.5">GMT+5:30 · IST</option>
+        <option value="8">GMT+8 · CST·CN</option>
+        <option value="9">GMT+9 · JST</option>
+      </select>
+      <div class="seg" id="rangeUnit" aria-label="date range">
+        <button data-u="" class="on">Any time</button>
+        <button data-u="d">Days</button>
+        <button data-u="m">Months</button>
+      </div>
+      <input id="rangeN" class="ctl" type="number" min="1" step="1" value="3"
+             style="width:64px;display:none" aria-label="range amount"/>
+      <label class="chk"><input type="checkbox" id="showInactive"/> show past / closed</label>
     </div>
-    <input id="q" class="ctl" placeholder="search name…" autocomplete="off"/>
-    <select id="country" class="ctl"></select>
-    <select id="tz" class="ctl" title="reference timezone for ‘today’ (gradient + range anchor)">
-      <option value="-8">GMT-8 · PST</option>
-      <option value="-7">GMT-7 · MST</option>
-      <option value="-6">GMT-6 · CST</option>
-      <option value="-5">GMT-5 · EST</option>
-      <option value="-3" selected>GMT-3 · BRT</option>
-      <option value="0">GMT+0 · UTC</option>
-      <option value="1">GMT+1 · CET</option>
-      <option value="3">GMT+3 · MSK</option>
-      <option value="5.5">GMT+5:30 · IST</option>
-      <option value="8">GMT+8 · CST·CN</option>
-      <option value="9">GMT+9 · JST</option>
-    </select>
-    <div class="seg" id="rangeUnit" aria-label="date range">
-      <button data-u="" class="on">Any time</button>
-      <button data-u="d">Days</button>
-      <button data-u="m">Months</button>
-    </div>
-    <input id="rangeN" class="ctl" type="number" min="1" step="1" value="3"
-           style="width:64px;display:none" aria-label="range amount"/>
-    <label class="chk"><input type="checkbox" id="showInactive"/> show past / closed</label>
+    <button id="filterToggle" class="ftoggle" aria-expanded="false" aria-controls="controls">
+      <span>Filters</span><span class="ar">▾</span>
+    </button>
     <div class="count" id="count"></div>
   </div>
 </div>
@@ -126,7 +157,7 @@
   <div class="lt">Color = <b id="legmode">festival date</b> · sooner → later</div>
   <div class="bar"></div>
   <div class="ends"><span>SOON <b id="legmin"></b></span><span><b id="legmax"></b> LATER</span></div>
-  <div class="glegend"><span class="dot" style="background:var(--grey)"></span> past event / no date — inactive</div>
+  <div class="glegend"><span class="dot" style="background:var(--grey)"></span> ended / closed / no date — greyed</div>
 </div>
 
 <script>
@@ -144,8 +175,9 @@ const DAY = 86400000;
 const fmt = d => new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 const fmtShort = d => new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'});
 
-const map = L.map('map',{worldCopyJump:true,zoomControl:true,preferCanvas:true,minZoom:2,maxBoundsViscosity:.6})
+const map = L.map('map',{worldCopyJump:true,zoomControl:false,attributionControl:false,preferCanvas:true,minZoom:2,maxBoundsViscosity:.6})
   .setView([28,8],2.4);
+L.control.zoom({position:'bottomright'}).addTo(map);
 
 // --- country geography drawn from embedded GeoJSON (no external tiles) ---
 const countryLayer = L.geoJSON(GEO,{
@@ -284,7 +316,7 @@ function render(){
   document.getElementById('legmin').textContent=fmtShort(TODAY.toISOString().slice(0,10));
   document.getElementById('legmax').textContent=fmtShort(new Date(mx).toISOString().slice(0,10));
   document.getElementById('legmode').textContent= MODE==='start'?'festival date':'submission deadline';
-  document.getElementById('count').innerHTML=`<b>${shown}</b> / ${DATA.length} shown`;
+  document.getElementById('count').innerHTML=`<b>${shown}</b>/${DATA.length}<span class="hide-sm"> shown</span>`;
 }
 
 document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
@@ -303,7 +335,14 @@ document.getElementById('q').oninput=render;
 sel.onchange=render;
 document.getElementById('showInactive').onchange=render;
 
-// --- load festival data (generated from the private "Future Festivals" sheet) ---
+// mobile: show/hide the filter cluster behind the Filters toggle
+const filterToggle=document.getElementById('filterToggle');
+filterToggle.onclick=()=>{
+  const open=document.getElementById('controls').classList.toggle('open');
+  filterToggle.setAttribute('aria-expanded', open);
+};
+
+// --- load festival data (generated from the public "Future Festivals" sheet) ---
 function init(){
   DATA.forEach(f=>{ f._active = !f.inactive; });
   populateCountries();
