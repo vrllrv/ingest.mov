@@ -61,6 +61,23 @@
   .ftoggle[aria-expanded="true"]{background:var(--accent);color:#1a1407;border-color:var(--accent)}
   .count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap}
   .count b{color:var(--accent)}
+  /* share / export actions */
+  .actions{display:flex;gap:8px}
+  .abtn{background:var(--panel);border:1px solid var(--line2);border-radius:9px;color:var(--txt);
+    font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:8px 11px;min-height:34px;cursor:pointer;white-space:nowrap}
+  .abtn:hover{background:#1b212b;border-color:var(--accent)}
+  .abtn.go{color:var(--accent);border-color:rgba(242,193,78,.4)}
+  /* active-filter readout — stays visible even when the Filters panel is collapsed */
+  #active{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;pointer-events:auto}
+  #active:empty{display:none}
+  .fchip{font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--txt);
+    background:var(--panel);border:1px solid var(--line2);border-radius:20px;padding:3px 9px;white-space:nowrap;backdrop-filter:blur(8px)}
+  .fchip b{color:var(--accent);font-weight:600}
+  /* toast */
+  .toast{position:absolute;z-index:1200;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);
+    background:var(--panel-solid);border:1px solid var(--line2);color:var(--txt);font-family:var(--mono);font-size:11.5px;
+    padding:9px 14px;border-radius:9px;box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.18s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
   /* ---- legend ---- */
   #legend{position:absolute;z-index:1000;left:14px;bottom:16px;background:var(--panel);
@@ -73,6 +90,13 @@
   .ends span b{color:var(--txt);font-weight:500}
   .glegend{display:flex;align-items:center;gap:7px;margin-top:9px;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
   .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+  .legtog{display:flex;align-items:center;gap:6px;background:transparent;border:0;padding:0;margin:0 0 8px;cursor:pointer;
+    color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase}
+  .legtog .ar{font-size:8px;transition:transform .18s}
+  #legend.collapsed{padding:8px 12px}
+  #legend.collapsed .legbody{display:none}
+  #legend.collapsed .legtog{margin:0}
+  #legend.collapsed .legtog .ar{transform:rotate(-90deg)}
 
   /* popup content */
   .pop b.nm{font-size:13.5px;display:block;margin-bottom:5px;line-height:1.3}
@@ -105,6 +129,8 @@
     .controls .seg button{flex:1;min-width:0;white-space:normal;line-height:1.2;text-align:center;min-height:38px;padding:8px 6px}
     .controls .ctl,.controls select.ctl{width:100%;max-width:none;min-width:0;min-height:38px}
     .controls .chk{width:100%;min-height:38px}
+    .controls .actions{width:100%}
+    .controls .abtn{flex:1;min-height:40px;text-align:center}
     #rangeN{width:100%!important}
     #legend{left:10px;bottom:10px;padding:9px 11px 10px;max-width:min(280px,82vw)}
     .leaflet-control-zoom{margin:0 8px 8px 0!important}
@@ -145,20 +171,29 @@
       <input id="rangeN" class="ctl" type="number" min="1" step="1" value="3"
              style="width:64px;display:none" aria-label="range amount"/>
       <label class="chk"><input type="checkbox" id="showInactive"/> show past / closed</label>
+      <div class="actions">
+        <button id="shareBtn" class="abtn go" title="copy a link to this exact view">Share range</button>
+        <button id="exportBtn" class="abtn" title="download the shown festivals as JSON">Export JSON</button>
+      </div>
     </div>
     <button id="filterToggle" class="ftoggle" aria-expanded="false" aria-controls="controls">
       <span>Filters</span><span class="ar">▾</span>
     </button>
     <div class="count" id="count"></div>
   </div>
+  <div id="active"></div>
 </div>
 
 <div id="legend">
-  <div class="lt">Color = <b id="legmode">festival date</b> · sooner → later</div>
-  <div class="bar"></div>
-  <div class="ends"><span>SOON <b id="legmin"></b></span><span><b id="legmax"></b> LATER</span></div>
-  <div class="glegend"><span class="dot" style="background:var(--grey)"></span> ended / closed / no date — greyed</div>
+  <button class="legtog" id="legToggle" aria-expanded="true" aria-controls="legbody">Legend <span class="ar">▾</span></button>
+  <div class="legbody" id="legbody">
+    <div class="lt">Color = <b id="legmode">festival date</b> · sooner → later</div>
+    <div class="bar"></div>
+    <div class="ends"><span>SOON <b id="legmin"></b></span><span><b id="legmax"></b> LATER</span></div>
+    <div class="glegend"><span class="dot" style="background:var(--grey)"></span> ended / closed / no date — greyed</div>
+  </div>
 </div>
+<div id="toast" class="toast"></div>
 
 <script>
 let DATA = [];
@@ -281,25 +316,53 @@ function popup(f){
     <a class="link" href="${f.url}" target="_blank" rel="noopener">open festival page ↗</a></div>`;
 }
 
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// single source of truth for "is this festival in the current view"
+function currentCtx(){
+  return {
+    cf: sel.value,
+    q: document.getElementById('q').value.trim().toLowerCase(),
+    cutoff: rangeCutoff(),
+    showInact: document.getElementById('showInactive').checked
+  };
+}
+function passes(f,ctx){
+  if(f.lat==null) return false;
+  if(ctx.cf && f.country!==ctx.cf) return false;
+  if(ctx.q && !f.name.toLowerCase().includes(ctx.q)) return false;
+  if(ctx.cutoff!=null){
+    const d=dateFor(f,MODE), t=d?d.getTime():null;
+    if(t==null || t<TODAY.getTime() || t>ctx.cutoff) return false;
+  }
+  if(greyed(f) && !ctx.showInact) return false;
+  return true;
+}
+function filteredFestivals(){ const ctx=currentCtx(); return DATA.filter(f=>passes(f,ctx)); }
+
+function rangeLabel(){
+  if(!RANGE_UNIT) return null;
+  const n=Math.max(1, parseInt(document.getElementById('rangeN').value,10)||1);
+  const unit = RANGE_UNIT==='d' ? (n===1?'day':'days') : (n===1?'month':'months');
+  return `next ${n} ${unit}`;
+}
+// readout of active constraints — visible even when the Filters panel is collapsed
+function updateActiveBar(){
+  const chips=[];
+  const r=rangeLabel(); if(r) chips.push(`<span class="fchip">range <b>${r}</b></span>`);
+  if(sel.value) chips.push(`<span class="fchip">${esc(sel.value)}</span>`);
+  const q=document.getElementById('q').value.trim();
+  if(q) chips.push(`<span class="fchip">name <b>${esc(q)}</b></span>`);
+  if(document.getElementById('showInactive').checked) chips.push(`<span class="fchip">incl. past</span>`);
+  document.getElementById('active').innerHTML=chips.join('');
+}
+
 function render(){
   layer.clearLayers();
   const mx=maxDate(MODE);
-  const cutoff=rangeCutoff();
-  const q=document.getElementById('q').value.trim().toLowerCase();
-  const cf=sel.value;
-  const showInact=document.getElementById('showInactive').checked;
-  let shown=0;
-  DATA.forEach(f=>{
-    if(f.lat==null) return;
-    if(cf && f.country!==cf) return;
-    if(q && !f.name.toLowerCase().includes(q)) return;
-    if(cutoff!=null){
-      const d=dateFor(f,MODE), t=d?d.getTime():null;
-      if(t==null || t<TODAY.getTime() || t>cutoff) return;
-    }
+  const list=filteredFestivals();
+  list.forEach(f=>{
     const inactive = greyed(f);
-    if(inactive && !showInact) return;
-    shown++;
     const col = inactive ? '#5b6472' : color(f,MODE,mx);
     const m=L.circleMarker([f.lat,f.lon],{
       radius: inactive?4:6, color:'rgba(255,255,255,.55)', weight:.7,
@@ -312,11 +375,11 @@ function render(){
     m.on('mouseout',()=>m.setStyle({weight:.7,radius:inactive?4:6}));
     layer.addLayer(m);
   });
-  // legend + count
   document.getElementById('legmin').textContent=fmtShort(TODAY.toISOString().slice(0,10));
   document.getElementById('legmax').textContent=fmtShort(new Date(mx).toISOString().slice(0,10));
   document.getElementById('legmode').textContent= MODE==='start'?'festival date':'submission deadline';
-  document.getElementById('count').innerHTML=`<b>${shown}</b>/${DATA.length}<span class="hide-sm"> shown</span>`;
+  document.getElementById('count').innerHTML=`<b>${list.length}</b>/${DATA.length}<span class="hide-sm"> shown</span>`;
+  updateActiveBar();
 }
 
 document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
@@ -342,10 +405,85 @@ filterToggle.onclick=()=>{
   filterToggle.setAttribute('aria-expanded', open);
 };
 
+// collapsible legend
+const legend=document.getElementById('legend'), legToggle=document.getElementById('legToggle');
+legToggle.onclick=()=>{ const c=legend.classList.toggle('collapsed'); legToggle.setAttribute('aria-expanded', String(!c)); };
+if(window.innerWidth<=720){ legend.classList.add('collapsed'); legToggle.setAttribute('aria-expanded','false'); }
+
+// --- shareable view state (encoded in the URL) ---
+function stateToURL(){
+  const p=new URLSearchParams();
+  if(MODE!=='start') p.set('mode',MODE);
+  const q=document.getElementById('q').value.trim(); if(q) p.set('q',q);
+  if(sel.value) p.set('country',sel.value);
+  if(TZ_OFFSET!==-3) p.set('tz',String(TZ_OFFSET));
+  if(RANGE_UNIT){ p.set('ru',RANGE_UNIT); p.set('rn',String(Math.max(1,parseInt(document.getElementById('rangeN').value,10)||1))); }
+  if(document.getElementById('showInactive').checked) p.set('past','1');
+  const qs=p.toString();
+  return location.origin+location.pathname+(qs?'?'+qs:'');
+}
+function applyStateFromURL(){
+  const p=new URLSearchParams(location.search);
+  if(![...p.keys()].length) return;
+  if(p.get('mode')==='deadline'){ MODE='deadline';
+    document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on', b.dataset.m==='deadline')); }
+  if(p.get('q')) document.getElementById('q').value=p.get('q');
+  if(p.get('country')) sel.value=p.get('country');           // after populateCountries()
+  if(p.get('tz')!=null){ const tz=parseFloat(p.get('tz')); if(!isNaN(tz)){ TZ_OFFSET=tz; document.getElementById('tz').value=String(tz); computeToday(); } }
+  const ru=p.get('ru');
+  if(ru==='d'||ru==='m'){ RANGE_UNIT=ru;
+    document.querySelectorAll('#rangeUnit button').forEach(b=>b.classList.toggle('on', b.dataset.u===ru));
+    const rn=document.getElementById('rangeN'); if(p.get('rn')) rn.value=p.get('rn'); rn.style.display=''; }
+  if(p.get('past')==='1') document.getElementById('showInactive').checked=true;
+}
+
+// --- toast ---
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200);
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); return true; }
+  catch(e){
+    const ta=document.createElement('textarea'); ta.value=t; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch(_){}
+    ta.remove(); return ok;
+  }
+}
+
+// --- share + export ---
+document.getElementById('shareBtn').onclick=async()=>{
+  const url=stateToURL();
+  const ok=await copyText(url);
+  toast(ok?'Link copied — share this view':'Copy failed — URL logged to console');
+  if(!ok) console.log(url);
+};
+document.getElementById('exportBtn').onclick=()=>{
+  const list=filteredFestivals();
+  const out={
+    generated:new Date().toISOString(),
+    view:stateToURL(),
+    filter:{ mode:MODE, range:rangeLabel()||'any time', country:sel.value||'all',
+      search:document.getElementById('q').value.trim()||null,
+      timezone:`GMT${TZ_OFFSET>=0?'+':''}${TZ_OFFSET}`, includesPast:document.getElementById('showInactive').checked },
+    count:list.length,
+    festivals:list.map(f=>({ id:f.id, name:f.name, country:f.country, categories:f.cats,
+      festivalStart:f.start, festivalEnd:f.end, submissionDeadline:f.deadline, opens:f.opens||null,
+      status:f.status, url:f.url, lat:f.lat, lon:f.lon }))
+  };
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`future-festivals-${MODE}${RANGE_UNIT?'-'+rangeLabel().replace(/\s+/g,''):''}-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  toast(`Exported ${list.length} festival${list.length===1?'':'s'} to JSON`);
+};
+
 // --- load festival data (generated from the public "Future Festivals" sheet) ---
 function init(){
   DATA.forEach(f=>{ f._active = !f.inactive; });
   populateCountries();
+  applyStateFromURL();
   render();
 }
 fetch('data.json',{cache:'no-cache'})
