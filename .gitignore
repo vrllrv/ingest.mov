@@ -1,0 +1,9 @@
+# Dependencies — reinstall with `npm install`, never commit (platform-specific binaries)
+node_modules/
+
+# Wrangler
+.wrangler/
+.dev.vars
+
+# OS / editor
+.DS_Store

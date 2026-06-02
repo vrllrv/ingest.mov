@@ -3,6 +3,13 @@ type = "javascript"
 main = "src/index.js"
 compatibility_date = "2025-12-02"
 
+# Static assets: files under ./public are served directly (assets take
+# precedence over the Worker). The fest-map lives at /fest-map/.
+# Unmatched paths fall through to the Worker (src/index.js), which still
+# serves the inline homepage.
+[assets]
+directory = "./public"
+
 [env.production]
 routes = [
   { pattern = "site.ingest-mov.workers.dev/*", zone_id = "" }

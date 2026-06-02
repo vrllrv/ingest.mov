@@ -2,5 +2,8 @@
   "name": "site",
   "type": "javascript",
   "main": "src/index.js",
-  "compatibility_date": "2025-12-02"
+  "compatibility_date": "2025-12-02",
+  "assets": {
+    "directory": "./public"
+  }
 }
