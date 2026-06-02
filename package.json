@@ -4,7 +4,12 @@
   "description": "Static website",
   "main": "src/index.js",
   "scripts": {
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "ingest": "node ingest/ingest.mjs",
+    "test:ingest": "node ingest/test-parse.mjs"
+  },
+  "dependencies": {
+    "googleapis": "^144.0.0"
   },
   "devDependencies": {
     "wrangler": "latest"
