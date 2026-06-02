@@ -107,6 +107,16 @@
     padding:2px 7px;border-radius:20px;border:1px solid var(--line2);color:var(--muted);margin-top:4px}
   .pop .warn{color:#f0a35e}
   .pop a.link{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:11px;color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(242,193,78,.4)}
+  /* contact block (email + copy + links) */
+  .pop .contact{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .pop .contact .em{font-family:var(--mono);font-size:11px;color:var(--txt);text-decoration:none;word-break:break-all;flex:1 1 auto;min-width:0}
+  .pop .contact .em:hover{color:var(--accent)}
+  .pop .copyemail{flex:0 0 auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;
+    background:var(--accent);color:#1a1407;border:0;border-radius:7px;padding:5px 10px;cursor:pointer}
+  .pop .copyemail:hover{filter:brightness(1.08)}
+  .pop .clinks{display:flex;gap:12px;margin-top:7px;flex-wrap:wrap}
+  .pop .clinks a{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2)}
+  .pop .clinks a:hover{color:var(--accent)}
   /* embedded-map country labels + hover */
   .cty{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:rgba(180,192,208,.55);
     text-shadow:0 1px 3px #000,0 0 2px #000;white-space:nowrap;pointer-events:none;
@@ -306,14 +316,23 @@ function popup(f){
   }
   const warn = (f.warn&&f.warn.length)? `<div class="tag warn">⚠ ${f.warn.join(' · ')}</div>`:'';
   const prec = f.prec==='country' ? `<div class="tag">approx · country-level</div>`:'';
+  const contact = f.email
+    ? `<div class="contact"><a class="em" href="mailto:${esc(f.email)}">${esc(f.email)}</a>`
+      + `<button class="copyemail" data-email="${esc(f.email)}" title="copy email address">copy</button></div>`
+    : '';
+  const links=[];
+  if(f.website) links.push(`<a href="${esc(f.website)}" target="_blank" rel="noopener">website ↗</a>`);
+  if(f.instagram) links.push(`<a href="${esc(f.instagram)}" target="_blank" rel="noopener">instagram ↗</a>`);
+  if(f.facebook) links.push(`<a href="${esc(f.facebook)}" target="_blank" rel="noopener">facebook ↗</a>`);
+  const clinks = links.length ? `<div class="clinks">${links.join('')}</div>` : '';
   return `<div class="pop"><b class="nm">${f.name}</b>
     <div class="meta">
       <i>Festival</i><s>${ev}${dtxt?` · ${dtxt}`:''}</s>
       <i>Deadline</i><s>${dl}</s>
       <i>Place</i><s>${f.country}</s>
       <i>Type</i><s>${(f.cats||'').replace(/\|/g,' · ')||'—'}</s>
-    </div>${warn}${prec}
-    <a class="link" href="${f.url}" target="_blank" rel="noopener">open festival page ↗</a></div>`;
+    </div>${warn}${prec}${contact}
+    <a class="link" href="${f.url}" target="_blank" rel="noopener">open festival page ↗</a>${clinks}</div>`;
 }
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -470,7 +489,8 @@ document.getElementById('exportBtn').onclick=()=>{
     count:list.length,
     festivals:list.map(f=>({ id:f.id, name:f.name, country:f.country, categories:f.cats,
       festivalStart:f.start, festivalEnd:f.end, submissionDeadline:f.deadline, opens:f.opens||null,
-      status:f.status, url:f.url, lat:f.lat, lon:f.lon }))
+      status:f.status, url:f.url, email:f.email||null, website:f.website||null,
+      instagram:f.instagram||null, facebook:f.facebook||null, lat:f.lat, lon:f.lon }))
   };
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
@@ -478,6 +498,13 @@ document.getElementById('exportBtn').onclick=()=>{
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
   toast(`Exported ${list.length} festival${list.length===1?'':'s'} to JSON`);
 };
+
+// copy a festival's email from its popup (delegated — popups are built on demand)
+document.addEventListener('click', e=>{
+  const b=e.target.closest('.copyemail'); if(!b) return;
+  e.preventDefault();
+  copyText(b.dataset.email).then(ok=>toast(ok?'Email copied — '+b.dataset.email:'copy failed; email in console'));
+});
 
 // --- load festival data (generated from the public "Future Festivals" sheet) ---
 function init(){

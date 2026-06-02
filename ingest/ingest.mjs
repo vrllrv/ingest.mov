@@ -28,7 +28,8 @@ const TAB = 'Future Festivals';
 const CSV_URL = process.env.CSV_URL ||
   `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(TAB)}`;
 const FIELD_ORDER = ['id', 'name', 'country', 'cats', 'start', 'end', 'deadline',
-  'opens', 'status', 'url', 'lat', 'lon', 'prec', 'inactive', 'warn'];
+  'opens', 'status', 'url', 'email', 'website', 'instagram', 'facebook',
+  'lat', 'lon', 'prec', 'inactive', 'warn'];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

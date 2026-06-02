@@ -95,6 +95,10 @@ export function parseRows(values) {
       start, end, deadline, opens,
       status: g(row, 'Status'),
       url: g(row, 'URL'),
+      email: g(row, 'Email') || null,
+      website: g(row, 'Website') || null,
+      instagram: g(row, 'Instagram') || null,
+      facebook: g(row, 'Facebook') || null,
       inactive: warn.length > 0,
       warn,
       addr: g(row, 'Full Address'), // transient — stripped before write

@@ -10,6 +10,10 @@
     "opens": "Opens 01 December 2026",
     "status": "Opens 01 December 2026",
     "url": "https://filmmakers.festhome.com/festival/10276",
+    "email": "info@Flightfest.com.au",
+    "website": "https://www.Flightfest.com.au",
+    "instagram": null,
+    "facebook": "https://facebook.com/flightfestOZ",
     "inactive": false,
     "warn": [],
     "addr": "P.O.Box 5792 / 5 Squadron drive, 4670, Bundaberg, Queensland, Australia"
@@ -25,6 +29,10 @@
     "opens": "Opens 06 October 2026",
     "status": "Opens 06 October 2026",
     "url": "https://filmmakers.festhome.com/festival/10260",
+    "email": "info@reelviewpro.com",
+    "website": "https://www.reelviewpro.com/afff/",
+    "instagram": "https://instagram.com/afffestival",
+    "facebook": "https://facebook.com/profile.php?id=61572008120222",
     "inactive": false,
     "warn": [],
     "addr": "625 N 1st St, 79601, Abilene, Texas, United States"
@@ -40,6 +48,10 @@
     "opens": null,
     "status": "22 hrs Deadline 01 June 2026",
     "url": "https://filmmakers.festhome.com/festival/169",
+    "email": "festivalcineyvino@gmail.com",
+    "website": "http://www.festivaldecinelasolana.com",
+    "instagram": null,
+    "facebook": "https://facebook.com/profile.php?id=100081478053121",
     "inactive": false,
     "warn": [],
     "addr": "Plaza Don Diego, 3, 13240, La Solana , Ciudad Real, Spain"
@@ -55,6 +67,10 @@
     "opens": null,
     "status": "22 hrs Early fee 20 Dec (6 months) Deadline 01 Jun 2026",
     "url": "https://filmmakers.festhome.com/festival/4190",
+    "email": "queerffplaya.inscription@gmail.com",
+    "website": "https://www.queerfilmfestivalplayadelcarmen.com/",
+    "instagram": null,
+    "facebook": "https://facebook.com/QueerfilmfestivalPlayadelCarmen/",
     "inactive": false,
     "warn": [],
     "addr": "av110 entre calle 6 y 8 norte, Colonia Ejidal, 77712, Playa del Carmen, Quintana Roo, Mexico"
@@ -70,6 +86,10 @@
     "opens": null,
     "status": "22 hrs Late fee 01 Jun (22 hrs) Deadline 01 Jun 2026",
     "url": "https://filmmakers.festhome.com/festival/4845",
+    "email": "mihai@mioritics.ro",
+    "website": "http://www.ffir.ro/en/",
+    "instagram": "https://instagram.com/filmsiistoriirasnov",
+    "facebook": "https://facebook.com/filmsiistoriirasnov",
     "inactive": false,
     "warn": [],
     "addr": "7 I.L. Caragiale, 505400, Râșnov, Brașov, Romania"
@@ -85,6 +105,10 @@
     "opens": null,
     "status": "22 hrs Late fee 01 Jun (22 hrs) Deadline 01 Jun 2026",
     "url": "https://filmmakers.festhome.com/festival/5541",
+    "email": "film@fpwc.org",
+    "website": "http://sunchild.am",
+    "instagram": "https://instagram.com/fpwc",
+    "facebook": "https://facebook.com/fpwc.arm",
     "inactive": false,
     "warn": [],
     "addr": "47/1 Khanjyan Str., 0001, Yerevan, Yerevan, Armenia"
@@ -100,6 +124,10 @@
     "opens": null,
     "status": "22 hrs Late fee 01 Jun (22 hrs) Deadline 01 Jun 2026",
     "url": "https://filmmakers.festhome.com/festival/9422",
+    "email": "ecoframesfestival@gmail.com",
+    "website": "https://ecoframes.gr",
+    "instagram": "https://instagram.com/doc_cafe_",
+    "facebook": "https://facebook.com/CreativeDocumentaryCenter",
     "inactive": false,
     "warn": [],
     "addr": "Koutsomitopoulou 6, 24100, Kalamata, Messinia, Greece"
@@ -115,6 +143,10 @@
     "opens": null,
     "status": "13 days Deadline 14 June 2026",
     "url": "https://filmmakers.festhome.com/festival/8714",
+    "email": "ladevesadetor@gmail.com",
+    "website": null,
+    "instagram": "https://instagram.com/premiscostabrava",
+    "facebook": "https://www.facebook.com/ladevesade.tor",
     "inactive": true,
     "warn": [
       "end before start"
@@ -132,6 +164,10 @@
     "opens": null,
     "status": "17 days Deadline 18 June 2026",
     "url": "https://filmmakers.festhome.com/festival/6183",
+    "email": "galichnikfilmfestival@gmail.com",
+    "website": "http://www.galichnikfilmfestival.com",
+    "instagram": "https://instagram.com/galichnikfilmfestival",
+    "facebook": "https://facebook.com/galichnikfilmfestival",
     "inactive": true,
     "warn": [
       "end before start"
