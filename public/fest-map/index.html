@@ -248,6 +248,27 @@ const countryLayer = L.geoJSON(GEO,{
   }
 }).addTo(map);
 
+// --- fit-to-country on selection ---
+const HOME=[[28,8],2.4];                         // default world view
+const geoBounds={};                              // GEO name -> shape bounds
+countryLayer.eachLayer(l=>{ geoBounds[l.feature.properties.name]=l.getBounds(); });
+const COUNTRY_ALIAS={ 'United States':'United States of America',
+  'North Macedonia':'Macedonia', 'Serbia':'Republic of Serbia' };
+function boundsForCountry(c){
+  const b=geoBounds[COUNTRY_ALIAS[c]||c];
+  // use the country shape when it's a single sane region; antimeridian/territory
+  // spreads (US, Russia…) blow up the bounds, so fall back to the festival markers
+  if(b && (b.getEast()-b.getWest())<170 && (b.getNorth()-b.getSouth())<150) return b;
+  const pts=DATA.filter(f=>f.country===c && f.lat!=null).map(f=>[f.lat,f.lon]);
+  return pts.length ? L.latLngBounds(pts) : null;
+}
+function zoomToCountry(){
+  const c=sel.value;
+  if(!c){ map.flyTo(HOME[0],HOME[1],{duration:.6}); return; }
+  const b=boundsForCountry(c);
+  if(b) map.flyToBounds(b,{paddingTopLeft:[30,150],paddingBottomRight:[30,60],maxZoom:6,duration:.7});
+}
+
 // permanent name labels, shown only when zoomed into a region (>=z4)
 function centroid(geom){
   let best=null,bn=0;
@@ -458,7 +479,7 @@ rangeOpts.addEventListener('input', e=>{
 });
 document.getElementById('tz').onchange=e=>{ TZ_OFFSET=parseFloat(e.target.value); computeToday(); render(); };
 document.getElementById('q').oninput=render;
-sel.onchange=render;
+sel.onchange=()=>{ render(); zoomToCountry(); };
 document.getElementById('showInactive').onchange=render;
 
 // mobile: show/hide the filter cluster behind the Filters toggle
@@ -564,6 +585,7 @@ function init(){
   populateCountries();
   applyStateFromURL();
   render();
+  if(sel.value) zoomToCountry();   // a shared link with ?country= lands fitted to it
 }
 fetch('data.json',{cache:'no-cache'})
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
