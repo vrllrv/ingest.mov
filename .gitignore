@@ -7,3 +7,6 @@ node_modules/
 
 # OS / editor
 .DS_Store
+
+# Generated each ingest (timestamp changes every run); deployed, not committed
+public/fest-map/meta.json

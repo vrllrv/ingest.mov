@@ -70,6 +70,8 @@
   .abtn.go{color:var(--accent);border-color:rgba(242,193,78,.4)}
   #active{display:flex;flex-wrap:wrap;gap:6px}
   #active:empty{display:none}
+  .fresh{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.03em;white-space:nowrap}
+  .abtn:disabled{opacity:.6;cursor:default}
   /* range presets + centred custom input (input sits in the middle) */
   .rangeopts{display:flex;align-items:center;gap:5px}
   .rangeopts .rpreset{appearance:none;background:var(--panel);border:1px solid var(--line2);border-radius:7px;color:var(--muted);
@@ -199,11 +201,13 @@
   </div>
   <div id="hudtools">
     <div class="actions">
+      <button id="refreshBtn" class="abtn" title="pull the latest festivals from the source sheet">↻ Refresh</button>
       <button id="shareBtn" class="abtn go" title="copy a link to this view">Share</button>
       <button id="exportBtn" class="abtn" title="download the shown festivals as JSON">Export</button>
       <button id="copyEmailsBtn" class="abtn" title="copy every shown festival’s email (for BCC)">Copy emails</button>
     </div>
     <div id="active"></div>
+    <span id="freshness" class="fresh" style="display:none"></span>
   </div>
 </div>
 
@@ -581,6 +585,61 @@ document.addEventListener('click', e=>{
   copyText(b.dataset.email).then(ok=>toast(ok?'Email copied — '+b.dataset.email:'copy failed; email in console'));
 });
 
+// --- "updated Nh ago" readout (from meta.json sidecar, written each ingest) ---
+let META=null;
+function relTime(iso){
+  const s=Math.max(0,(Date.now()-new Date(iso).getTime())/1000);
+  if(s<90) return 'just now';
+  if(s<5400) return Math.round(s/60)+'m ago';
+  if(s<129600) return Math.round(s/3600)+'h ago';
+  return Math.round(s/86400)+'d ago';
+}
+async function loadFreshness(){
+  const el=document.getElementById('freshness');
+  try{
+    const r=await fetch('meta.json?t='+Date.now(),{cache:'no-store'});
+    if(!r.ok) return;
+    META=await r.json();
+    if(META.generated){ el.textContent='updated '+relTime(META.generated); el.style.display=''; }
+  }catch(_){}
+}
+
+// --- "refresh now" button: re-fetch data without resetting the current view ---
+async function reloadData(){
+  const r=await fetch('data.json?t='+Date.now(),{cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  DATA=await r.json(); DATA.forEach(f=>{ f._active=!f.inactive; });
+  const cur=sel.value; populateCountries();
+  if(cur && [...sel.options].some(o=>o.value===cur)) sel.value=cur;
+  render();
+}
+const refreshBtn=document.getElementById('refreshBtn');
+let refreshing=false;
+function endRefresh(){ refreshing=false; refreshBtn.disabled=false; refreshBtn.textContent='↻ Refresh'; }
+refreshBtn.onclick=async()=>{
+  if(refreshing) return;
+  refreshing=true; refreshBtn.disabled=true; refreshBtn.textContent='↻ Refreshing…';
+  try{
+    const res=await fetch('refresh',{method:'POST'});
+    const j=await res.json().catch(()=>({}));
+    if(res.status===429){ toast(`Just refreshed — try again in ~${Math.max(1,Math.ceil((j.retryAfter||60)/60))} min`); endRefresh(); return; }
+    if(!res.ok || !j.ok){ toast('Refresh unavailable — try again later'); endRefresh(); return; }
+    toast('Refreshing from source… (~1–2 min)');
+    // poll meta.json until a newer build lands, then repaint in place
+    const before = META && META.generated;
+    const deadline = Date.now()+180000;
+    const tick=async()=>{
+      if(Date.now()>deadline){ toast('Still building — reload the page in a minute'); endRefresh(); return; }
+      try{
+        const mr=await fetch('meta.json?t='+Date.now(),{cache:'no-store'});
+        if(mr.ok){ const m=await mr.json(); if(m.generated && m.generated!==before){ await reloadData(); await loadFreshness(); toast('Map updated ✓'); endRefresh(); return; } }
+      }catch(_){}
+      setTimeout(tick,5000);
+    };
+    setTimeout(tick,15000);
+  }catch(e){ toast('Refresh failed — network error'); endRefresh(); }
+};
+
 // --- load festival data (generated from the public "Future Festivals" sheet) ---
 function init(){
   DATA.forEach(f=>{ f._active = !f.inactive; });
@@ -591,7 +650,7 @@ function init(){
 }
 fetch('data.json',{cache:'no-cache'})
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-  .then(d=>{ DATA=d; init(); })
+  .then(d=>{ DATA=d; init(); loadFreshness(); })
   .catch(err=>{
     console.error('data.json load failed',err);
     document.getElementById('count').innerHTML='<b style="color:#f0a35e">data load failed</b>';

@@ -6,10 +6,61 @@
 
 // Static content - bundled at build time
 // Edit the actual files (index.html, style.css, src/shader.js) and redeploy
+// --- fest-map "refresh now" endpoint ----------------------------------------
+// POST /fest-map/refresh triggers the daily GitHub Action on demand
+// (workflow_dispatch), which re-ingests the public sheet and redeploys.
+// Gated by a cooldown derived from the most recent run (cron runs count too),
+// so the button can't spam Festhome/Cloudflare. The GitHub token lives only
+// here, as the GITHUB_DISPATCH_TOKEN Worker secret — never in the page.
+const REPO = 'vrllrv/ingest.mov';
+const WORKFLOW = 'refresh-festmap.yml';
+const COOLDOWN_MS = 10 * 60 * 1000;
+const ghHeaders = (token) => ({
+  Authorization: `Bearer ${token}`,
+  Accept: 'application/vnd.github+json',
+  'X-GitHub-Api-Version': '2022-11-28',
+  'User-Agent': 'ingest-festmap-refresh',
+});
+const jsonResponse = (obj, status = 200) =>
+  new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json' } });
+
+async function handleRefresh(env) {
+  const token = env && env.GITHUB_DISPATCH_TOKEN;
+  if (!token) return jsonResponse({ ok: false, error: 'refresh not configured' }, 503);
+  try {
+    // cooldown: when did the workflow last run (scheduled or manual)?
+    const runsRes = await fetch(
+      `https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=1`,
+      { headers: ghHeaders(token) }
+    );
+    if (runsRes.ok) {
+      const last = (await runsRes.json()).workflow_runs?.[0];
+      if (last) {
+        const age = Date.now() - new Date(last.created_at).getTime();
+        if (age < COOLDOWN_MS) {
+          return jsonResponse({ ok: false, cooldown: true, retryAfter: Math.ceil((COOLDOWN_MS - age) / 1000) }, 429);
+        }
+      }
+    }
+    const disp = await fetch(
+      `https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`,
+      { method: 'POST', headers: ghHeaders(token), body: JSON.stringify({ ref: 'main' }) }
+    );
+    if (disp.status === 204) return jsonResponse({ ok: true, eta: 90 });
+    return jsonResponse({ ok: false, error: `github ${disp.status}`, detail: (await disp.text()).slice(0, 200) }, 502);
+  } catch (e) {
+    return jsonResponse({ ok: false, error: String(e) }, 502);
+  }
+}
+
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
     let pathname = url.pathname;
+
+    if (request.method === 'POST' && pathname === '/fest-map/refresh') {
+      return handleRefresh(env);
+    }
 
     // Map request to file
     if (pathname === '/' || pathname === '') {

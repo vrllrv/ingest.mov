@@ -22,6 +22,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 const CACHE_PATH = path.join(HERE, 'geocache.json');
 const OUT_PATH = path.join(ROOT, 'public/fest-map/data.json');
+const META_PATH = path.join(ROOT, 'public/fest-map/meta.json');
 
 const SHEET_ID = process.env.SHEET_ID || '1Ie60CKn3zlt5MFB43nt5GM6h6gbAO-p1wDvaTmB27xk';
 const TAB = 'Future Festivals';
@@ -96,6 +97,10 @@ async function main() {
   fs.writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 0));
   // one record per line: valid JSON array, but git-diff friendly
   fs.writeFileSync(OUT_PATH, '[\n' + out.map((r) => JSON.stringify(r)).join(',\n') + '\n]\n');
+  // sidecar: when this data was generated, so the map can show "updated Nh ago"
+  // and the refresh button can detect when a fresh build has landed. Not tracked
+  // in git (changes every run) — it's regenerated + deployed on each ingest.
+  fs.writeFileSync(META_PATH, JSON.stringify({ generated: new Date().toISOString(), count: out.length }) + '\n');
   const geoMissing = out.filter((r) => r.lat == null).length;
   console.log(`wrote ${out.length} -> ${path.relative(ROOT, OUT_PATH)}  (geocode calls: ${geocodeCalls}, missing coords: ${geoMissing})`);
 }
