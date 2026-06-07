@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FilmFreeway date scraper — ingest.mov fest-map
 // @namespace    ingest.mov
-// @version      0.5.0
+// @version      0.6.0
 // @description  Crawl FilmFreeway festival detail pages in your OWN browser session (so Cloudflare is already satisfied) to collect submission deadlines + event dates, then export JSON for the fest-map ingest. Throttled, resumable, weekly-diff friendly.
 // @author       ingest.mov
 // @match        https://filmfreeway.com/*
@@ -136,16 +136,35 @@
   }
 
   // ---- networking ----------------------------------------------------------
-  async function fetchDoc(slug) {
+  // Cloudflare randomly challenges ~10% of programmatic fetches (cf-mitigated:
+  // challenge -> 403), but the NEXT request to the same URL almost always
+  // succeeds. So a single fetch isn't reliable — we retry a few times with a
+  // short back-off and only surface CF403 if EVERY attempt is blocked (which
+  // means real clearance loss, not the random sampling).
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  async function fetchOnce(slug) {
     const res = await fetch('/' + encodeURIComponent(slug), { credentials: 'include' });
-    if (res.status === 403) throw new Error('CF403'); // clearance lost
+    if (res.status === 403) throw new Error('CF403'); // random challenge or clearance lost
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const html = await res.text();
     if (/Just a moment|cf-browser-verification|challenge-platform/i.test(html)) throw new Error('CF403');
     return new DOMParser().parseFromString(html, 'text/html');
   }
+  async function fetchDoc(slug) {
+    const RETRIES = 4;            // total attempts before giving up on a slug
+    for (let i = 1; i <= RETRIES; i++) {
+      try {
+        return await fetchOnce(slug);
+      } catch (e) {
+        if (e.message !== 'CF403' || i === RETRIES) throw e;
+        log(`⟳ challenge on "${slug}" (try ${i}/${RETRIES}) — retrying in ${3 * i}s…`);
+        await sleep(3000 * i); // 3s, 6s, 9s back-off; random blips clear fast
+      }
+    }
+  }
 
   // ---- crawl loop ----------------------------------------------------------
+  let consecCF = 0; // consecutive slugs that failed ALL retries -> real block
   async function step() {
     if (!running) return;
     const slug = state.queue.find((s) => !state.results[s]);
@@ -154,12 +173,20 @@
       const doc = await fetchDoc(slug);
       state.results[slug] = extractDates(doc, slug);
       delete state.errors[slug];
+      consecCF = 0;
     } catch (e) {
       state.errors[slug] = String(e.message || e);
       if (e.message === 'CF403') {
-        stop();
-        log('⛔ Cloudflare blocked the request. Open/refresh a normal filmfreeway.com tab to renew clearance, then Resume.');
-        save(); render(); return;
+        // Survived all retries on this slug. One stubborn slug shouldn't kill
+        // the run — skip it and move on. Only a STREAK means clearance is truly
+        // gone, so pause and ask the user to renew it.
+        consecCF++;
+        if (consecCF >= 4) {
+          stop();
+          log('⛔ Cloudflare blocked several in a row — clearance likely expired. Open/refresh a filmfreeway.com tab, then Resume.');
+          save(); render(); return;
+        }
+        log(`⚠ skipped "${slug}" after retries (${consecCF}/4) — continuing.`);
       }
     }
     save(); render();
