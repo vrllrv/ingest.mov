@@ -186,10 +186,6 @@
         <button data-s="ff">FilmFreeway</button>
         <button data-s="both">Both</button>
       </div>
-      <div class="seg" id="mode">
-        <button data-m="start" class="on">Festival date</button>
-        <button data-m="deadline">Submission deadline</button>
-      </div>
       <input id="q" class="ctl" placeholder="search name…" autocomplete="off"/>
       <select id="country" class="ctl"></select>
       <select id="tz" class="ctl" title="reference timezone for ‘today’ (gradient + range anchor)">
@@ -520,11 +516,6 @@ function render(){
   updateActiveBar();
 }
 
-document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on'); MODE=b.dataset.m; render();
-});
-
 // --- source toggle: Festhome | FilmFreeway | Both ---
 const SRC_LABEL={festhome:'Festhome', ff:'FilmFreeway', both:'Both'};
 async function ensureFF(){
@@ -586,7 +577,6 @@ if(window.innerWidth<=720){ legend.classList.add('collapsed'); legToggle.setAttr
 function stateToURL(){
   const p=new URLSearchParams();
   if(SOURCE!=='festhome') p.set('src',SOURCE);
-  if(MODE!=='start') p.set('mode',MODE);
   const q=document.getElementById('q').value.trim(); if(q) p.set('q',q);
   if(sel.value) p.set('country',sel.value);
   if(TZ_OFFSET!==-3) p.set('tz',String(TZ_OFFSET));
@@ -598,8 +588,6 @@ function stateToURL(){
 function applyStateFromURL(){
   const p=new URLSearchParams(location.search);
   if(![...p.keys()].length) return;
-  if(p.get('mode')==='deadline'){ MODE='deadline';
-    document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on', b.dataset.m==='deadline')); }
   if(p.get('q')) document.getElementById('q').value=p.get('q');
   if(p.get('country')) sel.value=p.get('country');           // after populateCountries()
   if(p.get('tz')!=null){ const tz=parseFloat(p.get('tz')); if(!isNaN(tz)){ TZ_OFFSET=tz; document.getElementById('tz').value=String(tz); computeToday(); } }
