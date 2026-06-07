@@ -107,12 +107,16 @@ export function parseRows(values) {
     if (/^opens/i.test(sd)) opens = sd;
     else deadline = parseDate(row[idx['Submission Deadline']]);
 
-    // Festival Dates: "Start: <date> End: <date>", else "Opens …".
+    // Festival Dates: prefer "Start: <date> End: <date>"; also tolerate a plain
+    // range ("18 November 2026 - 31 December 2026") or a single date, so the map
+    // still gets dates if the sheet's format ever drifts. "Opens …" is not a date.
     const fd = g(row, 'Festival Dates');
     let start = null, end = null;
+    const DATE = /\d{1,2}\s+[A-Za-z]+\s+\d{4}/g;
     const m = fd.match(/Start:\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})\s*End:\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})/);
     if (m) { start = parseDate(m[1]); end = parseDate(m[2]); }
-    else if (/^opens/i.test(fd) && !opens) opens = fd;
+    else if (/^opens/i.test(fd)) { if (!opens) opens = fd; }
+    else { const ds = fd.match(DATE); if (ds && ds.length) { start = parseDate(ds[0]); end = parseDate(ds[ds.length - 1]); } }
 
     // "Opens …" text can live in Submission Deadline, Festival Dates, or
     // (in newer sheet rows) only in Status — use whichever carries it.

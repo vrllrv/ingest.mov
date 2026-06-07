@@ -2,8 +2,10 @@ name: Refresh fest-map data
 
 on:
   schedule:
-    - cron: '0 6,18 * * *' # twice daily, 06:00 & 18:00 UTC
-  workflow_dispatch: {} # manual "Run workflow" button
+    # Weekly backstop — Festhome data refreshes weekly (sheet Apps Script, Mon ~6am),
+    # which also dispatches this workflow on update, so this cron is just a safety net.
+    - cron: '0 12 * * 1' # Mondays 12:00 UTC
+  workflow_dispatch: {} # manual run + triggered by the map's Refresh button and the sheet's Apps Script
 
 concurrency:
   group: refresh-festmap
