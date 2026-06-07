@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FilmFreeway date scraper — ingest.mov fest-map
 // @namespace    ingest.mov
-// @version      0.4.1
+// @version      0.5.0
 // @description  Crawl FilmFreeway festival detail pages in your OWN browser session (so Cloudflare is already satisfied) to collect submission deadlines + event dates, then export JSON for the fest-map ingest. Throttled, resumable, weekly-diff friendly.
 // @author       ingest.mov
 // @match        https://filmfreeway.com/*
@@ -185,6 +185,19 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }
 
+  // Restore progress in a fresh browser/profile: paste a previous export into
+  // the box and click Import — those festivals are marked done so a later Start
+  // skips them and only fetches what's left.
+  function importDone() {
+    let obj;
+    try { obj = JSON.parse(ui.slugs.value); } catch (e) { log('Import: paste a previous export (JSON) into the box first.'); return; }
+    if (!obj || Array.isArray(obj) || typeof obj !== 'object') { log('Import: expected the exported {slug:…} JSON.'); return; }
+    let n = 0;
+    for (const k in obj) { if (!state.results[k]) { state.results[k] = obj[k]; n++; } if (!state.queue.includes(k)) state.queue.push(k); }
+    save(); render(); ui.slugs.value = '';
+    log('Imported ' + n + ' done festivals. Now paste tools/ff-slugs.json and press Start — it skips these.');
+  }
+
   // Rich diagnostic to LOCATE festival dates in the DOM (not for the crawl).
   // Dumps structured deadlines + every short text block that contains a date,
   // plus meta/JSON-LD, so we can see exactly where festival event dates live.
@@ -250,6 +263,7 @@
       <div style="display:flex;gap:6px;align-items:center;margin:8px 0">
         <button id="ffstart" style="flex:1;border:0;border-radius:7px;color:#fff;padding:7px;cursor:pointer">Start</button>
         <button id="ffexport" style="border:0;border-radius:7px;background:#28303c;color:#e8ecf2;padding:7px 9px;cursor:pointer">Export</button>
+        <button id="ffimport" style="border:0;border-radius:7px;background:#28303c;color:#e8ecf2;padding:7px 9px;cursor:pointer" title="paste a previous export into the box, then click to restore progress">Import</button>
         <label style="color:#8a93a3">throttle <input id="ffthr" type="number" value="${Math.round(state.throttle/1000)}" style="width:42px;background:#0b0e13;color:#e8ecf2;border:1px solid #2a313c;border-radius:5px;padding:3px"/>s</label>
       </div>
       <button id="ffdiag" style="width:100%;border:1px solid #2a313c;border-radius:7px;background:#0b0e13;color:#f2c14e;padding:7px;cursor:pointer;margin-bottom:6px">Scrape THIS page (diagnostic)</button>
@@ -264,6 +278,7 @@
     ui.out = box.querySelector('#ffout');
     ui.start.onclick = () => (running ? stop() : start());
     box.querySelector('#ffexport').onclick = exportJSON;
+    box.querySelector('#ffimport').onclick = importDone;
     box.querySelector('#ffdiag').onclick = scrapeCurrent;
     box.querySelector('#ffthr').onchange = (e) => { state.throttle = Math.max(5, +e.target.value || 18) * 1000; save(); };
     box.querySelector('#ffclear').onclick = () => { if (confirm('Clear all scraped data + queue?')) { localStorage.removeItem(LS_KEY); location.reload(); } };
