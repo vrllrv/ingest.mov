@@ -1,0 +1,1272 @@
+{
+  "TribecaFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:04:05.717Z",
+    "title": "Tribeca Festival",
+    "eventStart": "2026-06-03",
+    "eventEnd": "2026-06-14",
+    "eventRaw": "June 3 – 14, 2026",
+    "opens": "2025-09-25",
+    "notification": "2026-04-30",
+    "deadlines": [
+      {
+        "date": "2025-10-29",
+        "label": "Early Deadline - Shorts & MVs",
+        "tier": "early"
+      },
+      {
+        "date": "2025-11-11",
+        "label": "Early Deadline - Tribeca X Tribeca X 1 Category Collapse",
+        "tier": "early"
+      },
+      {
+        "date": "2025-11-11",
+        "label": "Early Deadline - Tribeca X",
+        "tier": "early"
+      },
+      {
+        "date": "2025-11-19",
+        "label": "Official Deadline - Features/TV",
+        "tier": "other"
+      },
+      {
+        "date": "2025-12-03",
+        "label": "Official - Shorts/Early - Pod",
+        "tier": "early"
+      },
+      {
+        "date": "2026-01-13",
+        "label": "Official Deadline - Tribeca X Tribeca X 1 Category Collapse",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-13",
+        "label": "Official Deadline - Tribeca X",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-14",
+        "label": "Official Deadline - Podcasts Podcasts 1 Category Collapse",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-14",
+        "label": "Official Deadline - Podcasts",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-23",
+        "label": "Extended Deadline - Features/TV",
+        "tier": "extended"
+      },
+      {
+        "date": "2026-02-11",
+        "label": "Extended Deadline - Podcasts Podcasts 1 Category Collapse",
+        "tier": "extended"
+      },
+      {
+        "date": "2026-02-11",
+        "label": "Extended Deadline - Podcasts",
+        "tier": "extended"
+      },
+      {
+        "date": "2026-02-13",
+        "label": "Extended Deadline - Shorts & MVs",
+        "tier": "extended"
+      },
+      {
+        "date": "2026-04-08",
+        "label": "Extended Deadline - Tribeca X Tribeca X 1 Category Collapse",
+        "tier": "extended"
+      },
+      {
+        "date": "2026-04-08",
+        "label": "Extended Deadline - Tribeca X",
+        "tier": "extended"
+      }
+    ],
+    "finalDeadline": "2026-04-08"
+  },
+  "EncountersSouthAfricanInternationalDocumentaryFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:04:14.410Z",
+    "title": "Encounters South African International Documentary Festival",
+    "eventStart": "2026-06-04",
+    "eventEnd": "2026-06-14",
+    "eventRaw": "June 4 – 14, 2026",
+    "opens": "2025-10-31",
+    "notification": "2026-04-21",
+    "deadlines": [
+      {
+        "date": "2025-12-19",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-30",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-02-20",
+        "label": "Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-03-20",
+        "label": "Extended Deadline",
+        "tier": "extended"
+      }
+    ],
+    "finalDeadline": "2026-03-20"
+  },
+  "PegasusFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:04:21.854Z",
+    "title": "Pegasus Film Festival",
+    "eventStart": "2026-06-05",
+    "eventEnd": "2026-06-07",
+    "eventRaw": "June 5 – 7, 2026",
+    "opens": "2026-01-04",
+    "notification": "2026-05-03",
+    "deadlines": [
+      {
+        "date": "2026-01-18",
+        "label": "Free Early Bird Deadline",
+        "tier": "early"
+      },
+      {
+        "date": "2026-02-07",
+        "label": "Early Bird Deadline",
+        "tier": "early"
+      },
+      {
+        "date": "2026-03-12",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-04-12",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-04-12"
+  },
+  "ShortDays": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:04:29.228Z",
+    "title": "Short Days",
+    "eventStart": "2026-07-06",
+    "eventEnd": "2026-07-06",
+    "eventRaw": "July 6, 2026",
+    "opens": "2026-06-06",
+    "notification": "2026-07-06",
+    "deadlines": [
+      {
+        "date": "2026-06-08",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      }
+    ],
+    "finalDeadline": "2026-06-30"
+  },
+  "10InternationalesFestivalZeichenderNacht": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:04:38.547Z",
+    "title": "Internationales Festival Zeichen der Nacht",
+    "eventStart": "2026-06-09",
+    "eventEnd": "2026-06-14",
+    "eventRaw": "June 9 – 14, 2026",
+    "opens": "2026-02-19",
+    "notification": "2026-06-02",
+    "deadlines": [
+      {
+        "date": "2026-03-31",
+        "label": "Early Bird Deadline",
+        "tier": "early"
+      },
+      {
+        "date": "2026-05-08",
+        "label": "Standard Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-31",
+        "label": "Last Deadline",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-05-31"
+  },
+  "VisionovaFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:04:46.738Z",
+    "title": "Visionova Film Festival",
+    "eventStart": "2026-06-10",
+    "eventEnd": "2026-06-10",
+    "eventRaw": "June 10, 2026",
+    "opens": "2026-02-03",
+    "notification": "2026-06-05",
+    "deadlines": [
+      {
+        "date": "2026-02-22",
+        "label": "First Call",
+        "tier": "other"
+      },
+      {
+        "date": "2026-03-15",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-04-08",
+        "label": "Springboard Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-31",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      }
+    ],
+    "finalDeadline": "2026-05-31"
+  },
+  "FestivaldesNouveauxCinemas": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:04:55.555Z",
+    "title": "Festival des Nouveaux Cinémas / Nouveaux Cinemas Film Festival in Paris (France)",
+    "eventStart": "2026-06-12",
+    "eventEnd": "2026-06-21",
+    "eventRaw": "June 12 – 21, 2026",
+    "opens": "2026-02-26",
+    "notification": "2026-06-06",
+    "deadlines": [
+      {
+        "date": "2026-04-03",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-04-03"
+  },
+  "EcosShortsFest": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:05:04.250Z",
+    "title": "Ecos Shorts Festival",
+    "eventStart": "2026-06-13",
+    "eventEnd": "2026-06-13",
+    "eventRaw": "June 13, 2026",
+    "opens": "2026-03-01",
+    "notification": "2026-06-09",
+    "deadlines": [
+      {
+        "date": "2026-04-21",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-12",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-06-04",
+        "label": "Final Deadline",
+        "tier": "extended"
+      }
+    ],
+    "finalDeadline": "2026-06-04"
+  },
+  "DenverUndergroundFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:05:11.520Z",
+    "title": "Denver Underground Film Festival",
+    "eventStart": "2026-06-16",
+    "eventEnd": "2026-06-18",
+    "eventRaw": "June 16 – 18, 2026",
+    "opens": "2025-11-26",
+    "notification": "2026-05-23",
+    "deadlines": [
+      {
+        "date": "2026-03-31",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-05-20",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-05-20"
+  },
+  "PantherCity": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:05:18.791Z",
+    "title": "Panther City Film Festival",
+    "eventStart": "2026-06-18",
+    "eventEnd": "2026-06-20",
+    "eventRaw": "June 18 – 20, 2026",
+    "opens": "2025-06-22",
+    "notification": "2026-05-01",
+    "deadlines": [
+      {
+        "date": "2025-08-09",
+        "label": "Early",
+        "tier": "early"
+      },
+      {
+        "date": "2025-10-11",
+        "label": "Regular - First Quarter",
+        "tier": "regular"
+      },
+      {
+        "date": "2025-12-13",
+        "label": "Regular - Second Quarter",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-01-31",
+        "label": "Regular - Third Quarter",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-03-14",
+        "label": "Regular - Fourth Quarter - Late",
+        "tier": "late"
+      },
+      {
+        "date": "2026-04-18",
+        "label": "Extended Late",
+        "tier": "extended"
+      }
+    ],
+    "finalDeadline": "2026-04-18"
+  },
+  "OriginsFF": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:05:26.844Z",
+    "title": "Origins Film Festival",
+    "eventStart": "2026-06-19",
+    "eventEnd": "2026-06-20",
+    "eventRaw": "June 19 – 20, 2026",
+    "opens": "2025-09-06",
+    "notification": "2026-04-19",
+    "deadlines": [
+      {
+        "date": "2025-11-02",
+        "label": "Early Deadline",
+        "tier": "early"
+      },
+      {
+        "date": "2025-12-31",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-02-15",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-02-15"
+  },
+  "KickingScreeningSoccerFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:05:35.787Z",
+    "title": "Kicking + Screening Soccer Film Festival",
+    "eventStart": "2026-06-20",
+    "eventEnd": "2026-07-10",
+    "eventRaw": "June 20 – July 10, 2026",
+    "opens": "2026-03-20",
+    "notification": "2026-06-07",
+    "deadlines": [
+      {
+        "date": "2026-04-30",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-29",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      }
+    ],
+    "finalDeadline": "2026-05-29"
+  },
+  "AifilmawardsVerticalEdition": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:05:45.096Z",
+    "title": "AI Film Awards Vertical Edition",
+    "eventStart": "2026-06-22",
+    "eventEnd": "2026-06-26",
+    "eventRaw": "June 22 – 26, 2026",
+    "opens": "2026-06-02",
+    "notification": "2026-06-21",
+    "deadlines": [
+      {
+        "date": "2026-06-20",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-06-20"
+  },
+  "naiffmaryland": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:05:53.403Z",
+    "title": "NAIFF-Nepal America International Film Festival",
+    "eventStart": "2026-06-25",
+    "eventEnd": "2026-06-28",
+    "eventRaw": "June 25 – 28, 2026",
+    "opens": "2025-11-15",
+    "notification": "2026-05-15",
+    "deadlines": [
+      {
+        "date": "2026-01-15",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-02-15",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-03-15",
+        "label": "Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-04-15",
+        "label": "Extended Deadline",
+        "tier": "extended"
+      }
+    ],
+    "finalDeadline": "2026-04-15"
+  },
+  "WestEndFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:06:02.311Z",
+    "title": "West End Film Festival (WEFF)",
+    "eventStart": "2026-06-26",
+    "eventEnd": "2026-06-28",
+    "eventRaw": "June 26 – 28, 2026",
+    "opens": "2026-02-16",
+    "notification": "2026-05-29",
+    "deadlines": [
+      {
+        "date": "2026-03-16",
+        "label": "Early Bird Close",
+        "tier": "early"
+      },
+      {
+        "date": "2026-05-24",
+        "label": "Submissions Close",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-05-24"
+  },
+  "FrankenFilmFest": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:06:10.810Z",
+    "title": "FrankenFilmFest",
+    "eventStart": "2026-06-27",
+    "eventEnd": "2026-06-27",
+    "eventRaw": "June 27, 2026",
+    "opens": "2026-01-12",
+    "notification": "2026-06-15",
+    "deadlines": [
+      {
+        "date": "2026-01-30",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-15",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-06-05",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-06-05"
+  },
+  "andarasfilmfestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:06:18.084Z",
+    "title": "ANDARAS - Traveling Film Festival",
+    "eventStart": "2026-06-30",
+    "eventEnd": "2026-07-05",
+    "eventRaw": "June 30 – July 5, 2026",
+    "opens": "2025-12-21",
+    "notification": "2026-05-04",
+    "deadlines": [
+      {
+        "date": "2026-01-06",
+        "label": "Gift Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-02-02",
+        "label": "Early Bird Deadline",
+        "tier": "early"
+      },
+      {
+        "date": "2026-03-15",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-04-06",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-04-06"
+  },
+  "LaPoesiaCheSiVede": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:06:26.840Z",
+    "title": "La Poesia Che Si Vede - International Competition for Poetry Films",
+    "eventStart": "2026-07-01",
+    "eventEnd": "2026-07-02",
+    "eventRaw": "July 1 – 2, 2026",
+    "opens": "2026-03-18",
+    "notification": "2026-06-15",
+    "deadlines": [
+      {
+        "date": "2026-05-08",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      }
+    ],
+    "finalDeadline": "2026-05-08"
+  },
+  "ErnestFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:06:36.208Z",
+    "title": "Ernest Film Festival",
+    "eventStart": "2026-07-03",
+    "eventEnd": "2026-07-03",
+    "eventRaw": "July 3, 2026",
+    "opens": "2026-01-21",
+    "notification": "2026-06-28",
+    "deadlines": [
+      {
+        "date": "2026-02-01",
+        "label": "Worm Gets the Bird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-02-22",
+        "label": "Fashionably Latecomer Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-03-18",
+        "label": "Procrastinator's Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-04-19",
+        "label": "Script Rewrite Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-24",
+        "label": "Unexpected Plot Twist Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-06-14",
+        "label": "End Credits Roll Deadline",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-06-14"
+  },
+  "LFOCinema": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:06:43.786Z",
+    "title": "London Festival of Cinema",
+    "eventStart": "2026-07-04",
+    "eventEnd": "2026-07-04",
+    "eventRaw": "July 4, 2026",
+    "opens": "2025-07-12",
+    "notification": "2026-06-18",
+    "deadlines": [
+      {
+        "date": "2025-08-31",
+        "label": "First Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2025-10-31",
+        "label": "Second Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-06-14",
+        "label": "Final Deadline",
+        "tier": "extended"
+      }
+    ],
+    "finalDeadline": "2026-06-14"
+  },
+  "GalwayFilmFleadh": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:06:53.208Z",
+    "title": "Galway Film Fleadh",
+    "eventStart": "2026-07-07",
+    "eventEnd": "2026-07-12",
+    "eventRaw": "July 7 – 12, 2026",
+    "opens": "2025-08-27",
+    "notification": "2026-06-05",
+    "deadlines": [
+      {
+        "date": "2025-12-01",
+        "label": "Feature Film Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-23",
+        "label": "Short Film Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-02-13",
+        "label": "Feature Film Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-03-06",
+        "label": "Short Film Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-03-13",
+        "label": "Int Feature Film Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-04-03",
+        "label": "Irish Feature Film Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-04-10",
+        "label": "Int Short Film Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-05-04",
+        "label": "Irish Short Film Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-05-15",
+        "label": "XR/VR Deadline XR/VR/Immersive Experiences 1 Category Collapse",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-15",
+        "label": "XR/VR Deadline",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-05-15"
+  },
+  "BuryFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:07:02.421Z",
+    "title": "Bury Film Festival",
+    "eventStart": "2026-07-08",
+    "eventEnd": "2026-07-08",
+    "eventRaw": "July 8, 2026",
+    "opens": "2026-05-11",
+    "notification": "2026-06-20",
+    "deadlines": [
+      {
+        "date": "2026-06-15",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      }
+    ],
+    "finalDeadline": "2026-06-15"
+  },
+  "StarBurstFilmfestivalandFilmmakingSymposium": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:07:11.001Z",
+    "title": "S-Burst Film Festival",
+    "eventStart": "2026-07-10",
+    "eventEnd": "2026-07-11",
+    "eventRaw": "July 10 – 11, 2026",
+    "opens": "2025-07-18",
+    "notification": "2026-06-20",
+    "deadlines": [
+      {
+        "date": "2025-11-01",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-03-01",
+        "label": "Reguar Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-24",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-05-24"
+  },
+  "AnibarAnimationFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:07:20.137Z",
+    "title": "Anibar Animation Festival",
+    "eventStart": "2026-07-12",
+    "eventEnd": "2026-07-18",
+    "eventRaw": "July 12 – 18, 2026",
+    "opens": "2025-09-04",
+    "notification": "2026-07-01",
+    "deadlines": [
+      {
+        "date": "2026-04-15",
+        "label": "Deadline for entries",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-04-15"
+  },
+  "FantasiaFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:07:28.435Z",
+    "title": "Fantasia International Film Festival",
+    "eventStart": "2026-07-16",
+    "eventEnd": "2026-08-02",
+    "eventRaw": "July 16 – August 2, 2026",
+    "opens": "2025-09-01",
+    "notification": "2026-05-30",
+    "deadlines": [
+      {
+        "date": "2025-12-01",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-01",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-02-01",
+        "label": "Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-03-01",
+        "label": "Extended Deadline",
+        "tier": "extended"
+      },
+      {
+        "date": "2026-04-15",
+        "label": "Last Chance Deadline",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-04-15"
+  },
+  "daysofthedeadfilmfestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:07:36.627Z",
+    "title": "Days of the Dead International Film Festival",
+    "eventStart": "2026-07-17",
+    "eventEnd": "2026-07-19",
+    "eventRaw": "July 17 – 19, 2026",
+    "opens": "2025-12-17",
+    "notification": "2026-05-22",
+    "deadlines": [
+      {
+        "date": "2025-12-21",
+        "label": "5-Day Launch",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-25",
+        "label": "Early Bird Deadline",
+        "tier": "early"
+      },
+      {
+        "date": "2026-03-08",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-04-19",
+        "label": "Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-05-10",
+        "label": "Final Deadline",
+        "tier": "extended"
+      }
+    ],
+    "finalDeadline": "2026-05-10"
+  },
+  "LimitlessFramesFilmFest": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:07:45.227Z",
+    "title": "Limitless Frames Film Fest",
+    "eventStart": "2026-08-01",
+    "eventEnd": "2026-08-02",
+    "eventRaw": "August 1 – 2, 2026",
+    "opens": "2025-11-01",
+    "notification": "2026-07-07",
+    "deadlines": [
+      {
+        "date": "2026-05-10",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-06-11",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-07-05",
+        "label": "Late Deadline 7-16 shorts 17+ Shorts 7-16 17+ 4 Categories Collapse",
+        "tier": "late"
+      },
+      {
+        "date": "2026-07-05",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-07-05"
+  },
+  "MidwestFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:07:53.110Z",
+    "title": "Midwest Film Festival",
+    "eventStart": "2026-07-22",
+    "eventEnd": "2026-07-26",
+    "eventRaw": "July 22 – 26, 2026",
+    "opens": "2025-12-15",
+    "notification": "2026-05-24",
+    "deadlines": [
+      {
+        "date": "2026-01-15",
+        "label": "Early Bird Deadline",
+        "tier": "early"
+      },
+      {
+        "date": "2026-02-28",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-03-31",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-03-31"
+  },
+  "RUSHAfterDark": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:08:01.611Z",
+    "title": "RUSH After Dark",
+    "eventStart": "2026-07-23",
+    "eventEnd": "2026-07-26",
+    "eventRaw": "July 23 – 26, 2026",
+    "opens": "2025-06-13",
+    "notification": "2026-06-01",
+    "deadlines": [
+      {
+        "date": "2025-06-27",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2025-08-01",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-03-31",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-03-31"
+  },
+  "VertiStarVerticalFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:08:11.032Z",
+    "title": "VertiStar Vertical Film Festival",
+    "eventStart": "2026-07-24",
+    "eventEnd": "2026-07-24",
+    "eventRaw": "July 24, 2026",
+    "opens": "2026-04-15",
+    "notification": "2026-07-10",
+    "deadlines": [
+      {
+        "date": "2026-05-15",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-06-10",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-06-30",
+        "label": "Late Deadline",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-06-30"
+  },
+  "ALyteintheDark": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:08:19.434Z",
+    "title": "A Lyte in the Dark",
+    "eventStart": "2026-07-26",
+    "eventEnd": "2026-07-26",
+    "eventRaw": "July 26, 2026",
+    "opens": "2026-01-05",
+    "notification": "2026-06-30",
+    "deadlines": [
+      {
+        "date": "2026-02-01",
+        "label": "Red Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-02-22",
+        "label": "Orange Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-03-15",
+        "label": "Yellow Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-04-05",
+        "label": "Green Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-04-26",
+        "label": "Blue Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-17",
+        "label": "Indigo Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-06-07",
+        "label": "Violet Deadline",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-06-07"
+  },
+  "MicroandNoBudgetFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:08:26.906Z",
+    "title": "Micro & No Budget Film Night",
+    "eventStart": "2026-07-27",
+    "eventEnd": "2026-07-31",
+    "eventRaw": "July 27 – 31, 2026",
+    "opens": "2025-07-02",
+    "notification": "2026-07-05",
+    "deadlines": [
+      {
+        "date": "2025-07-31",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2025-08-27",
+        "label": "August Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2025-09-25",
+        "label": "Early Deadline",
+        "tier": "early"
+      },
+      {
+        "date": "2025-10-31",
+        "label": "October Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2025-12-17",
+        "label": "New Year's Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-02-17",
+        "label": "Mid Deadline",
+        "tier": "mid"
+      },
+      {
+        "date": "2026-03-29",
+        "label": "Late Deadline",
+        "tier": "late"
+      },
+      {
+        "date": "2026-05-26",
+        "label": "Extended Deadline",
+        "tier": "extended"
+      },
+      {
+        "date": "2026-06-23",
+        "label": "Final Deadline",
+        "tier": "extended"
+      }
+    ],
+    "finalDeadline": "2026-06-23"
+  },
+  "CreativeGutsShortFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:08:34.380Z",
+    "title": "The Creative Guts Short Film Festival",
+    "eventStart": "2026-07-30",
+    "eventEnd": "2026-07-30",
+    "eventRaw": "July 30, 2026",
+    "opens": "2026-05-01",
+    "notification": "2026-06-24",
+    "deadlines": [
+      {
+        "date": "2026-06-14",
+        "label": "Deadline",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-06-14"
+  },
+  "BengaliFilmFestivalofDallas": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:08:43.907Z",
+    "title": "Bengali Film Festival of Dallas",
+    "eventStart": "2026-07-31",
+    "eventEnd": "2026-08-02",
+    "eventRaw": "July 31 – August 2, 2026",
+    "opens": "2026-02-22",
+    "notification": "2026-07-27",
+    "deadlines": [
+      {
+        "date": "2026-07-17",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      }
+    ],
+    "finalDeadline": "2026-07-17"
+  },
+  "TheOLAFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:08:51.482Z",
+    "title": "The OLA Film Festival",
+    "eventStart": "2026-08-01",
+    "eventEnd": "2026-08-01",
+    "eventRaw": "August 1, 2026",
+    "opens": "2025-07-08",
+    "notification": "2026-06-05",
+    "deadlines": [
+      {
+        "date": "2026-02-06",
+        "label": "Earlybird Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-15",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      }
+    ],
+    "finalDeadline": "2026-05-15"
+  },
+  "FestivaldeBretagne": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:08:59.571Z",
+    "title": "Brittany International Film Festival",
+    "eventStart": "2026-08-03",
+    "eventEnd": "2026-08-08",
+    "eventRaw": "August 3 – 8, 2026",
+    "opens": "2025-08-04",
+    "notification": "2026-07-01",
+    "deadlines": [
+      {
+        "date": "2025-09-08",
+        "label": "August",
+        "tier": "other"
+      },
+      {
+        "date": "2025-10-08",
+        "label": "September",
+        "tier": "other"
+      },
+      {
+        "date": "2025-11-08",
+        "label": "October",
+        "tier": "other"
+      },
+      {
+        "date": "2025-12-08",
+        "label": "November",
+        "tier": "other"
+      },
+      {
+        "date": "2026-01-08",
+        "label": "December",
+        "tier": "other"
+      },
+      {
+        "date": "2026-02-08",
+        "label": "January",
+        "tier": "other"
+      },
+      {
+        "date": "2026-03-08",
+        "label": "February",
+        "tier": "other"
+      },
+      {
+        "date": "2026-04-08",
+        "label": "March",
+        "tier": "other"
+      },
+      {
+        "date": "2026-05-08",
+        "label": "April",
+        "tier": "other"
+      },
+      {
+        "date": "2026-06-08",
+        "label": "May",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-06-08"
+  },
+  "LimaInternationalFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:09:07.149Z",
+    "title": "Lima International Film Festival",
+    "eventStart": "2026-08-06",
+    "eventEnd": "2026-08-15",
+    "eventRaw": "August 6 – 15, 2026",
+    "opens": "2026-01-22",
+    "notification": "2026-07-22",
+    "deadlines": [
+      {
+        "date": "2026-02-28",
+        "label": "Regular Deadline",
+        "tier": "regular"
+      }
+    ],
+    "finalDeadline": "2026-02-28"
+  },
+  "LaGuarimba": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:09:15.855Z",
+    "title": "La Guarimba Film Festival",
+    "eventStart": "2026-08-07",
+    "eventEnd": "2026-08-12",
+    "eventRaw": "August 7 – 12, 2026",
+    "opens": "2025-09-01",
+    "notification": "2026-05-23",
+    "deadlines": [
+      {
+        "date": "2025-09-30",
+        "label": "EARLYBIRD",
+        "tier": "other"
+      },
+      {
+        "date": "2026-03-10",
+        "label": "REGULAR DEADLINE",
+        "tier": "regular"
+      },
+      {
+        "date": "2026-03-31",
+        "label": "LATE DEADLINE",
+        "tier": "late"
+      }
+    ],
+    "finalDeadline": "2026-03-31"
+  },
+  "CasoleFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:09:24.558Z",
+    "title": "Premio MELA D'ORO - Elsa Film Fest",
+    "eventStart": "2026-08-08",
+    "eventEnd": "2026-10-31",
+    "eventRaw": "August 8 – October 31, 2026",
+    "opens": "2026-05-19",
+    "notification": "2026-08-07",
+    "deadlines": [
+      {
+        "date": "2026-06-10",
+        "label": "First Deadline",
+        "tier": "other"
+      },
+      {
+        "date": "2026-08-01",
+        "label": "Second Deadline",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-08-01"
+  },
+  "OUTSOUTHQueerFilmFestival": {
+    "slug": "festivals",
+    "scrapedAt": "2026-06-07T14:09:33.981Z",
+    "title": "OUTSOUTH Queer Film Festival",
+    "eventStart": "2026-08-13",
+    "eventEnd": "2026-08-20",
+    "eventRaw": "August 13 – 20, 2026",
+    "opens": "2026-03-02",
+    "notification": "2026-06-19",
+    "deadlines": [
+      {
+        "date": "2026-04-17",
+        "label": "EARLY BIRD DEADLINE",
+        "tier": "early"
+      },
+      {
+        "date": "2026-05-15",
+        "label": "SHORTS DEADLINE",
+        "tier": "other"
+      },
+      {
+        "date": "2026-06-05",
+        "label": "FEATURES DEADLINE",
+        "tier": "other"
+      }
+    ],
+    "finalDeadline": "2026-06-05"
+  }
+}

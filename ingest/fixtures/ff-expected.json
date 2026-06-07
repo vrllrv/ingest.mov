@@ -1,0 +1,29 @@
+[
+  {
+    "id": "ff:TribecaFestival",
+    "slug": "TribecaFestival",
+    "name": "Tribeca Festival",
+    "country": "United States",
+    "location": "New York, NY, United States",
+    "years": 22,
+    "status": "Closed",
+    "badges": [
+      "Gold",
+      "Academy Award Qualifying"
+    ],
+    "url": "https://filmfreeway.com/TribecaFestival",
+    "addr": "New York, NY, United States"
+  },
+  {
+    "id": "ff:TinyFest",
+    "slug": "TinyFest",
+    "name": "Tiny Fest",
+    "country": "Portugal",
+    "location": "Lisbon, Portugal",
+    "years": null,
+    "status": "Open",
+    "badges": [],
+    "url": "https://filmfreeway.com/TinyFest/",
+    "addr": "Lisbon, Portugal"
+  }
+]

@@ -51,6 +51,42 @@ export function parseDate(v) {
   return null;
 }
 
+// FilmFreeway "FilmFreeway" tab (directory listing) -> records. The listing
+// carries NO dates — festival/event dates are merged in the ingest from
+// ingest/filmfreeway-dates.json (collected by tools/filmfreeway-scraper.user.js).
+// Stable id is `ff:<url-slug>` (slugs are unique). `addr` is transient (geocode).
+export function parseFFRows(values) {
+  const hdr = values[0].map((h) => String(h).trim());
+  const idx = Object.fromEntries(hdr.map((h, i) => [h, i]));
+  const g = (row, h) => (idx[h] != null && row[idx[h]] != null ? String(row[idx[h]]).trim() : '');
+
+  const out = [];
+  const seen = new Set();
+  for (const row of values.slice(1)) {
+    const url = g(row, 'URL');
+    if (!url) continue;
+    const slug = url.replace(/\/+$/, '').split('/').pop().split('?')[0];
+    if (!slug || seen.has(slug)) continue; // de-dupe by slug
+    seen.add(slug);
+
+    const yearsRaw = g(row, 'Years Running');
+    const loc = g(row, 'Location');
+    out.push({
+      id: 'ff:' + slug,
+      slug,
+      name: g(row, 'Festival Name'),
+      country: g(row, 'Country'),
+      location: loc || null,
+      years: /^\d+$/.test(yearsRaw) ? Number(yearsRaw) : null,
+      status: g(row, 'Entry Status') || null, // Open | Closed
+      badges: g(row, 'Badges').split('|').map((b) => b.trim()).filter(Boolean),
+      url,
+      addr: loc, // transient — stripped before write
+    });
+  }
+  return out;
+}
+
 // values: array-of-arrays from Sheets API (row 0 = header).
 // Each record carries a transient `addr` (Full Address) for geocoding;
 // the ingest strips it before writing data.json.

@@ -1,0 +1,242 @@
+[
+{
+"slug": "TribecaFestival",
+"name": "Tribeca Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/TribecaFestival"
+},
+{
+"slug": "EncountersSouthAfricanInternationalDocumentaryFestival",
+"name": "Encounters South African International Documentary Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/EncountersSouthAfricanInternationalDocumentaryFestival"
+},
+{
+"slug": "PegasusFilmFestival",
+"name": "Pegasus Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/PegasusFilmFestival"
+},
+{
+"slug": "ShortDays",
+"name": "Short Days",
+"status": "Open",
+"url": "https://filmfreeway.com/ShortDays"
+},
+{
+"slug": "10InternationalesFestivalZeichenderNacht",
+"name": "Internationales Festival Zeichen der Nacht",
+"status": "Open",
+"url": "https://filmfreeway.com/10InternationalesFestivalZeichenderNacht"
+},
+{
+"slug": "VisionovaFilmFestival",
+"name": "Visionova Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/VisionovaFilmFestival"
+},
+{
+"slug": "FestivaldesNouveauxCinemas",
+"name": "Festival des Nouveaux Cinémas / Nouveaux Cinemas Film Festival in Paris (France)",
+"status": "Closed",
+"url": "https://filmfreeway.com/FestivaldesNouveauxCinemas"
+},
+{
+"slug": "EcosShortsFest",
+"name": "Ecos Shorts Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/EcosShortsFest"
+},
+{
+"slug": "DenverUndergroundFilmFestival",
+"name": "Denver Underground Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/DenverUndergroundFilmFestival"
+},
+{
+"slug": "PantherCity",
+"name": "Panther City Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/PantherCity"
+},
+{
+"slug": "OriginsFF",
+"name": "Origins Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/OriginsFF"
+},
+{
+"slug": "KickingScreeningSoccerFilmFestival",
+"name": "Kicking + Screening Soccer Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/KickingScreeningSoccerFilmFestival"
+},
+{
+"slug": "AifilmawardsVerticalEdition",
+"name": "AI Film Awards Vertical Edition",
+"status": "Open",
+"url": "https://filmfreeway.com/AifilmawardsVerticalEdition"
+},
+{
+"slug": "naiffmaryland",
+"name": "NAIFF-Nepal America International Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/naiffmaryland"
+},
+{
+"slug": "WestEndFilmFestival",
+"name": "West End Film Festival (WEFF)",
+"status": "Closed",
+"url": "https://filmfreeway.com/WestEndFilmFestival"
+},
+{
+"slug": "FrankenFilmFest",
+"name": "FrankenFilmFest",
+"status": "Open",
+"url": "https://filmfreeway.com/FrankenFilmFest"
+},
+{
+"slug": "andarasfilmfestival",
+"name": "ANDARAS - Traveling Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/andarasfilmfestival"
+},
+{
+"slug": "LaPoesiaCheSiVede",
+"name": "La Poesia Che Si Vede - International Competition for Poetry Films",
+"status": "Closed",
+"url": "https://filmfreeway.com/LaPoesiaCheSiVede"
+},
+{
+"slug": "ErnestFilmFestival",
+"name": "Ernest Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/ErnestFilmFestival"
+},
+{
+"slug": "LFOCinema",
+"name": "London Festival of Cinema",
+"status": "Open",
+"url": "https://filmfreeway.com/LFOCinema"
+},
+{
+"slug": "GalwayFilmFleadh",
+"name": "Galway Film Fleadh",
+"status": "Closed",
+"url": "https://filmfreeway.com/GalwayFilmFleadh"
+},
+{
+"slug": "BuryFilmFestival",
+"name": "Bury Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/BuryFilmFestival"
+},
+{
+"slug": "StarBurstFilmfestivalandFilmmakingSymposium",
+"name": "S-Burst Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/StarBurstFilmfestivalandFilmmakingSymposium"
+},
+{
+"slug": "AnibarAnimationFestival",
+"name": "Anibar Animation Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/AnibarAnimationFestival"
+},
+{
+"slug": "FantasiaFilmFestival",
+"name": "Fantasia International Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/FantasiaFilmFestival"
+},
+{
+"slug": "daysofthedeadfilmfestival",
+"name": "Days of the Dead International Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/daysofthedeadfilmfestival"
+},
+{
+"slug": "LimitlessFramesFilmFest",
+"name": "Limitless Frames Film Fest",
+"status": "Open",
+"url": "https://filmfreeway.com/LimitlessFramesFilmFest"
+},
+{
+"slug": "MidwestFilmFestival",
+"name": "Midwest Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/MidwestFilmFestival"
+},
+{
+"slug": "RUSHAfterDark",
+"name": "RUSH After Dark",
+"status": "Open",
+"url": "https://filmfreeway.com/RUSHAfterDark"
+},
+{
+"slug": "VertiStarVerticalFilmFestival",
+"name": "VertiStar Vertical Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/VertiStarVerticalFilmFestival"
+},
+{
+"slug": "ALyteintheDark",
+"name": "A Lyte in the Dark",
+"status": "Open",
+"url": "https://filmfreeway.com/ALyteintheDark"
+},
+{
+"slug": "MicroandNoBudgetFilmFestival",
+"name": "Micro & No Budget Film Night",
+"status": "Open",
+"url": "https://filmfreeway.com/MicroandNoBudgetFilmFestival"
+},
+{
+"slug": "CreativeGutsShortFilmFestival",
+"name": "The Creative Guts Short Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/CreativeGutsShortFilmFestival"
+},
+{
+"slug": "BengaliFilmFestivalofDallas",
+"name": "Bengali Film Festival of Dallas",
+"status": "Open",
+"url": "https://filmfreeway.com/BengaliFilmFestivalofDallas"
+},
+{
+"slug": "TheOLAFilmFestival",
+"name": "The OLA Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/TheOLAFilmFestival"
+},
+{
+"slug": "FestivaldeBretagne",
+"name": "Brittany International Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/FestivaldeBretagne"
+},
+{
+"slug": "LimaInternationalFilmFestival",
+"name": "Lima International Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/LimaInternationalFilmFestival"
+},
+{
+"slug": "LaGuarimba",
+"name": "La Guarimba Film Festival",
+"status": "Closed",
+"url": "https://filmfreeway.com/LaGuarimba"
+},
+{
+"slug": "CasoleFilmFestival",
+"name": "Premio MELA D'ORO - Elsa Film Fest",
+"status": "Open",
+"url": "https://filmfreeway.com/CasoleFilmFestival"
+},
+{
+"slug": "OUTSOUTHQueerFilmFestival",
+"name": "OUTSOUTH Queer Film Festival",
+"status": "Open",
+"url": "https://filmfreeway.com/OUTSOUTHQueerFilmFestival"
+}
+]

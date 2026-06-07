@@ -1,31 +1,34 @@
-// Deterministic parser test against a committed fixture (fixtures/sample.csv
-// → fixtures/expected.json). Guards parse + CSV logic against regressions.
-// Run: npm run test:ingest
+// Deterministic parser tests against committed fixtures.
+//   fixtures/sample.csv     -> fixtures/expected.json      (Festhome parseRows)
+//   fixtures/ff-sample.csv  -> fixtures/ff-expected.json   (FilmFreeway parseFFRows)
+// Guards parse + CSV logic against regressions. Run: npm run test:ingest
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseCsv, parseRows } from './parse.mjs';
+import { parseCsv, parseRows, parseFFRows } from './parse.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const csv = fs.readFileSync(path.join(HERE, 'fixtures/sample.csv'), 'utf8');
-const expected = JSON.parse(fs.readFileSync(path.join(HERE, 'fixtures/expected.json'), 'utf8'));
+const read = (p) => fs.readFileSync(path.join(HERE, p), 'utf8');
 
-const got = parseRows(parseCsv(csv));
-const a = JSON.stringify(got, null, 2);
-const b = JSON.stringify(expected, null, 2);
-
-if (a === b) {
-  console.log(`ok — ${got.length} records match fixture`);
-  process.exit(0);
-}
-// show first differing record
-const ga = got, gb = expected;
-for (let i = 0; i < Math.max(ga.length, gb.length); i++) {
-  if (JSON.stringify(ga[i]) !== JSON.stringify(gb[i])) {
-    console.error(`MISMATCH at record ${i}:`);
-    console.error('  got     ', JSON.stringify(ga[i]));
-    console.error('  expected', JSON.stringify(gb[i]));
-    break;
+let failed = 0;
+function check(name, got, expected) {
+  if (JSON.stringify(got, null, 2) === JSON.stringify(expected, null, 2)) {
+    console.log(`ok — ${name}: ${got.length} records match fixture`);
+    return;
+  }
+  failed++;
+  console.error(`MISMATCH — ${name}:`);
+  for (let i = 0; i < Math.max(got.length, expected.length); i++) {
+    if (JSON.stringify(got[i]) !== JSON.stringify(expected[i])) {
+      console.error('  at record', i);
+      console.error('    got     ', JSON.stringify(got[i]));
+      console.error('    expected', JSON.stringify(expected[i]));
+      break;
+    }
   }
 }
-process.exit(1);
+
+check('festhome', parseRows(parseCsv(read('fixtures/sample.csv'))), JSON.parse(read('fixtures/expected.json')));
+check('filmfreeway', parseFFRows(parseCsv(read('fixtures/ff-sample.csv'))), JSON.parse(read('fixtures/ff-expected.json')));
+
+process.exit(failed ? 1 : 0);
