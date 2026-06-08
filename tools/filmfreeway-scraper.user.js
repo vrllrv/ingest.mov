@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FilmFreeway date scraper — ingest.mov fest-map
 // @namespace    ingest.mov
-// @version      0.6.1
+// @version      0.6.2
 // @description  Crawl FilmFreeway festival detail pages in your OWN browser session (so Cloudflare is already satisfied) to collect submission deadlines + event dates, then export JSON for the fest-map ingest. Throttled, resumable, weekly-diff friendly.
 // @author       ingest.mov
 // @match        https://filmfreeway.com/*
@@ -191,6 +191,13 @@
         // forever). Mark it skip so the queue ADVANCES instead of wedging on it.
         state.skip[slug] = true;
         log(`⤼ skipped "${slug}" (dead/blocked page) — moving on.`);
+      } else {
+        // Any OTHER error (HTTP 404/500, network) is permanent for this slug —
+        // retrying it just wedges the queue. Skip it and move on. Not a clearance
+        // problem, so the consecutive-block counter resets.
+        consecCF = 0;
+        state.skip[slug] = true;
+        log(`⤼ skipped "${slug}" (${e.message}) — moving on.`);
       }
     }
     save(); render();
