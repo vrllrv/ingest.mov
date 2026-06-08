@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FilmFreeway date scraper — ingest.mov fest-map
 // @namespace    ingest.mov
-// @version      0.6.0
+// @version      0.6.1
 // @description  Crawl FilmFreeway festival detail pages in your OWN browser session (so Cloudflare is already satisfied) to collect submission deadlines + event dates, then export JSON for the fest-map ingest. Throttled, resumable, weekly-diff friendly.
 // @author       ingest.mov
 // @match        https://filmfreeway.com/*
@@ -39,7 +39,8 @@
   // ---- persistent state ----------------------------------------------------
   const load = () => { try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; } catch { return {}; } };
   const save = () => localStorage.setItem(LS_KEY, JSON.stringify(state));
-  const state = Object.assign({ results: {}, errors: {}, queue: [], throttle: DEFAULT_THROTTLE_MS }, load());
+  const state = Object.assign({ results: {}, errors: {}, skip: {}, queue: [], throttle: DEFAULT_THROTTLE_MS }, load());
+  if (!state.skip) state.skip = {}; // slugs that 403'd through all retries (likely dead/removed pages)
 
   let running = false;
   let timer = null;
@@ -164,10 +165,11 @@
   }
 
   // ---- crawl loop ----------------------------------------------------------
-  let consecCF = 0; // consecutive slugs that failed ALL retries -> real block
+  let consecCF = 0; // consecutive DISTINCT slugs that failed ALL retries -> real block
   async function step() {
     if (!running) return;
-    const slug = state.queue.find((s) => !state.results[s]);
+    // Skip slugs already done AND slugs we've permanently given up on (dead pages).
+    const slug = state.queue.find((s) => !state.results[s] && !state.skip[s]);
     if (!slug) { stop(); log('✓ Done — nothing left in queue.'); render(); return; }
     try {
       const doc = await fetchDoc(slug);
@@ -177,16 +179,18 @@
     } catch (e) {
       state.errors[slug] = String(e.message || e);
       if (e.message === 'CF403') {
-        // Survived all retries on this slug. One stubborn slug shouldn't kill
-        // the run — skip it and move on. Only a STREAK means clearance is truly
-        // gone, so pause and ask the user to renew it.
         consecCF++;
-        if (consecCF >= 4) {
+        // A STREAK of different slugs all failing = real block (clearance gone).
+        // Pause WITHOUT skipping, so Resume retries them after you renew clearance.
+        if (consecCF >= 5) {
           stop();
-          log('⛔ Cloudflare blocked several in a row — clearance likely expired. Open/refresh a filmfreeway.com tab, then Resume.');
+          log('⛔ Cloudflare blocked 5 in a row — clearance likely expired. Open/refresh a filmfreeway.com tab, then Resume.');
           save(); render(); return;
         }
-        log(`⚠ skipped "${slug}" after retries (${consecCF}/4) — continuing.`);
+        // Otherwise it's almost certainly a dead/removed page (e.g. it alone 403s
+        // forever). Mark it skip so the queue ADVANCES instead of wedging on it.
+        state.skip[slug] = true;
+        log(`⤼ skipped "${slug}" (dead/blocked page) — moving on.`);
       }
     }
     save(); render();
@@ -270,8 +274,8 @@
   function render() {
     const total = state.queue.length;
     const done = Object.keys(state.results).length;
-    const errs = Object.keys(state.errors).length;
-    ui.count.textContent = `${done} done / ${total} queued · ${errs} errors`;
+    const skipped = Object.keys(state.skip).length;
+    ui.count.textContent = `${done} done / ${total} queued · ${skipped} skipped`;
     ui.start.textContent = running ? 'Pause' : (done ? 'Resume' : 'Start');
     ui.start.style.background = running ? '#b4541f' : '#1f6f3a';
   }
