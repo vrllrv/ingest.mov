@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FilmFreeway date scraper — ingest.mov fest-map
 // @namespace    ingest.mov
-// @version      0.6.2
+// @version      0.6.3
 // @description  Crawl FilmFreeway festival detail pages in your OWN browser session (so Cloudflare is already satisfied) to collect submission deadlines + event dates, then export JSON for the fest-map ingest. Throttled, resumable, weekly-diff friendly.
 // @author       ingest.mov
 // @match        https://filmfreeway.com/*
@@ -144,22 +144,34 @@
   // means real clearance loss, not the random sampling).
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   async function fetchOnce(slug) {
-    const res = await fetch('/' + encodeURIComponent(slug), { credentials: 'include' });
-    if (res.status === 403) throw new Error('CF403'); // random challenge or clearance lost
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const html = await res.text();
-    if (/Just a moment|cf-browser-verification|challenge-platform/i.test(html)) throw new Error('CF403');
-    return new DOMParser().parseFromString(html, 'text/html');
+    // Hard 30s cap: a stalled request (server holds the socket open) would
+    // otherwise hang the await forever and freeze the whole loop silently.
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 30000);
+    try {
+      const res = await fetch('/' + encodeURIComponent(slug), { credentials: 'include', signal: ctrl.signal });
+      if (res.status === 403) throw new Error('CF403'); // random challenge or clearance lost
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const html = await res.text();
+      if (/Just a moment|cf-browser-verification|challenge-platform/i.test(html)) throw new Error('CF403');
+      return new DOMParser().parseFromString(html, 'text/html');
+    } catch (e) {
+      if (e.name === 'AbortError') throw new Error('TIMEOUT');
+      throw e;
+    } finally {
+      clearTimeout(t);
+    }
   }
   async function fetchDoc(slug) {
     const RETRIES = 4;            // total attempts before giving up on a slug
+    const RETRYABLE = /^(CF403|TIMEOUT)$/; // transient: random challenge or a stall
     for (let i = 1; i <= RETRIES; i++) {
       try {
         return await fetchOnce(slug);
       } catch (e) {
-        if (e.message !== 'CF403' || i === RETRIES) throw e;
-        log(`⟳ challenge on "${slug}" (try ${i}/${RETRIES}) — retrying in ${3 * i}s…`);
-        await sleep(3000 * i); // 3s, 6s, 9s back-off; random blips clear fast
+        if (!RETRYABLE.test(e.message) || i === RETRIES) throw e;
+        log(`⟳ ${e.message} on "${slug}" (try ${i}/${RETRIES}) — retrying in ${3 * i}s…`);
+        await sleep(3000 * i); // 3s, 6s, 9s back-off; blips/stalls clear fast
       }
     }
   }
