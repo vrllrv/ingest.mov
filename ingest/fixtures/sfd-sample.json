@@ -1,0 +1,430 @@
+{
+  "countries": [
+    {
+      "Id": 150,
+      "Libelle": "Czech republic"
+    },
+    {
+      "Id": 68,
+      "Libelle": "France"
+    },
+    {
+      "Id": 148,
+      "Libelle": "Portugal"
+    },
+    {
+      "Id": 152,
+      "Libelle": "United Kingdom, England"
+    }
+  ],
+  "festivals": [
+    {
+      "Id": 1,
+      "Nom": "Festival International du Court Métrage de Clermont-Ferrand",
+      "ShortName": "Clermont_Ferrand_ISFF",
+      "Ville": "Clermont-Ferrand",
+      "TextePresentation": null,
+      "IdPays": 68,
+      "DebutCampagne": "2027-01-29T00:00:00",
+      "FinCampagne": "2027-02-06T00:00:00",
+      "IsOpen": true,
+      "IsLastDays": true,
+      "ClosureDays": 9,
+      "Competitions": [
+        {
+          "IdSection": 1,
+          "Name": "International Competition",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 13,
+          "PrixMax": 13,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2026-09-24T00:00:00",
+            "IsPayant": true,
+            "Prix": 13,
+            "HasExpired": false,
+            "IsExpireSoon": true,
+            "CurrentEventDate": null,
+            "CurrentEventPrix": 13,
+            "IsCurrent": true
+          }
+        },
+        {
+          "IdSection": 2,
+          "Name": "National Competition",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 13,
+          "PrixMax": 13,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2026-10-01T00:00:00",
+            "IsPayant": true,
+            "Prix": 13,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": null,
+            "CurrentEventPrix": 13,
+            "IsCurrent": true
+          }
+        },
+        {
+          "IdSection": 973,
+          "Name": "XR - Extended Reality section",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 13,
+          "PrixMax": 13,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2026-09-24T00:00:00",
+            "IsPayant": true,
+            "Prix": 13,
+            "HasExpired": false,
+            "IsExpireSoon": true,
+            "CurrentEventDate": null,
+            "CurrentEventPrix": 13,
+            "IsCurrent": true
+          }
+        }
+      ]
+    },
+    {
+      "Id": 371,
+      "Nom": "UK FILM FESTIVAL LONDON",
+      "ShortName": "UK_FILM_FESTIVAL_LONDON",
+      "Ville": "LONDON",
+      "TextePresentation": null,
+      "IdPays": 152,
+      "DebutCampagne": "2026-11-18T00:00:00",
+      "FinCampagne": "2026-11-22T00:00:00",
+      "IsOpen": true,
+      "IsLastDays": false,
+      "ClosureDays": null,
+      "Competitions": [
+        {
+          "IdSection": 1188,
+          "Name": "Short Films",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 50,
+          "PrixMax": 60,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2026-10-20T00:00:00",
+            "IsPayant": true,
+            "Prix": 60,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-09-29T00:00:00",
+            "CurrentEventPrix": 50,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1190,
+          "Name": "Short Documentaries",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 50,
+          "PrixMax": 60,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2026-10-20T00:00:00",
+            "IsPayant": true,
+            "Prix": 60,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-09-29T00:00:00",
+            "CurrentEventPrix": 50,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1191,
+          "Name": "Student shorts",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 45,
+          "PrixMax": 55,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2026-10-20T00:00:00",
+            "IsPayant": true,
+            "Prix": 55,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-09-29T00:00:00",
+            "CurrentEventPrix": 45,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1189,
+          "Name": "Short Films - 1st Time Directors",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 50,
+          "PrixMax": 60,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2026-10-20T00:00:00",
+            "IsPayant": true,
+            "Prix": 60,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-09-29T00:00:00",
+            "CurrentEventPrix": 50,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1259,
+          "Name": "Animated Short films",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 50,
+          "PrixMax": 60,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2026-10-20T00:00:00",
+            "IsPayant": true,
+            "Prix": 60,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-09-29T00:00:00",
+            "CurrentEventPrix": 50,
+            "IsCurrent": false
+          }
+        }
+      ]
+    },
+    {
+      "Id": 388,
+      "Nom": "Prague Film Festival",
+      "ShortName": "Prague_Film_Festival",
+      "Ville": "Praha",
+      "TextePresentation": null,
+      "IdPays": 150,
+      "DebutCampagne": "2027-04-28T00:00:00",
+      "FinCampagne": "2027-05-02T00:00:00",
+      "IsOpen": true,
+      "IsLastDays": false,
+      "ClosureDays": null,
+      "Competitions": [
+        {
+          "IdSection": 1207,
+          "Name": "Short Fiction/Narrative",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 19,
+          "PrixMax": 19,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2027-01-28T00:00:00",
+            "IsPayant": true,
+            "Prix": 19,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-12-17T00:00:00",
+            "CurrentEventPrix": 19,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1208,
+          "Name": "Short Animation",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 19,
+          "PrixMax": 29,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2027-01-28T00:00:00",
+            "IsPayant": true,
+            "Prix": 29,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-12-17T00:00:00",
+            "CurrentEventPrix": 19,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1209,
+          "Name": "Short Doc",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 19,
+          "PrixMax": 29,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2027-01-28T00:00:00",
+            "IsPayant": true,
+            "Prix": 29,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-12-17T00:00:00",
+            "CurrentEventPrix": 19,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1210,
+          "Name": "Short Experimental",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 19,
+          "PrixMax": 29,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2027-01-28T00:00:00",
+            "IsPayant": true,
+            "Prix": 29,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-12-17T00:00:00",
+            "CurrentEventPrix": 19,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1211,
+          "Name": "XYZ (Horror, Sci-fi, Thriller, Fantasy, Mystery)",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 19,
+          "PrixMax": 29,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2027-01-28T00:00:00",
+            "IsPayant": true,
+            "Prix": 29,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-12-17T00:00:00",
+            "CurrentEventPrix": 19,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1212,
+          "Name": "Student Film",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 9,
+          "PrixMax": 12,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2027-01-28T00:00:00",
+            "IsPayant": true,
+            "Prix": 12,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-12-17T00:00:00",
+            "CurrentEventPrix": 9,
+            "IsCurrent": false
+          }
+        },
+        {
+          "IdSection": 1362,
+          "Name": "Short Film for Kids",
+          "IsClosed": false,
+          "HasPassword": false,
+          "PrixMin": 9,
+          "PrixMax": 12,
+          "NextEvent": {
+            "EventLabel": "Final deadline",
+            "IdEvent": 2,
+            "DateEvent": "2027-01-28T00:00:00",
+            "IsPayant": true,
+            "Prix": 12,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": "2026-12-17T00:00:00",
+            "CurrentEventPrix": 9,
+            "IsCurrent": false
+          }
+        }
+      ]
+    },
+    {
+      "Id": 422,
+      "Nom": "Brèves D'Images, Festival International du court-métrage de la Jeunesse Francophone",
+      "ShortName": "breves-d-images-youth-short-film-festival",
+      "Ville": "Quint-Fonsegrives",
+      "TextePresentation": null,
+      "IdPays": 68,
+      "DebutCampagne": "2026-06-27T00:00:00",
+      "FinCampagne": "2026-06-27T00:00:00",
+      "IsOpen": false,
+      "IsLastDays": false,
+      "ClosureDays": null,
+      "Competitions": [
+        {
+          "IdSection": 1256,
+          "Name": "Call for films 2026",
+          "IsClosed": true,
+          "HasPassword": false,
+          "PrixMin": null,
+          "PrixMax": null,
+          "NextEvent": {
+            "EventLabel": "Notification of results",
+            "IdEvent": 3,
+            "DateEvent": "2027-05-19T00:00:00",
+            "IsPayant": false,
+            "Prix": null,
+            "HasExpired": false,
+            "IsExpireSoon": false,
+            "CurrentEventDate": null,
+            "CurrentEventPrix": null,
+            "IsCurrent": true
+          }
+        }
+      ]
+    },
+    {
+      "Id": 79,
+      "Nom": "Festival international d’Autrans - Montagne, cinéma & culture",
+      "ShortName": "autrans-mountain-film-festival",
+      "Ville": "Autrans",
+      "TextePresentation": null,
+      "IdPays": 68,
+      "DebutCampagne": "2026-12-02T00:00:00",
+      "FinCampagne": "2026-12-06T00:00:00",
+      "IsOpen": true,
+      "IsLastDays": false,
+      "ClosureDays": null,
+      "Competitions": []
+    },
+    {
+      "Id": 554,
+      "Nom": "Moinho Cine Fest",
+      "ShortName": "moinho-cine-fest",
+      "Ville": null,
+      "TextePresentation": null,
+      "IdPays": 148,
+      "DebutCampagne": "2027-04-01T00:00:00",
+      "FinCampagne": "2027-04-30T00:00:00",
+      "IsOpen": true,
+      "IsLastDays": false,
+      "ClosureDays": null,
+      "Competitions": []
+    }
+  ]
+}

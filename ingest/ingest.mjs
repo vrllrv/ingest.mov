@@ -16,7 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseRows, parseFFRows, parseCsv } from './parse.mjs';
+import { parseRows, parseFFRows, parseSFDRows, parseCsv } from './parse.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
@@ -24,6 +24,7 @@ const CACHE_PATH = path.join(HERE, 'geocache.json');
 const OUT_PATH = path.join(ROOT, 'public/fest-map/data.json');
 const META_PATH = path.join(ROOT, 'public/fest-map/meta.json');
 const OUT_FF_PATH = path.join(ROOT, 'public/fest-map/data-ff.json');
+const OUT_SFD_PATH = path.join(ROOT, 'public/fest-map/data-sfd.json');
 const FF_DATES_PATH = path.join(HERE, 'filmfreeway-dates.json'); // browser-scraped, committed
 
 const SHEET_ID = process.env.SHEET_ID || '1Ie60CKn3zlt5MFB43nt5GM6h6gbAO-p1wDvaTmB27xk';
@@ -38,6 +39,28 @@ const FIELD_ORDER = ['id', 'name', 'country', 'cats', 'start', 'end', 'deadline'
 const FF_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
   'deadline', 'opens', 'status', 'years', 'badges', 'url', 'slug',
   'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
+const SFD_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
+  'deadline', 'opens', 'status', 'comps', 'feeMin', 'feeMax', 'url', 'slug',
+  'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
+
+// Shortfilmdepot's public API. No key, no cookie: the site's own front end calls
+// these anonymously (CORS hides that from a browser, but server-side it is open).
+// skip/take go in the BODY — passing them only in the path returns a single row.
+const SFD_API = process.env.SFD_API || 'https://apiv3-user.shortfilmdepot.com';
+const SFD_UA = 'ingest.mov-festmap/1.0 (+https://ingest.mov)';
+const SFD_TAKE = 2000; // whole catalogue is ~219 rows; one request is plenty
+// sort block copied from the site's own request, so we get the same ordering
+// (and the same code path) rather than whatever the API defaults to
+const SFD_SORT_LEGACY = [
+  { Key: 'StatutCampagne', Value: true },
+  { Key: 'FermetureCampagne', Value: false },
+  { Key: 'DebutCampagne', Value: false },
+];
+const SFD_SORT = [
+  { Property: 'StatutCampagne', Priority: 0, IsDesc: true },
+  { Property: 'FermetureCampagne', Priority: 1, IsDesc: false },
+  { Property: 'DebutCampagne', Priority: 2, IsDesc: false },
+];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -143,15 +166,63 @@ async function buildFilmFreeway() {
   return out.length;
 }
 
+// --- source 3: Shortfilmdepot (public JSON API) ---
+async function fetchSFD(pathname, init) {
+  const r = await fetch(SFD_API + pathname, {
+    ...init,
+    headers: { accept: 'application/json', culture: 'en', 'user-agent': SFD_UA, ...(init && init.headers) },
+  });
+  if (!r.ok) throw new Error(`shortfilmdepot ${pathname} HTTP ${r.status}`);
+  return r.json();
+}
+
+async function buildShortfilmdepot() {
+  const countries = await fetchSFD('/pays/dico');
+  const countryById = Object.fromEntries(countries.map((p) => [p.Id, p.Libelle]));
+
+  const list = await fetchSFD(`/festivals/filter/0/${SFD_TAKE}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      skip: 0,
+      take: SFD_TAKE,
+      filter: {
+        Tri: SFD_SORT_LEGACY, Classement: null, GlobalSearch: null, IdsPkExclude: [], IdsPk: [],
+        TriV2: SFD_SORT, IdCompte: null, SearchEventId: null, IdPays: null,
+        IsCampagneOuverte: null, IsPayant: null, DeadLineComparer: null, DeadLine: null,
+        Edition: null, EditionComparer: null, IdsCategorie: [], IdsGenre: [],
+        IdsThematique: [], PecRealisateurs: [], PrixRange: null,
+      },
+    }),
+  });
+
+  const items = parseSFDRows(list, countryById);
+  console.log(`Shortfilmdepot: parsed ${items.length} festivals`);
+
+  const out = [];
+  for (const f of items) {
+    const { addr, ...rec } = f;
+    const geo = await geocode(addr, rec.country);
+    rec.lat = geo.lat; rec.lon = geo.lon; rec.prec = geo.prec;
+    out.push(Object.fromEntries(SFD_FIELD_ORDER.map((k) => [k, rec[k]])));
+  }
+  writeArray(OUT_SFD_PATH, out);
+  const withDeadline = out.filter((r) => r.deadline).length;
+  const miss = out.filter((r) => r.lat == null).length;
+  console.log(`  wrote ${out.length} -> ${path.relative(ROOT, OUT_SFD_PATH)} (with deadline: ${withDeadline}, missing coords: ${miss})`);
+  return out.length;
+}
+
 async function main() {
   const fhCount = await buildFesthome();
   const ffCount = await buildFilmFreeway();
+  const sfdCount = await buildShortfilmdepot();
 
   fs.writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 0));
   // sidecar: when this data was generated, so the map can show "updated Nh ago"
   // and the refresh button can detect when a fresh build has landed. Not tracked
   // in git (changes every run) — it's regenerated + deployed on each ingest.
-  fs.writeFileSync(META_PATH, JSON.stringify({ generated: new Date().toISOString(), count: fhCount, countFF: ffCount }) + '\n');
+  fs.writeFileSync(META_PATH, JSON.stringify({ generated: new Date().toISOString(), count: fhCount, countFF: ffCount, countSFD: sfdCount }) + '\n');
   console.log(`done (geocode calls this run: ${geocodeCalls})`);
 }
 

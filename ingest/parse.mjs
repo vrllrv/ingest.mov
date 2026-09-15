@@ -146,3 +146,87 @@ export function parseRows(values) {
   }
   return out;
 }
+
+// Shortfilmdepot's public JSON API returns the whole catalogue in one anonymous
+// POST, so unlike FilmFreeway this source needs no browser scraping.
+//
+// Naming gotcha: despite "Campagne", DebutCampagne/FinCampagne are the FESTIVAL's
+// own event dates — median span 5 days, and they match the dates festivals quote
+// in their own descriptions. They are NOT the submission window; submission dates
+// live in Competitions[].NextEvent.
+
+// SFD's country table carries sub-region suffixes ("United Kingdom, England") and
+// inconsistent casing ("Czech republic"). Left as-is each would become its own
+// entry in the map's country dropdown, splitting one country across several rows.
+const SFD_COUNTRY_FIX = {
+  'United States of America': 'United States', // the vocabulary the other two sources use
+  'United kingdom': 'United Kingdom',
+  'Czech republic': 'Czech Republic',
+  'Burkina faso': 'Burkina Faso',
+};
+
+export function normalizeSFDCountry(raw) {
+  if (!raw) return '';
+  const head = String(raw).split(',')[0].trim(); // "United Kingdom, England" -> "United Kingdom"
+  return SFD_COUNTRY_FIX[head] || head;
+}
+
+// NextEvent.IdEvent: 1 = opening submissions, 2 = final deadline, 9 = extended
+// deadline, 3 = notification of results. Results notifications are deliberately
+// NOT treated as deadlines — 96 of them exist, and using them would show a results
+// date where the map promises a submission cutoff.
+const SFD_DEADLINE_EVENTS = new Set([2, 9]);
+const SFD_OPENING_EVENT = 1;
+
+const sfdDay = (v) => (v ? String(v).slice(0, 10) : null); // "2027-01-29T00:00:00" -> "2027-01-29"
+
+// list: parsed JSON array from POST /festivals/filter/{skip}/{take}
+// countryById: IdPays -> country name, from GET /pays/dico
+export function parseSFDRows(list, countryById = {}) {
+  const out = [];
+  const seen = new Set();
+  for (const f of list || []) {
+    const slug = f.ShortName;
+    if (!slug || seen.has(slug)) continue; // de-dupe by slug
+    seen.add(slug);
+
+    const comps = f.Competitions || [];
+    const live = comps.map((c) => c.NextEvent).filter((e) => e && e.DateEvent && !e.HasExpired);
+    // earliest matching event wins, so a festival with several competitions
+    // surfaces the deadline the user actually has to hit first
+    const earliest = (test) => live.filter(test).map((e) => sfdDay(e.DateEvent)).sort()[0] || null;
+
+    const start = sfdDay(f.DebutCampagne);
+    const end = sfdDay(f.FinCampagne);
+
+    const prices = comps.flatMap((c) => [c.PrixMin, c.PrixMax]).filter((p) => p != null);
+    const country = normalizeSFDCountry(countryById[f.IdPays]);
+    const city = String(f.Ville || '').trim();
+
+    const warn = [];
+    if (start && end && end < start) warn.push('end before start');
+
+    out.push({
+      id: 'sfd:' + slug,
+      src: 'sfd',
+      name: String(f.Nom || '').trim(),
+      country,
+      location: city || null,
+      start,
+      end,
+      deadline: earliest((e) => SFD_DEADLINE_EVENTS.has(e.IdEvent)),
+      opens: earliest((e) => e.IdEvent === SFD_OPENING_EVENT),
+      status: f.IsOpen ? 'Open' : 'Closed',
+      comps: comps.length,
+      feeMin: prices.length ? Math.min(...prices) : null,
+      feeMax: prices.length ? Math.max(...prices) : null,
+      url: 'https://shortfilmdepot.com/en/festival/' + slug,
+      slug,
+      inactive: warn.length > 0,
+      warn,
+      hasDates: !!start,
+      addr: [city, country].filter(Boolean).join(', '), // transient — stripped before write
+    });
+  }
+  return out;
+}
