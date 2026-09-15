@@ -1,0 +1,4 @@
+# The ingest writes LF, CI runs on Linux, and the deployed assets are LF. Git for
+# Windows defaults to core.autocrlf=true, which would otherwise turn a one-line
+# edit into a whole-file CRLF rewrite. Normalise everything to LF on commit.
+* text=auto eol=lf
