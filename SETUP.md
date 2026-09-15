@@ -73,4 +73,4 @@ Site will be live at: `https://site.ingest-mov.workers.dev`
 To further improve this setup, consider:
 1. Setting up a build script that reads separate files and injects them into `src/index.js`
 2. Using Wrangler's asset bundling with proper module imports
-3. Adding GitHub Actions for automated deployment on push
+3. ~~Adding GitHub Actions for automated deployment on push~~ — done, see .github/workflows/deploy.yml

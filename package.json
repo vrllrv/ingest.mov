@@ -9,6 +9,6 @@
     "test:ingest": "node ingest/test.mjs"
   },
   "devDependencies": {
-    "wrangler": "latest"
+    "wrangler": "4.51.0"
   }
 }
