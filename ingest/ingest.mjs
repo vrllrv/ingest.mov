@@ -16,7 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseRows, parseFFRows, parseSFDRows, parseCsv } from './parse.mjs';
+import { parseRows, parseFFRows, parseSFDRows, parseFARows, parseCsv } from './parse.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
@@ -25,6 +25,7 @@ const OUT_PATH = path.join(ROOT, 'public/fest-map/data.json');
 const META_PATH = path.join(ROOT, 'public/fest-map/meta.json');
 const OUT_FF_PATH = path.join(ROOT, 'public/fest-map/data-ff.json');
 const OUT_SFD_PATH = path.join(ROOT, 'public/fest-map/data-sfd.json');
+const OUT_FA_PATH = path.join(ROOT, 'public/fest-map/data-fa.json');
 const FF_DATES_PATH = path.join(HERE, 'filmfreeway-dates.json'); // browser-scraped, committed
 
 const SHEET_ID = process.env.SHEET_ID || '1Ie60CKn3zlt5MFB43nt5GM6h6gbAO-p1wDvaTmB27xk';
@@ -42,12 +43,15 @@ const FF_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'en
 const SFD_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
   'deadline', 'opens', 'status', 'comps', 'feeMin', 'feeMax', 'url', 'slug',
   'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
+const FA_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
+  'deadline', 'opens', 'status', 'years', 'free', 'website', 'url', 'slug',
+  'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
 
 // Shortfilmdepot's public API. No key, no cookie: the site's own front end calls
 // these anonymously (CORS hides that from a browser, but server-side it is open).
 // skip/take go in the BODY — passing them only in the path returns a single row.
 const SFD_API = process.env.SFD_API || 'https://apiv3-user.shortfilmdepot.com';
-const SFD_UA = 'ingest.mov-festmap/1.0 (+https://ingest.mov)';
+const UA = 'ingest.mov-festmap/1.0 (+https://ingest.mov)'; // how this ingest identifies itself to each source
 const SFD_TAKE = 2000; // whole catalogue is ~219 rows; one request is plenty
 // sort block copied from the site's own request, so we get the same ordering
 // (and the same code path) rather than whatever the API defaults to
@@ -170,7 +174,7 @@ async function buildFilmFreeway() {
 async function fetchSFD(pathname, init) {
   const r = await fetch(SFD_API + pathname, {
     ...init,
-    headers: { accept: 'application/json', culture: 'en', 'user-agent': SFD_UA, ...(init && init.headers) },
+    headers: { accept: 'application/json', culture: 'en', 'user-agent': UA, ...(init && init.headers) },
   });
   if (!r.ok) throw new Error(`shortfilmdepot ${pathname} HTTP ${r.status}`);
   return r.json();
@@ -213,16 +217,57 @@ async function buildShortfilmdepot() {
   return out.length;
 }
 
+// --- source 4: Festagent (server-rendered list pages) ---
+// Every field the map needs is on /en/festivals?page=N (30 rows a page, ~51 pages),
+// so the ~1,500 detail pages are never fetched. Pages are walked until one comes
+// back without rows; MAX is a runaway guard, far above the real page count.
+const FA_BASE = process.env.FA_BASE || 'https://festagent.com';
+const FA_MAX_PAGES = 200;
+
+async function buildFestagent() {
+  const pages = [];
+  for (let p = 1; p <= FA_MAX_PAGES; p++) {
+    const r = await fetch(`${FA_BASE}/en/festivals?page=${p}`, {
+      headers: { accept: 'text/html', 'user-agent': UA },
+    });
+    if (!r.ok) throw new Error(`festagent page ${p} HTTP ${r.status}`);
+    const html = await r.text();
+    if (!html.includes('class="title-link"')) break; // past the last page
+    pages.push(html);
+    await sleep(1000); // one list page a second
+  }
+
+  const items = parseFARows(pages);
+  // zero rows means the markup changed, not that the catalogue emptied — fail loudly
+  // rather than deploy an empty layer
+  if (!items.length) throw new Error(`festagent: parsed 0 festivals from ${pages.length} pages — markup changed?`);
+  console.log(`Festagent: parsed ${items.length} festivals from ${pages.length} pages`);
+
+  const out = [];
+  for (const f of items) {
+    const { addr, ...rec } = f;
+    const geo = await geocode(addr, rec.country);
+    rec.lat = geo.lat; rec.lon = geo.lon; rec.prec = geo.prec;
+    out.push(Object.fromEntries(FA_FIELD_ORDER.map((k) => [k, rec[k]])));
+  }
+  writeArray(OUT_FA_PATH, out);
+  const withDeadline = out.filter((r) => r.deadline).length;
+  const miss = out.filter((r) => r.lat == null).length;
+  console.log(`  wrote ${out.length} -> ${path.relative(ROOT, OUT_FA_PATH)} (with deadline: ${withDeadline}, missing coords: ${miss})`);
+  return out.length;
+}
+
 async function main() {
   const fhCount = await buildFesthome();
   const ffCount = await buildFilmFreeway();
   const sfdCount = await buildShortfilmdepot();
+  const faCount = await buildFestagent();
 
   fs.writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 0));
   // sidecar: when this data was generated, so the map can show "updated Nh ago"
   // and the refresh button can detect when a fresh build has landed. Not tracked
   // in git (changes every run) — it's regenerated + deployed on each ingest.
-  fs.writeFileSync(META_PATH, JSON.stringify({ generated: new Date().toISOString(), count: fhCount, countFF: ffCount, countSFD: sfdCount }) + '\n');
+  fs.writeFileSync(META_PATH, JSON.stringify({ generated: new Date().toISOString(), count: fhCount, countFF: ffCount, countSFD: sfdCount, countFA: faCount }) + '\n');
   console.log(`done (geocode calls this run: ${geocodeCalls})`);
 }
 

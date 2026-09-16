@@ -230,3 +230,121 @@ export function parseSFDRows(list, countryById = {}) {
   }
   return out;
 }
+
+// Festagent's festival directory is server-rendered HTML: /en/festivals?page=N,
+// 30 rows a page, and every row already carries what the map needs (event dates,
+// country, city, deadline) — so the ingest reads the list pages, never the ~1,500
+// detail pages. Reuse condition from their footer: "You may use information from
+// this website only if a link to the source is provided" — every popup links back.
+
+const decodeEntities = (s) => String(s)
+  .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+  .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+  .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+  .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&');
+
+const FA_COUNTRY_FIX = {
+  Macedonia: 'North Macedonia', // the vocabulary the other sources use
+};
+
+const iso = (y, mon, d) => `${y}-${String(mon).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+// "Event Dates:" text. Formats seen across the whole catalogue:
+//   "1 — 3 December 2026"            same month
+//   "29 January — 6 February 2027"   year only on the end
+//   "21 November 2025 — 29 November 2026"
+//   "23 October 2026"                single day
+//   "No data"
+// A range crossing New Year without a start year ("28 December — 3 January 2027")
+// starts the year before; none exist today, but the listing format allows it.
+export function parseFADates(raw) {
+  const s = decodeEntities(raw || '').replace(/^\s*Event Dates:\s*/i, '').replace(/\s+/g, ' ').trim();
+  let m = s.match(/^(\d{1,2})(?: ([A-Za-z]+))?(?: (\d{4}))? — (\d{1,2}) ([A-Za-z]+) (\d{4})$/);
+  if (m && MONTHS[m[5]] && (!m[2] || MONTHS[m[2]])) {
+    const endMon = MONTHS[m[5]], endYear = Number(m[6]);
+    const startMon = m[2] ? MONTHS[m[2]] : endMon;
+    const startYear = m[3] ? Number(m[3]) : startMon > endMon ? endYear - 1 : endYear;
+    return { start: iso(startYear, startMon, m[1]), end: iso(endYear, endMon, m[4]) };
+  }
+  const one = parseDate(s); // "23 October 2026"
+  return { start: one, end: one };
+}
+
+// Deadline column: "September 24, 2026" while submissions are open, otherwise
+// "The submission period is over." or "No data." — which is also how the row's
+// status is known. Year 2100 is a "rolling / no deadline" placeholder, not a date.
+function parseFADeadline(raw) {
+  const m = String(raw || '').replace(/\s+/g, ' ').trim().match(/^([A-Za-z]+) (\d{1,2}), (\d{4})$/);
+  if (!m || !MONTHS[m[1]] || Number(m[3]) >= 2100) return null;
+  return iso(m[3], MONTHS[m[1]], m[2]);
+}
+
+// The first place in the city cell. Cells hold lists ("Moscow, St. Petersburg,
+// Penza and Vladimir."), qualifiers ("Santarcangelo di Romagna (Rimini)"), whole
+// sentences and non-places ("2025-2026-..."); Nominatim wants one place, and
+// geocode() falls back to the country when even that misses.
+const faCity = (city) => {
+  const first = city.split(/,|;|\(| and /)[0].replace(/\.+$/, '').trim();
+  return /\p{L}/u.test(first) ? first : '';
+};
+
+// pages: HTML strings of /en/festivals?page=N, in page order
+export function parseFARows(pages) {
+  const out = [];
+  const seen = new Set();
+  for (const html of [].concat(pages || [])) {
+    // each row opens with <div class="festival " id="<slug>">. The sidebar reuses
+    // the prefix (festival-counter-tooltip, festival-list-countries) but those have
+    // no title link, so the name check below drops them.
+    for (const block of String(html).split(/<div class="festival[^"]*"\s+id="/).slice(1)) {
+      const pick = (re) => { const m = block.match(re); return m ? decodeEntities(m[1]).replace(/\s+/g, ' ').trim() : ''; };
+      const slug = block.slice(0, block.indexOf('"'));
+      const name = pick(/class="title-link">\s*<a[^>]*>(?:\s*<img[^>]*>)?([\s\S]*?)<\/a>/);
+      // the list is deadline-sorted and can shift mid-crawl, so a row may repeat
+      if (!slug || !name || seen.has(slug)) continue;
+      seen.add(slug);
+
+      const { start, end } = parseFADates(pick(/festival-dates">([\s\S]*?)<\/p>/));
+      // any date in the deadline column means open — including the 2100 placeholder,
+      // which is a rolling call with no cutoff rather than a closed one
+      const deadlineText = pick(/class="text-gray deadline">([\s\S]*?)<\/small>/);
+      const deadline = parseFADeadline(deadlineText);
+      const deadlineCol = pick(/deadline-column">([\s\S]*?)<\/div>/).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+      const status = deadlineText ? 'Open' : /submission period is over/i.test(deadlineCol) ? 'Closed' : null;
+
+      const rawCountry = pick(/class="country-icon[^"]*"><\/span>([^<]*)/);
+      const country = FA_COUNTRY_FIX[rawCountry] || rawCountry;
+      const city = pick(/festival-city">([^<]*)</);
+      const years = pick(/<div class="small text-gray">\s*(\d+) years?\s*<\/div>/);
+
+      const warn = [];
+      if (start && end && end < start) warn.push('end before start');
+
+      out.push({
+        id: 'fa:' + slug,
+        src: 'fa',
+        name,
+        country,
+        location: /\p{L}/u.test(city) ? city : null, // "2025-2026-..." is not a place
+        start,
+        end,
+        deadline,
+        opens: null, // the list page has no opening date
+        status,
+        years: years ? Number(years) : null,
+        free: /festival-label-free"/.test(block),
+        website: pick(/festival-website">\s*<a[^>]*href="([^"]*)"/) || null,
+        url: 'https://festagent.com/en/festivals/' + slug,
+        slug,
+        inactive: warn.length > 0,
+        warn,
+        hasDates: !!start,
+        // transient — stripped before write. Empty without a city: a bare country here
+        // would be cached as a city-precision hit; geocode() places it on the country.
+        addr: faCity(city) ? [faCity(city), country].filter(Boolean).join(', ') : '',
+      });
+    }
+  }
+  return out;
+}
+

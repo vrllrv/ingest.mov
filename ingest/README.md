@@ -21,7 +21,7 @@ read via its public CSV export.
 
 ## Sources
 
-The map carries three catalogues, each written to its own file and switched on or
+The map carries four catalogues, each written to its own file and switched on or
 off independently in the UI. **No source needs credentials.**
 
 | Source | Key | Where the data comes from | Output |
@@ -29,6 +29,7 @@ off independently in the UI. **No source needs credentials.**
 | Festhome | `festhome` | `Future Festivals` sheet tab (public CSV) | `data.json` |
 | FilmFreeway | `ff` | `FilmFreeway` sheet tab + browser-scraped `filmfreeway-dates.json` | `data-ff.json` |
 | Shortfilmdepot | `sfd` | the site's own public JSON API | `data-sfd.json` |
+| Festagent | `fa` | server-rendered festival list pages | `data-fa.json` |
 
 ### Shortfilmdepot
 
@@ -55,6 +56,37 @@ country dropdown.
 
 It is an undocumented internal API: the ingest sends an identifying User-Agent and
 makes exactly two calls per run. Override the host with `SFD_API` if it moves.
+
+### Festagent
+
+`festagent.com/en/festivals?page=N` is plain server-rendered HTML, 30 rows a page
+(~51 pages, ~1,500 festivals). Each row already carries event dates, country, city
+and deadline, so the ingest reads only the list pages — one a second — and never
+the detail pages. It walks pages until one comes back without rows.
+
+**Reuse condition.** Festagent's footer: *"You may use information from this website
+only if a link to the source is provided."* Every Festagent popup links to the
+festival's Festagent page; keep it that way.
+
+Things that are easy to get wrong:
+
+- **The row prefix is shared.** Rows open with `<div class="festival " id="<slug>">`,
+  but so do sidebar blocks (`festival-counter-tooltip`, `festival-list-countries`).
+  Only blocks with a title link are festivals.
+- **Status comes from the deadline column.** A date there means open; `The submission
+  period is over.` means closed; `No data.` (old editions) leaves status empty.
+- **`October 13, 2100` is a placeholder** for a call with no cutoff. It stays open,
+  with no deadline, and the popup says "rolling".
+- **Only the end of a range carries the year** (`29 January — 6 February 2027`). A
+  range whose start month is later than its end month starts the year before.
+- **The city cell is free text:** lists (`Moscow, St. Petersburg, …`), qualifiers
+  (`Santarcangelo di Romagna (Rimini)`), Cyrillic, and non-places (`2025-2026-...`).
+  The first place is geocoded and `geocode()` falls back to the country; the full
+  text is kept as `location` for the popup.
+- The list is sorted by deadline and can shift while it's being crawled, so rows
+  are de-duplicated by slug.
+
+Override the host with `FA_BASE` if it moves.
 
 ## Files
 
@@ -92,7 +124,7 @@ daily 06:00 UTC run.
 ## Run locally
 
 ```bash
-npm run ingest        # refresh all three sources -> public/fest-map/data*.json
+npm run ingest        # refresh all four sources -> public/fest-map/data*.json
 npx wrangler deploy   # push live
 npm run test:ingest   # deterministic parser regression test
 ```

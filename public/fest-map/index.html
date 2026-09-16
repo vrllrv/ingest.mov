@@ -86,6 +86,7 @@
   #srckey .ring.fh{border:1.5px solid rgba(255,255,255,.7)}
   #srckey .ring.ff{border:1.5px solid #5ac8fa}
   #srckey .ring.sfd{border:1.5px solid #c89bf5}
+  #srckey .ring.fa{border:1.5px solid #ffb454}
   #srckey .ring.aa{border:2px solid var(--accent)}
   /* range presets + centred custom input (input sits in the middle) */
   .rangeopts{display:flex;align-items:center;gap:5px}
@@ -163,6 +164,9 @@
     .controls.open{display:flex}
     .controls .seg{width:100%;min-width:0}
     .controls .seg button{flex:1;min-width:0;white-space:normal;line-height:1.2;text-align:center;min-height:38px;padding:8px 6px}
+    /* past three catalogues the labels overlap at phone width: wrap, three a row ("Shortfilmdepot" needs ~105px) */
+    .controls #source{flex-wrap:wrap}
+    .controls #source button{flex:1 1 30%}
     .controls .ctl,.controls select.ctl{width:100%;max-width:none;min-width:0;min-height:38px}
     .controls .chk{width:100%;min-height:38px}
     .controls .rangeopts{width:100%}
@@ -186,6 +190,7 @@
         <button data-s="festhome" class="on" aria-pressed="true">Festhome</button>
         <button data-s="ff" aria-pressed="false">FilmFreeway</button>
         <button data-s="sfd" aria-pressed="false">Shortfilmdepot</button>
+        <button data-s="fa" aria-pressed="false">Festagent</button>
       </div>
       <input id="q" class="ctl" placeholder="search name…" autocomplete="off"/>
       <select id="country" class="ctl"></select>
@@ -239,6 +244,7 @@
       <div class="k"><span class="ring fh"></span> Festhome</div>
       <div class="k"><span class="ring ff"></span> FilmFreeway</div>
       <div class="k"><span class="ring sfd"></span> Shortfilmdepot</div>
+      <div class="k"><span class="ring fa"></span> Festagent</div>
       <div class="k"><span class="ring aa"></span> Academy Award Qualifying</div>
     </div>
   </div>
@@ -253,6 +259,7 @@ const SOURCES = {
   festhome: { label:'Festhome',       file:'data.json',     ring:'rgba(255,255,255,.55)', data:[], loaded:false },
   ff:       { label:'FilmFreeway',    file:'data-ff.json',  ring:'#5ac8fa',               data:[], loaded:false },
   sfd:      { label:'Shortfilmdepot', file:'data-sfd.json', ring:'#c89bf5',               data:[], loaded:false },
+  fa:       { label:'Festagent',      file:'data-fa.json',  ring:'#ffb454',               data:[], loaded:false },
 };
 const SRC_KEYS = Object.keys(SOURCES);
 const DEFAULT_SRC = 'festhome';
@@ -484,9 +491,34 @@ function popupSFD(f){
     <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Shortfilmdepot ↗</a></div>`;
 }
 
+// Festagent popup — list-page data: event dates, deadline, city, years running.
+// Festagent permits reuse only with a link back, so the source link is not optional.
+function popupFA(f){
+  const ev = f.start ? fmt(f.start)+(f.end&&f.end!==f.start?' – '+fmt(f.end):'') : '— not listed';
+  let dtxt='';
+  if(f.start){
+    const ds=Math.round((new Date(f.start+'T00:00:00')-TODAY)/DAY);
+    const ended=new Date((f.end||f.start)+'T00:00:00')<TODAY;
+    dtxt = ds>0 ? `in ${ds} days` : (ended ? `${-ds} days ago` : 'running now');
+  }
+  // open with no date = Festagent's "2100" placeholder for a call with no cutoff
+  const dl = f.deadline ? fmt(f.deadline) : (f.status==='Open' ? 'rolling' : '—');
+  const st = f.status ? `<span class="ff-status ${esc(f.status.toLowerCase())}">${esc(f.status)}</span>` : '—';
+  const prec = f.prec==='country' ? `<div class="tag">approx · country-level</div>`:'';
+  return `<div class="pop"><b class="nm">${esc(f.name)}</b>
+    <div class="meta">
+      <i>Festival</i><s>${ev}${dtxt?` · ${dtxt}`:''}</s>
+      <i>Deadline</i><s>${dl}</s>
+      <i>Place</i><s>${esc([f.location,f.country].filter(Boolean).join(', ')||'—')}</s>
+      ${f.years?`<i>Running</i><s>${f.years} years</s>`:''}
+      <i>Entry</i><s>${st}${f.free?' · free':''}</s>
+    </div>${prec}
+    <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Festagent ↗</a></div>`;
+}
+
 // which popup a marker gets, by the source that produced it
 function popupFor(f){
-  return f.src==='ff' ? popupFF(f) : f.src==='sfd' ? popupSFD(f) : popup(f);
+  return f.src==='ff' ? popupFF(f) : f.src==='sfd' ? popupSFD(f) : f.src==='fa' ? popupFA(f) : popup(f);
 }
 
 // single source of truth for "is this festival in the current view"
