@@ -348,3 +348,118 @@ export function parseFARows(pages) {
   return out;
 }
 
+// Movibeta is a Laravel + Inertia.js app: /festivals?page=N is an HTML shell whose
+// data-page attribute holds the page's full props as HTML-escaped JSON, 30 festivals
+// a page (~25 pages). No API key, no cookie.
+//
+// Raw rows also carry fields that must never be stored (email_paypal, merchantId,
+// webhook_token, user_id…). parseMBRows reads only the fields named below, and the
+// committed fixture holds only those.
+
+// data-page JSON from one list page -> { rows, states, lastPage }
+export function parseMBPage(html) {
+  const m = String(html).match(/data-page="([^"]*)"/);
+  if (!m) throw new Error('movibeta: no data-page attribute — not an Inertia page any more?');
+  const { props } = JSON.parse(decodeEntities(m[1]));
+  const pg = props && props.paginator;
+  if (!pg || !Array.isArray(pg.data)) throw new Error('movibeta: data-page has no paginator.data');
+  return {
+    rows: pg.data,
+    // the open/closed state lives only in the parallel `projects` list, keyed by id
+    states: Object.fromEntries((props.projects || []).map((p) => [p.id, p.estado])),
+    lastPage: Number(pg.last_page) || 1,
+  };
+}
+
+// paisOrigen mixes English and Spanish names for the same country
+const MB_COUNTRY_FIX = {
+  'España': 'Spain', 'México': 'Mexico', 'Italia': 'Italy', 'Brasil': 'Brazil',
+  'Panamá': 'Panama', 'Perú': 'Peru', 'Alemania': 'Germany', 'Marruecos': 'Morocco',
+  'Turquía': 'Turkey', 'Reino Unido': 'United Kingdom',
+  'Russian Federation': 'Russia', // the spelling most rows in the other sources use
+};
+
+// Dates are stored as UTC instants of a LOCAL midnight or 23:59, in the festival's
+// own timezone, which isn't stored: 22:00Z is midnight in Madrid, 03:00Z midnight in
+// Buenos Aires, 02:59Z is 23:59 the day before in Buenos Aires. Neither slicing the
+// UTC string nor converting to Madrid gets all of them right. So: find the offset in
+// Movibeta's markets (UTC-6 Americas … UTC+2 Madrid summer) that makes the instant a
+// round 00:00 or 23:59, and take that local date. Anything else ("19:00Z", or
+// "21:00Z" = 23:00 in Madrid) is read as CET. The window stops at +2 on purpose:
+// the few Russian festivals are stored in Madrid time too, and +3 would turn
+// Spain's 23:00 deadlines into Moscow midnight, a day late.
+function mbDay(v) {
+  const t = Date.parse(v);
+  if (!v || Number.isNaN(t)) return null;
+  for (let h = -6; h <= 2; h++) {
+    const local = new Date(t + h * 3600e3).toISOString();
+    const hm = local.slice(11, 16);
+    if (hm === '00:00' || hm === '23:59') return local.slice(0, 10);
+  }
+  return new Date(t + 3600e3).toISOString().slice(0, 10);
+}
+
+// estado from the projects list. "soon" = submissions not open yet.
+const MB_STATUS = {
+  'project-state-open': 'Open',
+  'project-state-last-days': 'Open',
+  'project-state-soon': 'Soon',
+  'project-state-closed': 'Closed',
+  'project-state-closed-projection': 'Closed',
+};
+
+// rows: paginator.data from every page, in page order
+// states: id -> estado, merged from every page's projects list
+export function parseMBRows(rows, states = {}) {
+  const out = [];
+  const seen = new Set();
+  for (const f of rows || []) {
+    // the list is deadline-sorted and shifts between page fetches, so ids repeat
+    if (f.id == null || seen.has(f.id)) continue;
+    seen.add(f.id);
+
+    const deadline = mbDay(f.fechaFinSubida);
+    // fechaCelebracion is the festival date, but the form defaults it to the
+    // deadline: 257 of 741 rows are exactly equal, 145 more land within a day of it.
+    // A festival held on or before its own submission deadline is that default, not
+    // a date, so it's treated as unknown.
+    const cel = mbDay(f.fechaCelebracion);
+    const start = cel && (!deadline || cel > deadline) ? cel : null;
+    // `pais` is NOT the location — it's the list of countries eligible to submit
+    // ("Argentina__Bolivia__…"). paisOrigen is where the festival is.
+    const rawCountry = String(f.paisOrigen || '').trim();
+    const country = MB_COUNTRY_FIX[rawCountry] || rawCountry;
+    // deactivated festivals are left out of the projects list, so they have no estado
+    const status = MB_STATUS[states[f.id]] || (f.active === false ? 'Closed' : null);
+    // fee, fee1..fee3 are price tiers, each with its own feeNDesde start date. An
+    // unused tier is stored as 0 with no start date — counting it would make a paid
+    // festival look free. No usable tier at all is how free festivals are stored.
+    const tiers = [[f.fee, f.feeDesde], [f.fee1, f.fee1Desde], [f.fee2, f.fee2Desde], [f.fee3, f.fee3Desde]]
+      .filter(([v, from]) => from || Number(v) > 0).map(([v]) => Number(v)).filter(Number.isFinite);
+    const fees = tiers.length ? tiers : [0];
+
+    out.push({
+      id: 'mb:' + f.id,
+      src: 'mb',
+      name: decodeEntities(f.nombre || '').replace(/\s+/g, ' ').trim(),
+      country,
+      location: null, // Movibeta has no city field
+      start,
+      end: null, // fechaFinProyeccion is the end of online screening, not the festival
+      deadline,
+      opens: mbDay(f.fechaInicio),
+      status,
+      feeMin: fees.length ? Math.min(...fees) : null,
+      feeMax: fees.length ? Math.max(...fees) : null,
+      qualifying: !!f.goyaOscar, // Goya / Oscar qualifying
+      url: 'https://www.movibeta.com/festivals/' + f.id,
+      slug: String(f.id),
+      inactive: false,
+      warn: [],
+      hasDates: !!start,
+      // no city: geocode() places it on the country, flagged prec 'country'
+      addr: '', // transient — stripped before write
+    });
+  }
+  return out;
+}

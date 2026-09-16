@@ -3,11 +3,12 @@
 //   fixtures/ff-sample.csv  -> fixtures/ff-expected.json   (FilmFreeway parseFFRows)
 //   fixtures/sfd-sample.json-> fixtures/sfd-expected.json  (Shortfilmdepot parseSFDRows)
 //   fixtures/fa-sample.html -> fixtures/fa-expected.json   (Festagent parseFARows)
+//   fixtures/mb-sample.json -> fixtures/mb-expected.json   (Movibeta parseMBRows)
 // Guards parse + CSV logic against regressions. Run: npm run test:ingest
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseCsv, parseRows, parseFFRows, parseSFDRows, parseFARows } from './parse.mjs';
+import { parseCsv, parseRows, parseFFRows, parseSFDRows, parseFARows, parseMBRows } from './parse.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const read = (p) => fs.readFileSync(path.join(HERE, p), 'utf8');
@@ -47,5 +48,14 @@ check('shortfilmdepot', parseSFDRows(sfd.festivals, sfdCountries), JSON.parse(re
 // no-data deadline columns, a Cyrillic city, a multi-city list, a non-place city,
 // a missing city, a "(Region)" qualifier, Macedonia, HTML entities, a repeated row.
 check('festagent', parseFARows(read('fixtures/fa-sample.html')), JSON.parse(read('fixtures/fa-expected.json')));
+
+// Movibeta ships as data-page JSON. The sample holds ONLY the fields the parser reads
+// (raw rows also carry payment and webhook fields). Cases covered: Madrid midnight
+// and 23:59, an Americas 23:59 (02:59Z), a mid-day time, a 23:00 Madrid deadline
+// that must not read as Moscow midnight, festival dates defaulted to the deadline,
+// unused price tiers, Spanish country names, the eligibility list in `pais`, missing
+// countries, a "soon" state, a deactivated festival with no state, a repeated id.
+const mb = JSON.parse(read('fixtures/mb-sample.json'));
+check('movibeta', parseMBRows(mb.rows, mb.states), JSON.parse(read('fixtures/mb-expected.json')));
 
 process.exit(failed ? 1 : 0);

@@ -16,7 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseRows, parseFFRows, parseSFDRows, parseFARows, parseCsv } from './parse.mjs';
+import { parseRows, parseFFRows, parseSFDRows, parseFARows, parseMBPage, parseMBRows, parseCsv } from './parse.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
@@ -26,6 +26,7 @@ const META_PATH = path.join(ROOT, 'public/fest-map/meta.json');
 const OUT_FF_PATH = path.join(ROOT, 'public/fest-map/data-ff.json');
 const OUT_SFD_PATH = path.join(ROOT, 'public/fest-map/data-sfd.json');
 const OUT_FA_PATH = path.join(ROOT, 'public/fest-map/data-fa.json');
+const OUT_MB_PATH = path.join(ROOT, 'public/fest-map/data-mb.json');
 const FF_DATES_PATH = path.join(HERE, 'filmfreeway-dates.json'); // browser-scraped, committed
 
 const SHEET_ID = process.env.SHEET_ID || '1Ie60CKn3zlt5MFB43nt5GM6h6gbAO-p1wDvaTmB27xk';
@@ -45,6 +46,9 @@ const SFD_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'e
   'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
 const FA_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
   'deadline', 'opens', 'status', 'years', 'free', 'website', 'url', 'slug',
+  'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
+const MB_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
+  'deadline', 'opens', 'status', 'feeMin', 'feeMax', 'qualifying', 'url', 'slug',
   'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
 
 // Shortfilmdepot's public API. No key, no cookie: the site's own front end calls
@@ -257,17 +261,59 @@ async function buildFestagent() {
   return out.length;
 }
 
+// --- source 5: Movibeta (Inertia.js data-page JSON) ---
+// /festivals?page=N embeds its props as JSON (30 rows a page); every page reports
+// last_page. Raw rows carry payment and webhook fields: they stay in this function's
+// memory and only parseMBRows' whitelisted fields are written.
+const MB_BASE = process.env.MB_BASE || 'https://www.movibeta.com';
+const MB_MAX_PAGES = 200; // runaway guard if last_page ever misreports
+
+async function buildMovibeta() {
+  const rows = [];
+  const states = {};
+  let last = 1;
+  for (let p = 1; p <= last && p <= MB_MAX_PAGES; p++) {
+    const r = await fetch(`${MB_BASE}/festivals?page=${p}`, {
+      headers: { accept: 'text/html', 'user-agent': UA },
+    });
+    if (!r.ok) throw new Error(`movibeta page ${p} HTTP ${r.status}`);
+    const page = parseMBPage(await r.text());
+    rows.push(...page.rows);
+    Object.assign(states, page.states);
+    last = page.lastPage;
+    await sleep(1000); // one list page a second
+  }
+
+  const items = parseMBRows(rows, states);
+  if (!items.length) throw new Error(`movibeta: parsed 0 festivals from ${last} pages — markup changed?`);
+  console.log(`Movibeta: parsed ${items.length} festivals from ${last} pages`);
+
+  const out = [];
+  for (const f of items) {
+    const { addr, ...rec } = f;
+    const geo = await geocode(addr, rec.country);
+    rec.lat = geo.lat; rec.lon = geo.lon; rec.prec = geo.prec;
+    out.push(Object.fromEntries(MB_FIELD_ORDER.map((k) => [k, rec[k]])));
+  }
+  writeArray(OUT_MB_PATH, out);
+  const withDates = out.filter((r) => r.hasDates).length;
+  const miss = out.filter((r) => r.lat == null).length;
+  console.log(`  wrote ${out.length} -> ${path.relative(ROOT, OUT_MB_PATH)} (with festival dates: ${withDates}, missing coords: ${miss})`);
+  return out.length;
+}
+
 async function main() {
   const fhCount = await buildFesthome();
   const ffCount = await buildFilmFreeway();
   const sfdCount = await buildShortfilmdepot();
   const faCount = await buildFestagent();
+  const mbCount = await buildMovibeta();
 
   fs.writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 0));
   // sidecar: when this data was generated, so the map can show "updated Nh ago"
   // and the refresh button can detect when a fresh build has landed. Not tracked
   // in git (changes every run) — it's regenerated + deployed on each ingest.
-  fs.writeFileSync(META_PATH, JSON.stringify({ generated: new Date().toISOString(), count: fhCount, countFF: ffCount, countSFD: sfdCount, countFA: faCount }) + '\n');
+  fs.writeFileSync(META_PATH, JSON.stringify({ generated: new Date().toISOString(), count: fhCount, countFF: ffCount, countSFD: sfdCount, countFA: faCount, countMB: mbCount }) + '\n');
   console.log(`done (geocode calls this run: ${geocodeCalls})`);
 }
 

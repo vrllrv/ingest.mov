@@ -87,6 +87,7 @@
   #srckey .ring.ff{border:1.5px solid #5ac8fa}
   #srckey .ring.sfd{border:1.5px solid #c89bf5}
   #srckey .ring.fa{border:1.5px solid #ffb454}
+  #srckey .ring.mb{border:1.5px solid #7ee787}
   #srckey .ring.aa{border:2px solid var(--accent)}
   /* range presets + centred custom input (input sits in the middle) */
   .rangeopts{display:flex;align-items:center;gap:5px}
@@ -191,6 +192,7 @@
         <button data-s="ff" aria-pressed="false">FilmFreeway</button>
         <button data-s="sfd" aria-pressed="false">Shortfilmdepot</button>
         <button data-s="fa" aria-pressed="false">Festagent</button>
+        <button data-s="mb" aria-pressed="false">Movibeta</button>
       </div>
       <input id="q" class="ctl" placeholder="search name…" autocomplete="off"/>
       <select id="country" class="ctl"></select>
@@ -245,6 +247,7 @@
       <div class="k"><span class="ring ff"></span> FilmFreeway</div>
       <div class="k"><span class="ring sfd"></span> Shortfilmdepot</div>
       <div class="k"><span class="ring fa"></span> Festagent</div>
+      <div class="k"><span class="ring mb"></span> Movibeta</div>
       <div class="k"><span class="ring aa"></span> Academy Award Qualifying</div>
     </div>
   </div>
@@ -260,6 +263,7 @@ const SOURCES = {
   ff:       { label:'FilmFreeway',    file:'data-ff.json',  ring:'#5ac8fa',               data:[], loaded:false },
   sfd:      { label:'Shortfilmdepot', file:'data-sfd.json', ring:'#c89bf5',               data:[], loaded:false },
   fa:       { label:'Festagent',      file:'data-fa.json',  ring:'#ffb454',               data:[], loaded:false },
+  mb:       { label:'Movibeta',       file:'data-mb.json',  ring:'#7ee787',               data:[], loaded:false },
 };
 const SRC_KEYS = Object.keys(SOURCES);
 const DEFAULT_SRC = 'festhome';
@@ -516,9 +520,37 @@ function popupFA(f){
     <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Festagent ↗</a></div>`;
 }
 
+// Movibeta popup — no city on this platform, so every pin sits on its country.
+// "Soon" festivals haven't opened submissions yet: show when they do.
+function popupMB(f){
+  const ev = f.start ? fmt(f.start) : '— not listed';
+  let dtxt='';
+  if(f.start){
+    const ds=Math.round((new Date(f.start+'T00:00:00')-TODAY)/DAY);
+    dtxt = ds>0 ? `in ${ds} days` : (ds<0 ? `${-ds} days ago` : 'today');
+  }
+  const money=v=>'€'+(Number(v)%1?Number(v).toFixed(2):Number(v));
+  const fee = f.feeMin==null ? '—'
+    : Number(f.feeMax)===0 ? 'free'
+    : f.feeMin===f.feeMax ? money(f.feeMin) : money(f.feeMin)+' – '+money(f.feeMax);
+  const st = f.status ? `<span class="ff-status ${esc(f.status.toLowerCase())}">${esc(f.status)}</span>` : '—';
+  const dl = f.deadline ? fmt(f.deadline) : '—';
+  const opens = f.status==='Soon' && f.opens ? `<i>Opens</i><s>${fmt(f.opens)}</s>` : '';
+  const prec = f.prec==='country' ? `<div class="tag">approx · country-level</div>`:'';
+  return `<div class="pop"><b class="nm">${esc(f.name)}</b>
+    <div class="meta">
+      <i>Festival</i><s>${ev}${dtxt?` · ${dtxt}`:''}</s>
+      ${opens}
+      <i>Deadline</i><s>${dl}</s>
+      <i>Place</i><s>${esc(f.country||'—')}</s>
+      <i>Entry</i><s>${st}${f.feeMin!=null?` · ${fee}`:''}</s>
+    </div>${f.qualifying?`<div class="badges"><span class="badge aa">Goya / Oscar qualifying</span></div>`:''}${prec}
+    <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Movibeta ↗</a></div>`;
+}
+
 // which popup a marker gets, by the source that produced it
 function popupFor(f){
-  return f.src==='ff' ? popupFF(f) : f.src==='sfd' ? popupSFD(f) : f.src==='fa' ? popupFA(f) : popup(f);
+  return f.src==='ff' ? popupFF(f) : f.src==='sfd' ? popupSFD(f) : f.src==='fa' ? popupFA(f) : f.src==='mb' ? popupMB(f) : popup(f);
 }
 
 // single source of truth for "is this festival in the current view"

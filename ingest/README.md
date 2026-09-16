@@ -21,7 +21,7 @@ read via its public CSV export.
 
 ## Sources
 
-The map carries four catalogues, each written to its own file and switched on or
+The map carries five catalogues, each written to its own file and switched on or
 off independently in the UI. **No source needs credentials.**
 
 | Source | Key | Where the data comes from | Output |
@@ -30,6 +30,7 @@ off independently in the UI. **No source needs credentials.**
 | FilmFreeway | `ff` | `FilmFreeway` sheet tab + browser-scraped `filmfreeway-dates.json` | `data-ff.json` |
 | Shortfilmdepot | `sfd` | the site's own public JSON API | `data-sfd.json` |
 | Festagent | `fa` | server-rendered festival list pages | `data-fa.json` |
+| Movibeta | `mb` | `data-page` JSON embedded in its list pages | `data-mb.json` |
 
 ### Shortfilmdepot
 
@@ -88,6 +89,46 @@ Things that are easy to get wrong:
 
 Override the host with `FA_BASE` if it moves.
 
+### Movibeta
+
+Movibeta is a Laravel + Inertia.js app. `movibeta.com/festivals?page=N` is an HTML
+shell whose `data-page` attribute holds the page's props as HTML-escaped JSON: 30
+festivals in `props.paginator.data` (~25 pages, ~740 festivals), plus
+`paginator.last_page`. No key, no cookie. One page a second.
+
+**Raw rows carry fields that must never be stored**: `email_paypal`, `merchantId`,
+`webhook_token`, `user_id` and others. They stay in `buildMovibeta()`'s memory;
+`parseMBRows()` reads a fixed set of fields, and `fixtures/mb-sample.json` holds
+only those. Keep it that way when refreshing the fixture.
+
+Things that are easy to get wrong:
+
+- **`pais` is not the location.** It's the list of countries *eligible to submit*
+  (`"Argentina__Bolivia__…"`). The festival's own country is `paisOrigen`, which mixes
+  English and Spanish (`España`, `México`, `Reino Unido`…); `MB_COUNTRY_FIX` folds them.
+- **There is no city field**, so every Movibeta pin sits on its country
+  (`prec: 'country'`, flagged in the popup). ~22 rows have no country at all and
+  don't appear on the map.
+- **Dates are local midnights / 23:59s stored as UTC, in an unstored timezone.**
+  `22:00Z` is midnight in Madrid, `03:00Z` midnight in Buenos Aires, `02:59Z` is 23:59
+  the day before in Buenos Aires. Slicing the string or converting to Madrid both
+  get some wrong. `mbDay()` picks the offset between UTC−6 and UTC+2 that makes the
+  instant a round 00:00 or 23:59, and reads anything else as CET. The window stops
+  at +2 on purpose: `21:00Z` deadlines are 23:00 in Madrid, not Moscow midnight.
+- **`fechaCelebracion` (festival date) defaults to the deadline.** 257 of 741 rows
+  are exactly equal and 145 more land within a day. A festival date on or before
+  its own deadline is treated as unknown.
+- **`fechaFinProyeccion` is not the festival's end** (it's the end of online
+  screening, often before the festival), so `end` stays empty.
+- **Unused price tiers are stored as `0`.** A tier counts only with a start date
+  (`feeNDesde`) or a non-zero price; no counting tier means free.
+- **Open/closed state isn't in the row**: it's `estado` in the parallel
+  `props.projects` list, joined by id. Deactivated festivals are missing from that
+  list and are marked closed.
+- The list shifts between page fetches, so ids repeat and are de-duplicated.
+
+Override the host with `MB_BASE` if it moves.
+
 ## Files
 
 | File | Purpose |
@@ -124,7 +165,7 @@ daily 06:00 UTC run.
 ## Run locally
 
 ```bash
-npm run ingest        # refresh all four sources -> public/fest-map/data*.json
+npm run ingest        # refresh all five sources -> public/fest-map/data*.json
 npx wrangler deploy   # push live
 npm run test:ingest   # deterministic parser regression test
 ```
