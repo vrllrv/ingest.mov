@@ -1,0 +1,22 @@
+{
+  "_note": "Is an account linked from a festival's homepage the festival's own? Real cases from the 2026-09-17 run: the festival as listed, and the account its homepage linked.",
+  "cases": [
+    { "festival": { "name": "Chicago International Film Festival", "website": "http://www.chicagofilmfestival.com/", "emails": [] }, "account": "https://instagram.com/chifilmfest" },
+    { "festival": { "name": "Edinburgh Mountain Film Festival", "website": "http://www.edinburghmountainff.com/", "emails": [] }, "account": "https://instagram.com/the_emff" },
+    { "festival": { "name": "St. John's International Women's Film Festival", "website": "http://www.womensfilmfestival.com/", "emails": [] }, "account": "https://instagram.com/sjiwff" },
+    { "festival": { "name": "Hill Country Film Festival", "website": "http://www.hillcountryff.com/", "emails": [] }, "account": "https://instagram.com/hc_film_fest" },
+    { "festival": { "name": "K3", "website": "http://www.k3festival.com/", "emails": ["info@k3festival.com"] }, "account": "https://instagram.com/real_k3filmfestival" },
+    { "festival": { "name": "Festival International du Court Métrage de Clermont-Ferrand", "website": "https://www.lecourt-clermont.org/en/", "emails": [] }, "account": "https://instagram.com/lecourtclermont" },
+    { "festival": { "name": "Big Sky Documentary Film Festival", "website": "http://www.bigskyfilmfest.org/", "emails": [] }, "account": "https://facebook.com/pages/Big-Sky-Documentary-Film-Fest/118218721574648" },
+    { "festival": { "name": "Golden Aphrodite", "website": "https://cyprusfilmfestival.org/", "emails": [] }, "account": "https://facebook.com/cyprusfilmfest" },
+    { "festival": { "name": "Piriápolis de Película", "website": "https://www.piriapolisdepelicula.com.uy/", "emails": [] }, "account": "https://facebook.com/pages/Festival-Piriápolis-de-Pel%C3%ADcula/377507672367185" },
+    { "festival": { "name": "Gathering", "website": "https://festvstrecha.com/", "emails": [] }, "account": "https://instagram.com/vavada.inst" },
+    { "festival": { "name": "The Indie Gathering", "website": "http://theindiegathering.com/", "emails": [] }, "account": "https://instagram.com/teepublic" },
+    { "festival": { "name": "St. Louis International Film Festival", "website": "http://www.cinemastlouis.org/", "emails": [] }, "account": "https://instagram.com/hipointetheatre" },
+    { "festival": { "name": "SILAFEST", "website": "http://www.silafest.com/", "emails": [] }, "account": "https://instagram.com/silkfest24" },
+    { "festival": { "name": "Next Generation", "website": "http://next-filmfest.be/", "emails": [] }, "account": "https://instagram.com/brusselsshort" },
+    { "festival": { "name": "Milwaukee Short Film Festival", "website": "http://milwaukeeindependentfilmsociety.org/", "emails": ["milwaukeeshortfilmfestival@gmail.com"] }, "account": "https://facebook.com/hisonni.johnson" },
+    { "festival": { "name": "Mecal Pro Barcelona International Short and Animation Film Festival", "website": "http://www.mecalbcn.org/", "emails": [] }, "account": "https://facebook.com/profile.php?id=100064746878768" },
+    { "festival": { "name": "Adelaide Film Festival", "website": "http://www.adelaidefilmfestival.org/", "emails": [] }, "account": "https://instagram.com/adlfilmfest" }
+  ]
+}

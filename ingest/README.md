@@ -129,6 +129,65 @@ Things that are easy to get wrong:
 
 Override the host with `MB_BASE` if it moves.
 
+## Contacts (email, website, Instagram, Facebook)
+
+Festhome's sheet already carries contacts. For Shortfilmdepot, Festagent and
+Movibeta, `contacts.mjs` collects them into `contacts.json`, and the ingest merges
+that file into `data-{sfd,fa,mb}.json`. **The ingest never scrapes contacts**, so a
+deploy stays fast. Accuracy over coverage: every value is normalised, and anything
+ambiguous is dropped rather than guessed.
+
+```bash
+npm run contacts                         # everything never fetched or older than 180 days (~45 min for all)
+npm run contacts -- --only-new           # only festivals not in contacts.json yet
+npm run contacts -- --budget 150         # at most 150 platform requests (the weekly CI run)
+npm run contacts -- --sources fa --no-websites
+```
+
+It paces itself (one request a second per platform, the three in parallel; homepages
+a few hosts at a time, `robots.txt` respected) and saves progress as it goes: stop
+it any time and re-run to resume. It reads the catalogue from `data-*.json`, so run
+the ingest first; it patches those files' contact fields when done.
+
+Where each value comes from, in priority order, recorded per field in `via`:
+
+1. **platform**, the catalogue's own page:
+   - Shortfilmdepot `GET /festivals/{Id}/fiche/en`: `Email`, then `EmailContact`, `SiteWeb`, `UrlInstagram`, `UrlFacebook`.
+   - Festagent's detail page, **only** its `a.website`, `div.contacts`, `p.festival-contact-emails` and `p.festival-social`.
+   - Movibeta: no contact fields; addresses and links organisers wrote into the description.
+2. **website**: the festival's homepage, for festivals still missing Instagram or email.
+3. **match:<id>** (Movibeta only): the same festival in Festhome, Shortfilmdepot or Festagent.
+
+Things that are easy to get wrong:
+
+- **Platform addresses sit next to festival ones.** Shortfilmdepot fills an empty
+  `EmailContact` with `help@shortfilmdepot.com`; every Festagent page has
+  `hello@festagent.com` in its footer. Platform domains are never stored.
+- **Festagent pages hold personal emails** in "Jury and Organizers". Only the contact
+  sections are read.
+- **Movibeta's project has `email_paypal`**: a payment account, never a contact. The
+  parser only ever receives `descripcion` and `textoPortada`. A description URL counts as
+  the website only when an email on the same (non-freemail) domain vouches for it, or
+  the text calls it the website.
+- **Messy URLs**: `www.x.com`, `https://http://x.com/`, zero-width spaces before
+  emails. `normUrl`/`normEmail` handle them.
+- **Homepages link accounts that aren't theirs.** Wix templates link
+  `instagram.com/wix`; pages link the organiser, the venue, a sponsor or a merch shop;
+  expired domains serve spam ("Gathering" → a casino account). Site-builder handles
+  are blocklisted, a profile counts only when exactly one is linked, and
+  `accountFits()` keeps it only if its name visibly belongs to the festival (a
+  distinctive word of the name, domain or email; or the name's initials or a name word
+  next to a film word: `the_emff`, `chifilmfest`). The rest move to `site.rejected`.
+  Every run re-vets stored layers under the current rules, with no refetch. Some real
+  abbreviations are lost (`adlfilmfest` for Adelaide): dropped, not guessed.
+- **Old Facebook URL forms**: `pg/<name>/about` is the page `<name>`; `pages/…`,
+  `people/…`, `groups/…` and `p/…` keep their path; `profile.php?id=` keeps the id.
+- **Borrowed values are re-normalised.** Festhome's sheet has corrupted handles
+  (`instagram.com/noxfilfestival-viewer-location`) that must not spread.
+- **Name matches are exact**: the normalised name (edition markers like `[EDICIÓN 2026]`,
+  `10º`, `XVIII` dropped) plus the same country. A name one catalogue uses for two
+  festivals never matches.
+
 ## Files
 
 | File | Purpose |
@@ -136,6 +195,9 @@ Override the host with `MB_BASE` if it moves.
 | `parse.mjs` | Pure CSV + row + API parsers (no I/O). |
 | `ingest.mjs` | Fetch each source + geocode + write the `data*.json` files. |
 | `geocache.json` | `Full Address → {lat,lon,prec}` cache. **Committed** so coords are reused; a normal run does zero geocoding. |
+| `contacts-parse.mjs` | Pure contact parsers, normalisers and name matching (no I/O). |
+| `contacts.mjs` | Fetch contacts for Shortfilmdepot / Festagent / Movibeta → `contacts.json`. |
+| `contacts.json` | Contacts per festival id, with per-field provenance. **Committed**; merged by the ingest. |
 | `test.mjs` + `fixtures/` | Deterministic parser regression test against a committed sample (`npm run test:ingest`). |
 
 ## One-time setup
@@ -166,6 +228,7 @@ daily 06:00 UTC run.
 
 ```bash
 npm run ingest        # refresh all five sources -> public/fest-map/data*.json
+npm run contacts      # (slow) contacts for sfd/fa/mb -> contacts.json + data*.json
 npx wrangler deploy   # push live
 npm run test:ingest   # deterministic parser regression test
 ```

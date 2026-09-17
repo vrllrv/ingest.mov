@@ -237,7 +237,7 @@ export function parseSFDRows(list, countryById = {}) {
 // detail pages. Reuse condition from their footer: "You may use information from
 // this website only if a link to the source is provided" — every popup links back.
 
-const decodeEntities = (s) => String(s)
+export const decodeEntities = (s) => String(s)
   .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
   .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
   .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
@@ -357,10 +357,15 @@ export function parseFARows(pages) {
 // committed fixture holds only those.
 
 // data-page JSON from one list page -> { rows, states, lastPage }
-export function parseMBPage(html) {
+// any Movibeta page (list or festival detail) -> its Inertia props
+export function readInertiaProps(html) {
   const m = String(html).match(/data-page="([^"]*)"/);
   if (!m) throw new Error('movibeta: no data-page attribute — not an Inertia page any more?');
-  const { props } = JSON.parse(decodeEntities(m[1]));
+  return JSON.parse(decodeEntities(m[1])).props || {};
+}
+
+export function parseMBPage(html) {
+  const props = readInertiaProps(html);
   const pg = props && props.paginator;
   if (!pg || !Array.isArray(pg.data)) throw new Error('movibeta: data-page has no paginator.data');
   return {

@@ -10,3 +10,6 @@ node_modules/
 
 # Generated each ingest (timestamp changes every run); deployed, not committed
 public/fest-map/meta.json
+
+# contacts.mjs writes the cache via a temp file; only left behind if a write is interrupted
+ingest/contacts.json.tmp

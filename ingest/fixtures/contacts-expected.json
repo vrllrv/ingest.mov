@@ -1,0 +1,402 @@
+{
+  "sfd": [
+    [
+      "Clermont_Ferrand_ISFF",
+      {
+        "email": "info@lecourt-clermont.org",
+        "emails": [
+          "info@lecourt-clermont.org",
+          "submissions@lecourt-clermont.org"
+        ],
+        "website": "https://www.lecourt-clermont.org/en/",
+        "instagram": "https://instagram.com/lecourtclermont",
+        "facebook": "https://facebook.com/LeCourtClermont"
+      }
+    ],
+    [
+      "medfest-egypt-film-festival",
+      {
+        "email": "programming@medfestegypt.org",
+        "emails": [
+          "programming@medfestegypt.org"
+        ],
+        "website": "https://www.medfestegypt.com/",
+        "instagram": null,
+        "facebook": null
+      }
+    ],
+    [
+      "pinerolofilmfestival",
+      {
+        "email": "pinerolofilmfest@gmail.com",
+        "emails": [
+          "pinerolofilmfest@gmail.com"
+        ],
+        "website": "http://pinerolofilmfestival.it/",
+        "instagram": "https://instagram.com/pinerolofilmfest",
+        "facebook": "https://facebook.com/PIFF"
+      }
+    ],
+    [
+      "un-poing-c-est-court",
+      {
+        "email": "info@vaulxfilmcourt.com",
+        "emails": [
+          "info@vaulxfilmcourt.com"
+        ],
+        "website": "https://www.unpoingcestcourt.com/",
+        "instagram": "https://instagram.com/festivalfilmcourt",
+        "facebook": "https://facebook.com/FestivalFilmCourt"
+      }
+    ],
+    [
+      "bordeaux-short-film-festival",
+      {
+        "email": "inscriptioncinefestival@gmail.com",
+        "emails": [
+          "inscriptioncinefestival@gmail.com"
+        ],
+        "website": null,
+        "instagram": "https://instagram.com/festivalcourtbordeaux",
+        "facebook": null
+      }
+    ],
+    [
+      "medina-del-campo-film-festival",
+      {
+        "email": null,
+        "emails": [],
+        "website": "http://medinafilmfestival.com/",
+        "instagram": null,
+        "facebook": null
+      }
+    ],
+    [
+      "le-frisson-qui-vient_767250",
+      {
+        "email": "lefrissonquivient@outlook.com",
+        "emails": [
+          "lefrissonquivient@outlook.com"
+        ],
+        "website": "https://lefrissonquivient.com/",
+        "instagram": "https://instagram.com/lefrissonquivient",
+        "facebook": "https://facebook.com/profile.php?id=61588831857025"
+      }
+    ],
+    [
+      "cinejeunedelaisne",
+      {
+        "email": "gaelle@cinejeunedelaisne.fr",
+        "emails": [
+          "gaelle@cinejeunedelaisne.fr"
+        ],
+        "website": "https://cinejeunedelaisne.fr/",
+        "instagram": "https://instagram.com/cinejeunedelaisne02",
+        "facebook": "https://facebook.com/people/Cin%C3%A9-jeune-de-lAisne/100063531344364"
+      }
+    ]
+  ],
+  "fa": [
+    [
+      "kinenova",
+      {
+        "email": "contact@kinenova.com",
+        "emails": [
+          "contact@kinenova.com",
+          "info@kinenova.com",
+          "artcinemamk@gmail.com"
+        ],
+        "website": "http://www.kinenova.com/",
+        "instagram": null,
+        "facebook": "https://facebook.com/KineNova-Film-Festival-1749445508677662"
+      }
+    ],
+    [
+      "travelfilmfest",
+      {
+        "email": "travelfilmfest2017@gmail.com",
+        "emails": [
+          "travelfilmfest2017@gmail.com"
+        ],
+        "website": "http://travelfilmfest.com/",
+        "instagram": "https://instagram.com/travelingfilms",
+        "facebook": null
+      }
+    ],
+    [
+      "watersprite",
+      {
+        "email": "info@watersprite.org.uk",
+        "emails": [
+          "info@watersprite.org.uk",
+          "submissions@watersprite.org.uk"
+        ],
+        "website": "http://www.watersprite.org.uk/",
+        "instagram": null,
+        "facebook": "https://facebook.com/watersprite.film.festival"
+      }
+    ],
+    [
+      "bastau",
+      {
+        "email": "festivalbastau@gmail.com",
+        "emails": [
+          "festivalbastau@gmail.com"
+        ],
+        "website": "http://bastauiff.com/",
+        "instagram": null,
+        "facebook": "https://facebook.com/bastauiff"
+      }
+    ]
+  ],
+  "mb": [
+    [
+      "773",
+      {
+        "email": "callforentries@centroamerica.at",
+        "emails": [
+          "callforentries@centroamerica.at"
+        ],
+        "website": "https://centroamerica.at/",
+        "instagram": null,
+        "facebook": null
+      }
+    ],
+    [
+      "984",
+      {
+        "email": null,
+        "emails": [],
+        "website": "http://www.cinalfama.com/",
+        "instagram": null,
+        "facebook": null
+      }
+    ],
+    [
+      "1345",
+      {
+        "email": "info@citybluefilmsfestival.com",
+        "emails": [
+          "info@citybluefilmsfestival.com"
+        ],
+        "website": "http://www.citybluefilmsfestival.com/",
+        "instagram": "https://instagram.com/citybluefilmsfestival",
+        "facebook": null
+      }
+    ],
+    [
+      "1470",
+      {
+        "email": "info@accordiedisaccordi.it",
+        "emails": [
+          "info@accordiedisaccordi.it"
+        ],
+        "website": null,
+        "instagram": null,
+        "facebook": null
+      }
+    ],
+    [
+      "1965",
+      {
+        "email": null,
+        "emails": [],
+        "website": null,
+        "instagram": null,
+        "facebook": null
+      }
+    ]
+  ],
+  "site": [
+    [
+      "noxfilmfest",
+      {
+        "email": null,
+        "emails": [],
+        "instagram": null,
+        "facebook": "https://facebook.com/noxfilmfest"
+      }
+    ],
+    [
+      "clermont-ferrand",
+      {
+        "email": null,
+        "emails": [],
+        "instagram": "https://instagram.com/lecourtclermont",
+        "facebook": "https://facebook.com/lecourtclermont"
+      }
+    ],
+    [
+      "zagrebdox",
+      {
+        "email": "info@zagrebdox.net",
+        "emails": [
+          "info@zagrebdox.net"
+        ],
+        "instagram": "https://instagram.com/zagrebdox",
+        "facebook": "https://facebook.com/zagrebdoxfestival"
+      }
+    ],
+    [
+      "synthetic-two-handles",
+      {
+        "email": null,
+        "emails": [],
+        "instagram": null,
+        "facebook": null
+      }
+    ],
+    [
+      "synthetic-posts-only",
+      {
+        "email": null,
+        "emails": [],
+        "instagram": null,
+        "facebook": null
+      }
+    ]
+  ],
+  "match": [
+    [
+      "unique hit across '@' spacing",
+      {
+        "email": "accordiedisaccordi@gmail.com",
+        "website": "https://accordiedisaccordi.it/",
+        "instagram": null,
+        "facebook": "https://facebook.com/accordieDISACCORDIFestivaldelCinemaAllAperto",
+        "from": {
+          "email": "festhome:4760",
+          "website": "festhome:4760",
+          "facebook": "festhome:4760"
+        }
+      }
+    ],
+    [
+      "borrowed values are normalised: Festhome's corrupted instagram is dropped",
+      {
+        "email": "noxfilmfest@gmail.com",
+        "website": "http://www.noxfilmfest.com/",
+        "instagram": null,
+        "facebook": "https://facebook.com/noxfilmfest",
+        "from": {
+          "email": "festhome:3302",
+          "website": "festhome:3302",
+          "facebook": "festhome:3302"
+        }
+      }
+    ],
+    [
+      "edition markers ignored ([EDICIÓN 2026], IX vs X)",
+      {
+        "email": "info@premislolagaos.example",
+        "website": null,
+        "instagram": null,
+        "facebook": null,
+        "from": {
+          "email": "festhome:1"
+        }
+      }
+    ],
+    [
+      "ambiguous: one catalogue has two festivals with this name",
+      null
+    ],
+    [
+      "same name, different country",
+      null
+    ],
+    [
+      "similar but not exact name",
+      null
+    ],
+    [
+      "sfd outranks festhome per field",
+      {
+        "email": "sfd@priority.example",
+        "website": "https://festhome-listed.example/",
+        "instagram": "https://instagram.com/priorityfest",
+        "facebook": "https://facebook.com/priorityfest",
+        "from": {
+          "email": "sfd:priority-fest",
+          "website": "festhome:4",
+          "instagram": "festhome:4",
+          "facebook": "sfd:priority-fest"
+        }
+      }
+    ],
+    [
+      "no country: never matches",
+      null
+    ]
+  ],
+  "accounts": [
+    [
+      "Chicago International Film Festival -> https://instagram.com/chifilmfest",
+      true
+    ],
+    [
+      "Edinburgh Mountain Film Festival -> https://instagram.com/the_emff",
+      true
+    ],
+    [
+      "St. John's International Women's Film Festival -> https://instagram.com/sjiwff",
+      true
+    ],
+    [
+      "Hill Country Film Festival -> https://instagram.com/hc_film_fest",
+      true
+    ],
+    [
+      "K3 -> https://instagram.com/real_k3filmfestival",
+      true
+    ],
+    [
+      "Festival International du Court Métrage de Clermont-Ferrand -> https://instagram.com/lecourtclermont",
+      true
+    ],
+    [
+      "Big Sky Documentary Film Festival -> https://facebook.com/pages/Big-Sky-Documentary-Film-Fest/118218721574648",
+      true
+    ],
+    [
+      "Golden Aphrodite -> https://facebook.com/cyprusfilmfest",
+      true
+    ],
+    [
+      "Piriápolis de Película -> https://facebook.com/pages/Festival-Piriápolis-de-Pel%C3%ADcula/377507672367185",
+      true
+    ],
+    [
+      "Gathering -> https://instagram.com/vavada.inst",
+      false
+    ],
+    [
+      "The Indie Gathering -> https://instagram.com/teepublic",
+      false
+    ],
+    [
+      "St. Louis International Film Festival -> https://instagram.com/hipointetheatre",
+      false
+    ],
+    [
+      "SILAFEST -> https://instagram.com/silkfest24",
+      false
+    ],
+    [
+      "Next Generation -> https://instagram.com/brusselsshort",
+      false
+    ],
+    [
+      "Milwaukee Short Film Festival -> https://facebook.com/hisonni.johnson",
+      false
+    ],
+    [
+      "Mecal Pro Barcelona International Short and Animation Film Festival -> https://facebook.com/profile.php?id=100064746878768",
+      false
+    ],
+    [
+      "Adelaide Film Festival -> https://instagram.com/adlfilmfest",
+      false
+    ]
+  ]
+}

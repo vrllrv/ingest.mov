@@ -1,0 +1,33 @@
+{
+  "noxfilmfest": {
+    "urls": [
+      "https://www.noxfilmfest.com/"
+    ],
+    "html": "<a href=\"https://www.facebook.com/share/p/1EjNRYTUeP/\" target=\"_blank\" rel=\"noreferrer noopener\" class=\"wixui-rich-text__text\">\n<a data-testid=\"linkElement\" href=\"https://www.facebook.com/share/p/1EjNRYTUeP/\" target=\"_blank\" rel=\"noreferrer noopener\" class=\"apPOZK\">\n<a data-testid=\"linkElement\" href=\"https://www.facebook.com/noxfilmfest/\" target=\"_blank\" class=\"twXk19\" aria-label=\"Voluntarios NOX FILM FEST\">\n<a data-testid=\"linkElement\" href=\"http://instagram.com/wix\" target=\"_blank\" class=\"twXk19\" aria-label=\"White Instagram Icon\">"
+  },
+  "clermont-ferrand": {
+    "urls": [
+      "http://www.clermont-filmfest.com/",
+      "https://www.lecourt-clermont.org/"
+    ],
+    "html": "<a target=\"_blank\" href=\"https://www.instagram.com/lecourtclermont/\">\n<a target=\"_blank\" href=\"https://www.facebook.com/lecourtclermont\">"
+  },
+  "zagrebdox": {
+    "urls": [
+      "http://www.zagrebdox.net/"
+    ],
+    "html": "<a href=\"mailto:info@zagrebdox.net\">\n<a class=\"facebook-icon\" alt=\"facebook\" href=\"https://www.facebook.com/zagrebdoxfestival/\">\n<a class=\"instagram-icon\" alt=\"Instagram\" href=\"https://www.instagram.com/zagrebdox\">"
+  },
+  "synthetic-two-handles": {
+    "urls": [
+      "https://fest.example.org/"
+    ],
+    "html": "<a href=\"https://www.instagram.com/festofficial/\">IG</a>\n<a href=\"https://instagram.com/partnercinema\">Partner</a>\n<a href=\"mailto:press@gmail.com\">press</a>"
+  },
+  "synthetic-posts-only": {
+    "urls": [
+      "https://fest2.example.org/"
+    ],
+    "html": "<a href=\"https://www.instagram.com/p/C8xYz12/\">post</a>\n<a href=\"https://www.instagram.com/reel/C9abc/\">reel</a>\n<a href=\"https://www.facebook.com/sharer/sharer.php?u=x\">share</a>"
+  }
+}

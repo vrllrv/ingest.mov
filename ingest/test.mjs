@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseCsv, parseRows, parseFFRows, parseSFDRows, parseFARows, parseMBRows } from './parse.mjs';
+import { parseSFDFiche, parseFADetail, parseMBDescription, parseSiteSocials, buildMatchIndex, lookupMatch, accountFits } from './contacts-parse.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const read = (p) => fs.readFileSync(path.join(HERE, p), 'utf8');
@@ -57,5 +58,28 @@ check('festagent', parseFARows(read('fixtures/fa-sample.html')), JSON.parse(read
 // countries, a "soon" state, a deactivated festival with no state, a repeated id.
 const mb = JSON.parse(read('fixtures/mb-sample.json'));
 check('movibeta', parseMBRows(mb.rows, mb.states), JSON.parse(read('fixtures/mb-expected.json')));
+
+// Contacts (contacts-parse.mjs), all trimmed from real responses except the cases
+// marked synthetic. Covered: help@shortfilmdepot.com fallback, scheme-less and
+// "https://http://" URLs, profile.php, people/ and pg/ Facebook URLs; Festagent jury
+// emails, footer email and zero-width spaces; Movibeta PDF links resolved to the site root, a
+// labelled website, an unlabelled signup URL and "@" in a festival name; a Wix
+// template's own Instagram, a redirected domain, two handles, post/share links;
+// name matching across "@" spacing and edition markers, a corrupted borrowed handle,
+// ambiguity, country, priority.
+const cx = (name) => JSON.parse(read(`fixtures/${name}`));
+const contactsExpected = cx('contacts-expected.json');
+check('contacts: shortfilmdepot', cx('contacts-sfd.json').map((d) => [d.ShortName, parseSFDFiche(d)]), contactsExpected.sfd);
+check('contacts: festagent', Object.entries(cx('contacts-fa.json')).map(([k, h]) => [k, parseFADetail(h)]), contactsExpected.fa);
+check('contacts: movibeta', Object.entries(cx('contacts-mb.json')).map(([k, p]) => [k, parseMBDescription(p)]), contactsExpected.mb);
+check('contacts: homepages', Object.entries(cx('contacts-site.json')).map(([k, s]) => [k, parseSiteSocials(s.html, s.urls)]), contactsExpected.site);
+const matchFx = cx('contacts-match.json');
+const matchIndex = buildMatchIndex(matchFx.candidates);
+check('contacts: name match', matchFx.queries.map((q) => [q.case, lookupMatch(matchIndex, q.name, q.country)]), contactsExpected.match);
+// Homepage accounts: kept only when they visibly belong to the festival. Real cases:
+// abbreviations and domain names that fit; an expired domain's casino spam, a merch
+// shop, a venue, a different festival, a sister festival, a personal profile and an
+// unverifiable profile id that don't; and one real abbreviation knowingly lost.
+check('contacts: homepage accounts', cx('contacts-accounts.json').cases.map((c) => [`${c.festival.name} -> ${c.account}`, accountFits(c.account, c.festival)]), contactsExpected.accounts);
 
 process.exit(failed ? 1 : 0);

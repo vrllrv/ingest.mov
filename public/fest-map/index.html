@@ -407,6 +407,21 @@ function populateCountries(){
   if(cur && countries.includes(cur)) sel.value=cur;   // keep selection across source switches
 }
 
+// every catalogue's popup: the email (with a copy button) above the source link,
+// website / instagram / facebook below it
+function contactParts(f){
+  const contact = f.email
+    ? `<div class="contact"><a class="em" href="mailto:${esc(f.email)}">${esc(f.email)}</a>`
+      + `<button class="copyemail" data-email="${esc(f.email)}" title="copy email address">copy</button></div>`
+    : '';
+  const links=[];
+  if(f.website) links.push(`<a href="${esc(f.website)}" target="_blank" rel="noopener">website ↗</a>`);
+  if(f.instagram) links.push(`<a href="${esc(f.instagram)}" target="_blank" rel="noopener">instagram ↗</a>`);
+  if(f.facebook) links.push(`<a href="${esc(f.facebook)}" target="_blank" rel="noopener">facebook ↗</a>`);
+  const clinks = links.length ? `<div class="clinks">${links.join('')}</div>` : '';
+  return { contact, clinks };
+}
+
 function popup(f){
   const ev = f.start ? fmt(f.start)+(f.end&&f.end!==f.start?' – '+fmt(f.end):'') : '—';
   const dl = f.deadline ? fmt(f.deadline) : (f.opens?('opens '+f.opens.replace(/^Opens\s*/i,'')):'—');
@@ -418,15 +433,7 @@ function popup(f){
   }
   const warn = (f.warn&&f.warn.length)? `<div class="tag warn">⚠ ${f.warn.join(' · ')}</div>`:'';
   const prec = f.prec==='country' ? `<div class="tag">approx · country-level</div>`:'';
-  const contact = f.email
-    ? `<div class="contact"><a class="em" href="mailto:${esc(f.email)}">${esc(f.email)}</a>`
-      + `<button class="copyemail" data-email="${esc(f.email)}" title="copy email address">copy</button></div>`
-    : '';
-  const links=[];
-  if(f.website) links.push(`<a href="${esc(f.website)}" target="_blank" rel="noopener">website ↗</a>`);
-  if(f.instagram) links.push(`<a href="${esc(f.instagram)}" target="_blank" rel="noopener">instagram ↗</a>`);
-  if(f.facebook) links.push(`<a href="${esc(f.facebook)}" target="_blank" rel="noopener">facebook ↗</a>`);
-  const clinks = links.length ? `<div class="clinks">${links.join('')}</div>` : '';
+  const { contact, clinks } = contactParts(f);
   return `<div class="pop"><b class="nm">${f.name}</b>
     <div class="meta">
       <i>Festival</i><s>${ev}${dtxt?` · ${dtxt}`:''}</s>
@@ -478,6 +485,7 @@ function popupSFD(f){
   const st = f.status ? `<span class="ff-status ${esc(f.status.toLowerCase())}">${esc(f.status)}</span>` : '—';
   const dl = f.deadline ? fmt(f.deadline) : (f.opens ? 'opens '+fmt(f.opens) : '—');
   const prec = f.prec==='country' ? `<div class="tag">approx · country-level</div>`:'';
+  const { contact, clinks } = contactParts(f);
   return `<div class="pop"><b class="nm">${esc(f.name)}</b>
     <div class="meta">
       <i>Festival</i><s>${ev}${dtxt?` · ${dtxt}`:''}</s>
@@ -485,8 +493,8 @@ function popupSFD(f){
       <i>Place</i><s>${esc([f.location,f.country].filter(Boolean).join(', ')||'—')}</s>
       ${f.comps?`<i>Sections</i><s>${f.comps}</s>`:''}
       <i>Entry</i><s>${st}${f.feeMin!=null?` · ${fee}`:''}</s>
-    </div>${prec}
-    <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Shortfilmdepot ↗</a></div>`;
+    </div>${prec}${contact}
+    <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Shortfilmdepot ↗</a>${clinks}</div>`;
 }
 
 // Festagent popup — list-page data: event dates, deadline, city, years running.
@@ -503,6 +511,7 @@ function popupFA(f){
   const dl = f.deadline ? fmt(f.deadline) : (f.status==='Open' ? 'rolling' : '—');
   const st = f.status ? `<span class="ff-status ${esc(f.status.toLowerCase())}">${esc(f.status)}</span>` : '—';
   const prec = f.prec==='country' ? `<div class="tag">approx · country-level</div>`:'';
+  const { contact, clinks } = contactParts(f);
   return `<div class="pop"><b class="nm">${esc(f.name)}</b>
     <div class="meta">
       <i>Festival</i><s>${ev}${dtxt?` · ${dtxt}`:''}</s>
@@ -510,8 +519,8 @@ function popupFA(f){
       <i>Place</i><s>${esc([f.location,f.country].filter(Boolean).join(', ')||'—')}</s>
       ${f.years?`<i>Running</i><s>${f.years} years</s>`:''}
       <i>Entry</i><s>${st}${f.free?' · free':''}</s>
-    </div>${prec}
-    <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Festagent ↗</a></div>`;
+    </div>${prec}${contact}
+    <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Festagent ↗</a>${clinks}</div>`;
 }
 
 // Movibeta popup — no city on this platform, so every pin sits on its country.
@@ -531,6 +540,7 @@ function popupMB(f){
   const dl = f.deadline ? fmt(f.deadline) : '—';
   const opens = f.status==='Soon' && f.opens ? `<i>Opens</i><s>${fmt(f.opens)}</s>` : '';
   const prec = f.prec==='country' ? `<div class="tag">approx · country-level</div>`:'';
+  const { contact, clinks } = contactParts(f);
   return `<div class="pop"><b class="nm">${esc(f.name)}</b>
     <div class="meta">
       <i>Festival</i><s>${ev}${dtxt?` · ${dtxt}`:''}</s>
@@ -538,8 +548,8 @@ function popupMB(f){
       <i>Deadline</i><s>${dl}</s>
       <i>Place</i><s>${esc(f.country||'—')}</s>
       <i>Entry</i><s>${st}${f.feeMin!=null?` · ${fee}`:''}</s>
-    </div>${f.qualifying?`<div class="badges"><span class="badge aa">Goya / Oscar qualifying</span></div>`:''}${prec}
-    <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Movibeta ↗</a></div>`;
+    </div>${f.qualifying?`<div class="badges"><span class="badge aa">Goya / Oscar qualifying</span></div>`:''}${prec}${contact}
+    <a class="link" href="${esc(f.url)}" target="_blank" rel="noopener">open on Movibeta ↗</a>${clinks}</div>`;
 }
 
 // which popup a marker gets, by the source that produced it

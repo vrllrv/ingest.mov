@@ -17,10 +17,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseRows, parseFFRows, parseSFDRows, parseFARows, parseMBPage, parseMBRows, parseCsv } from './parse.mjs';
+import { applyContacts } from './contacts-parse.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 const CACHE_PATH = path.join(HERE, 'geocache.json');
+const CONTACTS_PATH = path.join(HERE, 'contacts.json'); // written by contacts.mjs; merged here, never fetched
 const OUT_PATH = path.join(ROOT, 'public/fest-map/data.json');
 const META_PATH = path.join(ROOT, 'public/fest-map/meta.json');
 const OUT_FF_PATH = path.join(ROOT, 'public/fest-map/data-ff.json');
@@ -42,13 +44,13 @@ const FF_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'en
   'deadline', 'opens', 'status', 'years', 'badges', 'url', 'slug',
   'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
 const SFD_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
-  'deadline', 'opens', 'status', 'comps', 'feeMin', 'feeMax', 'url', 'slug',
+  'deadline', 'opens', 'status', 'comps', 'feeMin', 'feeMax', 'email', 'website', 'instagram', 'facebook', 'url', 'slug',
   'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
 const FA_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
-  'deadline', 'opens', 'status', 'years', 'free', 'website', 'url', 'slug',
+  'deadline', 'opens', 'status', 'years', 'free', 'email', 'website', 'instagram', 'facebook', 'url', 'slug',
   'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
 const MB_FIELD_ORDER = ['id', 'src', 'name', 'country', 'location', 'start', 'end',
-  'deadline', 'opens', 'status', 'feeMin', 'feeMax', 'qualifying', 'url', 'slug',
+  'deadline', 'opens', 'status', 'feeMin', 'feeMax', 'qualifying', 'email', 'website', 'instagram', 'facebook', 'url', 'slug',
   'lat', 'lon', 'prec', 'inactive', 'warn', 'hasDates'];
 
 // Shortfilmdepot's public API. No key, no cookie: the site's own front end calls
@@ -87,6 +89,8 @@ async function fetchValues(url = CSV_URL) {
 // --- geocoding (Nominatim, cached) ---
 const cache = fs.existsSync(CACHE_PATH) ? JSON.parse(fs.readFileSync(CACHE_PATH, 'utf8')) : {};
 let geocodeCalls = 0;
+
+const contacts = fs.existsSync(CONTACTS_PATH) ? JSON.parse(fs.readFileSync(CONTACTS_PATH, 'utf8')) : {};
 
 async function nominatim(q) {
   const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q);
@@ -212,7 +216,8 @@ async function buildShortfilmdepot() {
     const { addr, ...rec } = f;
     const geo = await geocode(addr, rec.country);
     rec.lat = geo.lat; rec.lon = geo.lon; rec.prec = geo.prec;
-    out.push(Object.fromEntries(SFD_FIELD_ORDER.map((k) => [k, rec[k]])));
+    const withContacts = applyContacts(rec, contacts);
+    out.push(Object.fromEntries(SFD_FIELD_ORDER.map((k) => [k, withContacts[k]])));
   }
   writeArray(OUT_SFD_PATH, out);
   const withDeadline = out.filter((r) => r.deadline).length;
@@ -252,7 +257,8 @@ async function buildFestagent() {
     const { addr, ...rec } = f;
     const geo = await geocode(addr, rec.country);
     rec.lat = geo.lat; rec.lon = geo.lon; rec.prec = geo.prec;
-    out.push(Object.fromEntries(FA_FIELD_ORDER.map((k) => [k, rec[k]])));
+    const withContacts = applyContacts(rec, contacts);
+    out.push(Object.fromEntries(FA_FIELD_ORDER.map((k) => [k, withContacts[k]])));
   }
   writeArray(OUT_FA_PATH, out);
   const withDeadline = out.filter((r) => r.deadline).length;
@@ -293,7 +299,8 @@ async function buildMovibeta() {
     const { addr, ...rec } = f;
     const geo = await geocode(addr, rec.country);
     rec.lat = geo.lat; rec.lon = geo.lon; rec.prec = geo.prec;
-    out.push(Object.fromEntries(MB_FIELD_ORDER.map((k) => [k, rec[k]])));
+    const withContacts = applyContacts(rec, contacts);
+    out.push(Object.fromEntries(MB_FIELD_ORDER.map((k) => [k, withContacts[k]])));
   }
   writeArray(OUT_MB_PATH, out);
   const withDates = out.filter((r) => r.hasDates).length;

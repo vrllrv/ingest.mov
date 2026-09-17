@@ -31,6 +31,13 @@ jobs:
       - name: Ingest sheet
         run: npm run ingest
 
+      # Email / website / instagram for festivals not seen before, at a polite pace and
+      # capped so the job stays short. The full catalogue is scraped locally, not here.
+      # A failure must not block the data refresh, so it can't fail the job.
+      - name: Contacts for new festivals
+        run: npm run contacts -- --only-new --budget 150
+        continue-on-error: true
+
       # Push the regenerated asset live to Cloudflare
       - name: Deploy to Cloudflare
         env:
@@ -43,7 +50,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/fest-map/data.json public/fest-map/data-ff.json public/fest-map/data-sfd.json public/fest-map/data-fa.json public/fest-map/data-mb.json ingest/geocache.json
+          git add public/fest-map/data.json public/fest-map/data-ff.json public/fest-map/data-sfd.json public/fest-map/data-fa.json public/fest-map/data-mb.json ingest/geocache.json ingest/contacts.json
           if git diff --cached --quiet; then
             echo "No data changes."
           else

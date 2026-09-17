@@ -1,0 +1,127 @@
+{
+  "_note": "Name matching for Movibeta. The festhome:4760, festhome:9000 and festhome:3302 candidates are real Festhome records (2026-09-16), 3302 with its corrupted Instagram value; the rest are synthetic, to cover ambiguity and source priority.",
+  "candidates": [
+    {
+      "id": "festhome:4760",
+      "src": "festhome",
+      "name": "accordi@ DISACCORDI - International Short Film Festival",
+      "country": "Italy",
+      "email": "accordiedisaccordi@gmail.com",
+      "website": "https://accordiedisaccordi.it/",
+      "instagram": null,
+      "facebook": "https://facebook.com/accordieDISACCORDIFestivaldelCinemaAllAperto"
+    },
+    {
+      "id": "festhome:9000",
+      "src": "festhome",
+      "name": "Cinalfama Lisbon International Film Festival",
+      "country": "Portugal",
+      "email": "geral@cinalfama.com",
+      "website": "http://www.cinalfama.com",
+      "instagram": "https://instagram.com/cinalfama",
+      "facebook": "https://facebook.com/cinalfama"
+    },
+    {
+      "id": "festhome:3302",
+      "src": "festhome",
+      "name": "NOX FILM FEST",
+      "country": "Uruguay",
+      "email": "noxfilmfest@gmail.com",
+      "website": "http://www.noxfilmfest.com",
+      "instagram": "https://instagram.com/noxfilfestival-viewer-location",
+      "facebook": "https://facebook.com/noxfilmfest"
+    },
+    {
+      "id": "festhome:1",
+      "src": "festhome",
+      "name": "X Premis de l'Audiovisual Valencià | Premis Lola Gaos",
+      "country": "Spain",
+      "email": "info@premislolagaos.example",
+      "website": null,
+      "instagram": null,
+      "facebook": null
+    },
+    {
+      "id": "festhome:2",
+      "src": "festhome",
+      "name": "Short Film Festival",
+      "country": "Spain",
+      "email": "one@short.example",
+      "website": null,
+      "instagram": null,
+      "facebook": null
+    },
+    {
+      "id": "festhome:3",
+      "src": "festhome",
+      "name": "SHORT FILM FESTIVAL",
+      "country": "Spain",
+      "email": "two@short.example",
+      "website": null,
+      "instagram": null,
+      "facebook": null
+    },
+    {
+      "id": "festhome:4",
+      "src": "festhome",
+      "name": "Priority Fest",
+      "country": "France",
+      "email": "festhome@priority.example",
+      "website": "https://festhome-listed.example/",
+      "instagram": "https://instagram.com/priorityfest",
+      "facebook": null
+    },
+    {
+      "id": "sfd:priority-fest",
+      "src": "sfd",
+      "name": "Priority Fest",
+      "country": "France",
+      "email": "sfd@priority.example",
+      "website": null,
+      "instagram": null,
+      "facebook": "https://facebook.com/priorityfest"
+    }
+  ],
+  "queries": [
+    {
+      "case": "unique hit across '@' spacing",
+      "name": "accordi @ DISACCORDI - International Short Film Festival",
+      "country": "Italy"
+    },
+    {
+      "case": "borrowed values are normalised: Festhome's corrupted instagram is dropped",
+      "name": "Nox Film Fest",
+      "country": "Uruguay"
+    },
+    {
+      "case": "edition markers ignored ([EDICIÓN 2026], IX vs X)",
+      "name": "[EDICIÓN 2026] IX Premis de l´Audiovisual Valencià | Premis Lola Gaos",
+      "country": "Spain"
+    },
+    {
+      "case": "ambiguous: one catalogue has two festivals with this name",
+      "name": "Short Film Festival",
+      "country": "Spain"
+    },
+    {
+      "case": "same name, different country",
+      "name": "Cinalfama Lisbon International Film Festival",
+      "country": "Brazil"
+    },
+    {
+      "case": "similar but not exact name",
+      "name": "Cinalfama Film Observatory",
+      "country": "Portugal"
+    },
+    {
+      "case": "sfd outranks festhome per field",
+      "name": "Priority Fest",
+      "country": "France"
+    },
+    {
+      "case": "no country: never matches",
+      "name": "Priority Fest",
+      "country": ""
+    }
+  ]
+}
