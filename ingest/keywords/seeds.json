@@ -8,7 +8,10 @@
     "língua gestual portuguesa": "General sign-language searches (learning it), not film accessibility",
     "tradução em libras": "General Libras translation, not film accessibility",
     "kdm management": "KDM is also the KDE Linux login manager (2.4K/mo vs 320 for \"cinema kdm\")",
-    "screening copy": "Ambiguous outside film (document and print screening)"
+    "screening copy": "Ambiguous outside film (document and print screening)",
+    "closed caption": "The TV feature: in Brazil 1.9K of 2.9K/mo is \"closed caption o que é\", the rest is mostly turning it off on the TV",
+    "closed captions": "The TV feature, grouped with \"closed caption\" (what it is, turning it off); services are \"captioning services\"",
+    "audiodescrição": "TV viewers and learners: \"o que é\" 590, courses, turning it off on Globo/Samsung/LG; \"audiodescrição cinema\" is 10/mo"
   },
 
   "sets": {
@@ -38,7 +41,7 @@
       "kw": {
         "en": ["closed captions", "closed captioning services", "sdh subtitles", "subtitles for the deaf and hard of hearing", "captioning services", "film captioning", "open captions", "audio description", "audio description services", "audio description film", "audio description for film", "described video", "sign language interpretation video", "sign language film", "accessible film screening", "film accessibility", "accessible cinema", "accessibility film festival", "captions for film festival", "dcp closed captions", "cinema closed captions", "scc captions"],
         "es": ["subtitulado para sordos", "subtítulos para sordos", "subtitulado accesible", "subtítulos cerrados", "audiodescripción", "audiodescripción cine", "servicio de audiodescripción", "lengua de signos", "lengua de señas", "intérprete de lengua de señas video", "accesibilidad audiovisual", "cine accesible"],
-        "pt": ["legendas para surdos", "legenda para surdos e ensurdecidos", "legenda descritiva", "closed caption", "legenda closed caption", "audiodescrição", "audiodescrição filme", "roteiro de audiodescrição", "janela de libras", "tradução em libras", "intérprete de libras vídeo", "libras em filmes", "acessibilidade audiovisual", "acessibilidade em filmes", "cinema acessível", "lei de acessibilidade audiovisual", "ancine acessibilidade", "instrução normativa 165 ancine", "recursos de acessibilidade ancine", "língua gestual portuguesa"],
+        "pt": ["legendas para surdos", "legenda para surdos e ensurdecidos", "legenda descritiva", "closed caption", "legenda closed caption", "audiodescrição", "audiodescrição filme", "roteiro de audiodescrição", "janela de libras", "tradução em libras", "intérprete de libras vídeo", "libras em filmes", "acessibilidade audiovisual", "acessibilidade em filmes", "cinema acessível", "lei de acessibilidade audiovisual", "ancine acessibilidade", "instrução normativa 165 ancine", "recursos de acessibilidade ancine", "língua gestual portuguesa", "legendagem descritiva", "janela de libras abnt", "audiodescritor", "acessibilidade no cinema"],
         "fr": ["sous-titrage sourds et malentendants", "sous-titres sme", "sous-titrage sme", "audiodescription", "audiodescription film", "langue des signes film", "accessibilité cinéma", "cinéma accessible"],
         "it": ["sottotitoli per non udenti", "sottotitolazione per sordi", "audiodescrizione", "audiodescrizione film", "lingua dei segni film", "cinema accessibile", "accessibilità cinema"],
         "de": ["untertitel für hörgeschädigte", "barrierefreie untertitel", "audiodeskription", "audiodeskription film", "gebärdensprache film", "barrierefreies kino", "barrierefreie filmfassung", "barrierefreie fassung"],
@@ -69,7 +72,8 @@
     "brands": {
       "label": "Competitor & tool brands", "short": "Brands",
       "kw": {
-        "any": ["cinesend", "qube wire", "qubewire", "eventive", "shift72", "festival scope", "masv", "cinando", "captiview", "greta und starks"]
+        "any": ["cinesend", "qube wire", "qubewire", "eventive", "shift72", "festival scope", "masv", "cinando", "captiview", "greta und starks"],
+        "pt": ["moviereading", "mobiload"]
       }
     },
 
