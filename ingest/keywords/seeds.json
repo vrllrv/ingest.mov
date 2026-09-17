@@ -1,0 +1,160 @@
+{
+  "collector": { "budget": 20, "floor": 30, "maxAgeDays": 28, "network": "googlesearch", "discoveryMinVolume": 10 },
+
+  "flagged": {
+    "digital cinema package": "Google counts it with the acronym \"dcp\", which mostly means other things (90K/mo worldwide vs 3.6K for \"dcp film\")",
+    "lengua de señas": "General sign-language searches (learning it), not film accessibility",
+    "lengua de signos": "General sign-language searches (learning it), not film accessibility",
+    "língua gestual portuguesa": "General sign-language searches (learning it), not film accessibility",
+    "tradução em libras": "General Libras translation, not film accessibility",
+    "kdm management": "KDM is also the KDE Linux login manager (2.4K/mo vs 320 for \"cinema kdm\")",
+    "screening copy": "Ambiguous outside film (document and print screening)"
+  },
+
+  "sets": {
+    "dcp": {
+      "label": "DCP creation", "short": "DCP",
+      "kw": {
+        "any": ["dcp-o-matic", "dcpomatic", "dcp o matic", "easydcp", "opendcp", "dcp kdm", "dci dcp"],
+        "en": ["digital cinema package", "dcp creation", "create dcp", "make a dcp", "how to make a dcp", "how to create a dcp", "dcp conversion", "convert to dcp", "convert video to dcp", "mp4 to dcp", "prores to dcp", "premiere pro dcp", "davinci resolve dcp", "export dcp", "dcp encoding", "dcp mastering", "dcp service", "dcp services", "dcp creation service", "dcp cost", "dcp price", "dcp for film festival", "film festival dcp", "dcp subtitles", "dcp player", "dcp checker", "dcp validation", "dcp hard drive", "cru drive dcp", "dcp film", "dcp format", "dcp file", "dcp cinema", "kdm key", "cinema kdm", "dcp near me", "dcp lab"],
+        "es": ["crear dcp", "cómo crear un dcp", "como hacer un dcp", "hacer dcp", "convertir a dcp", "exportar dcp", "dcp cine", "formato dcp", "paquete de cine digital", "dcp para festival", "dcp para festivales", "precio dcp", "servicio dcp", "creación de dcp", "subtítulos dcp", "copia dcp"],
+        "pt": ["criar dcp", "como fazer dcp", "como fazer um dcp", "fazer dcp", "gerar dcp", "converter para dcp", "exportar dcp", "dcp cinema", "formato dcp", "arquivo dcp", "dcp para festival", "dcp para festivais", "preço dcp", "quanto custa um dcp", "criação de dcp", "masterização dcp", "legendas dcp", "cópia dcp"],
+        "fr": ["créer un dcp", "creer un dcp", "comment faire un dcp", "fabrication dcp", "fabriquer un dcp", "conversion dcp", "export dcp", "encodage dcp", "dcp cinéma", "dcp festival", "prix dcp", "tarif dcp", "sous-titres dcp", "laboratoire dcp"],
+        "it": ["creare dcp", "come creare un dcp", "come fare un dcp", "convertire in dcp", "esportare dcp", "prezzo dcp", "creazione dcp", "sottotitoli dcp"],
+        "de": ["dcp erstellen", "dcp erstellen lassen", "dcp konvertieren", "dcp exportieren", "dcp kino", "dcp datei", "dcp kosten", "dcp untertitel"],
+        "ru": ["dcp пакет", "создать dcp", "создание dcp", "как сделать dcp", "конвертировать в dcp", "dcp для кинотеатра", "dcp для фестиваля", "формат dcp", "цифровой кинопакет"],
+        "pl": ["tworzenie dcp", "jak zrobić dcp", "dcp kino"],
+        "ko": ["dcp 제작", "dcp 변환", "dcp 파일"],
+        "tr": ["dcp oluşturma", "dcp dönüştürme", "dcp formatı"],
+        "el": ["δημιουργία dcp", "dcp κινηματογράφος"],
+        "nl": ["dcp maken", "dcp laten maken"],
+        "ro": ["creare dcp", "cum faci un dcp"],
+        "cs": ["vytvoření dcp", "dcp kino"]
+      }
+    },
+
+    "access": {
+      "label": "Accessibility", "short": "Access",
+      "kw": {
+        "en": ["closed captions", "closed captioning services", "sdh subtitles", "subtitles for the deaf and hard of hearing", "captioning services", "film captioning", "open captions", "audio description", "audio description services", "audio description film", "audio description for film", "described video", "sign language interpretation video", "sign language film", "accessible film screening", "film accessibility", "accessible cinema", "accessibility film festival", "captions for film festival", "dcp closed captions", "cinema closed captions", "scc captions"],
+        "es": ["subtitulado para sordos", "subtítulos para sordos", "subtitulado accesible", "subtítulos cerrados", "audiodescripción", "audiodescripción cine", "servicio de audiodescripción", "lengua de signos", "lengua de señas", "intérprete de lengua de señas video", "accesibilidad audiovisual", "cine accesible"],
+        "pt": ["legendas para surdos", "legenda para surdos e ensurdecidos", "legenda descritiva", "closed caption", "legenda closed caption", "audiodescrição", "audiodescrição filme", "roteiro de audiodescrição", "janela de libras", "tradução em libras", "intérprete de libras vídeo", "libras em filmes", "acessibilidade audiovisual", "acessibilidade em filmes", "cinema acessível", "lei de acessibilidade audiovisual", "ancine acessibilidade", "instrução normativa 165 ancine", "recursos de acessibilidade ancine", "língua gestual portuguesa"],
+        "fr": ["sous-titrage sourds et malentendants", "sous-titres sme", "sous-titrage sme", "audiodescription", "audiodescription film", "langue des signes film", "accessibilité cinéma", "cinéma accessible"],
+        "it": ["sottotitoli per non udenti", "sottotitolazione per sordi", "audiodescrizione", "audiodescrizione film", "lingua dei segni film", "cinema accessibile", "accessibilità cinema"],
+        "de": ["untertitel für hörgeschädigte", "barrierefreie untertitel", "audiodeskription", "audiodeskription film", "gebärdensprache film", "barrierefreies kino", "barrierefreie filmfassung", "barrierefreie fassung"],
+        "ru": ["субтитры для глухих", "тифлокомментарий", "тифлокомментирование фильмов", "сурдоперевод фильмов", "доступная среда кино"],
+        "pl": ["audiodeskrypcja", "napisy dla niesłyszących"],
+        "ko": ["배리어프리 영화", "화면해설", "청각장애인 자막"],
+        "tr": ["sesli betimleme", "işitme engelliler için altyazı"],
+        "el": ["υπότιτλοι για κωφούς", "ακουστική περιγραφή"],
+        "nl": ["audiodescriptie", "ondertiteling voor doven"],
+        "ro": ["audiodescriere", "subtitrare pentru surzi"],
+        "cs": ["audiopopis", "skryté titulky"]
+      }
+    },
+
+    "delivery": {
+      "label": "Copy & delivery software", "short": "Delivery",
+      "kw": {
+        "en": ["print traffic", "film print traffic", "festival print traffic", "print traffic coordinator", "screening copy", "exhibition copy", "film festival screening copy", "film delivery", "film festival delivery", "film deliverables", "film festival deliverables", "deliverables list film", "dcp delivery", "send dcp", "dcp shipping", "dcp upload", "electronic dcp delivery", "kdm delivery", "kdm management", "kdm generator", "film festival management software", "film festival software", "festival management platform", "film festival submission platform", "screener platform", "online screener", "secure screener", "private screening link", "film festival hosting platform", "online film festival platform", "virtual film festival platform", "digital print traffic", "festival copy management"],
+        "es": ["copia de proyección", "copias de exhibición festival", "envío de dcp", "enviar dcp", "entrega de materiales festival", "software gestión festival de cine", "plataforma festival de cine", "gestión de copias", "tráfico de copias", "screener película", "enlace de visionado"],
+        "pt": ["cópia de exibição", "cópia de exibição festival", "envio de dcp", "enviar dcp", "entrega de materiais festival", "tráfego de cópias", "logística de cópias", "software para festival de cinema", "plataforma para festival de cinema", "gestão de festival de cinema", "screener filme", "link de visionamento"],
+        "fr": ["régie copies", "régie copie festival", "circulation des copies", "circulation des copies festival", "envoi dcp", "livraison dcp", "logiciel festival de cinéma", "plateforme festival de cinéma", "gestion des copies", "copie de projection", "lien de visionnage"],
+        "it": ["traffico copie", "invio dcp", "copia di proiezione", "software festival cinema", "piattaforma festival cinema", "gestione copie festival", "link di visione"],
+        "de": ["kopienlogistik", "dcp versand", "dcp versenden", "vorführkopie", "filmfestival software", "sichtungslink", "kopienverwaltung"],
+        "ru": ["отправка dcp", "фестивальная копия", "показная копия фильма", "программа для кинофестиваля", "платформа для кинофестиваля", "скринер фильма"]
+      }
+    },
+
+    "brands": {
+      "label": "Competitor & tool brands", "short": "Brands",
+      "kw": {
+        "any": ["cinesend", "qube wire", "qubewire", "eventive", "shift72", "festival scope", "masv", "cinando", "captiview", "greta und starks"]
+      }
+    },
+
+    "proxy": {
+      "label": "Submitting filmmakers (proxy)", "short": "Filmmakers",
+      "kw": {
+        "any": ["filmfreeway", "festhome", "movibeta", "shortfilmdepot", "short film depot", "festagent", "clickforfestivals", "click for festivals", "withoutabox", "filmfestivallife", "film festival life"],
+        "en": ["film festival submission", "submit film to festival", "film festivals to submit to", "short film festivals", "film festival deadlines", "how to submit to film festivals", "film festival strategy", "festival submission service", "film festival distribution"],
+        "es": ["festivales de cortometrajes", "enviar cortometraje a festivales", "convocatoria festival de cine", "festivales de cine convocatorias", "distribución de cortometrajes"],
+        "pt": ["festivais de curta metragem", "inscrição festival de cinema", "inscrever filme em festival", "festivais de cinema inscrições abertas", "distribuição de curtas"],
+        "fr": ["festival court métrage inscription", "inscrire un film en festival", "appel à films", "diffusion court métrage"],
+        "it": ["festival cortometraggi", "bando festival cinema", "iscrivere film festival", "distribuzione cortometraggi"],
+        "de": ["kurzfilmfestival einreichen", "film bei festival einreichen", "kurzfilmfestivals"],
+        "ru": ["кинофестиваль подать заявку", "фестиваль короткометражных фильмов", "прием заявок кинофестиваль"],
+        "pl": ["festiwale filmów krótkometrażowych"],
+        "ko": ["단편영화제 공모"],
+        "tr": ["kısa film festivali başvuru"],
+        "el": ["φεστιβάλ ταινιών μικρού μήκους"],
+        "nl": ["kortfilmfestival inzenden"],
+        "ro": ["festival de scurtmetraje înscriere"],
+        "cs": ["festival krátkých filmů přihlášky"]
+      }
+    }
+  },
+
+  "markets": [
+    { "id": "global", "label": "Worldwide", "country": null, "cc": "US", "loc": null, "kw": ["en", "es", "pt", "fr", "it", "de", "ru", "pl", "ko", "tr", "el", "nl", "ro", "cs"], "tier": 1 },
+    { "id": "es", "label": "Spain", "country": "Spain", "cc": "ES", "loc": 2724, "kw": ["es", "en"], "tier": 1 },
+    { "id": "us", "label": "United States", "country": "United States", "cc": "US", "loc": 2840, "kw": ["en", "es"], "tier": 1 },
+    { "id": "it", "label": "Italy", "country": "Italy", "cc": "IT", "loc": 2380, "kw": ["it", "en"], "tier": 1 },
+    { "id": "fr", "label": "France", "country": "France", "cc": "FR", "loc": 2250, "kw": ["fr", "en"], "tier": 1 },
+    { "id": "in", "label": "India", "country": "India", "cc": "IN", "loc": 2356, "kw": ["en"], "tier": 1 },
+    { "id": "gb", "label": "United Kingdom", "country": "United Kingdom", "cc": "GB", "loc": 2826, "kw": ["en"], "tier": 1 },
+    { "id": "co", "label": "Colombia", "country": "Colombia", "cc": "CO", "loc": 2170, "kw": ["es", "en"], "tier": 1 },
+    { "id": "de", "label": "Germany", "country": "Germany", "cc": "DE", "loc": 2276, "kw": ["de", "en"], "tier": 1 },
+    { "id": "ar", "label": "Argentina", "country": "Argentina", "cc": "AR", "loc": 2032, "kw": ["es", "en"], "tier": 1 },
+    { "id": "mx", "label": "Mexico", "country": "Mexico", "cc": "MX", "loc": 2484, "kw": ["es", "en"], "tier": 1 },
+    { "id": "br", "label": "Brazil", "country": "Brazil", "cc": "BR", "loc": 2076, "kw": ["pt", "en"], "tier": 1 },
+    { "id": "ca", "label": "Canada", "country": "Canada", "cc": "CA", "loc": 2124, "kw": ["en", "fr"], "tier": 1 },
+    { "id": "cl", "label": "Chile", "country": "Chile", "cc": "CL", "loc": 2152, "kw": ["es", "en"], "tier": 1 },
+    { "id": "pt", "label": "Portugal", "country": "Portugal", "cc": "PT", "loc": 2620, "kw": ["pt", "en"], "tier": 1 },
+
+    { "id": "gr", "label": "Greece", "country": "Greece", "cc": "GR", "loc": 2300, "kw": ["el", "en"], "tier": 2 },
+    { "id": "au", "label": "Australia", "country": "Australia", "cc": "AU", "loc": 2036, "kw": ["en"], "tier": 2 },
+    { "id": "ng", "label": "Nigeria", "country": "Nigeria", "cc": "NG", "loc": 2566, "kw": ["en"], "tier": 2 },
+    { "id": "pe", "label": "Peru", "country": "Peru", "cc": "PE", "loc": 2604, "kw": ["es", "en"], "tier": 2 },
+    { "id": "cz", "label": "Czech Republic", "country": "Czech Republic", "cc": "CZ", "loc": 2203, "kw": ["cs", "en"], "tier": 2 },
+    { "id": "tr", "label": "Turkey", "country": "Turkey", "cc": "TR", "loc": 2792, "kw": ["tr", "en"], "tier": 2 },
+    { "id": "nl", "label": "Netherlands", "country": "Netherlands", "cc": "NL", "loc": 2528, "kw": ["nl", "en"], "tier": 2 },
+    { "id": "be", "label": "Belgium", "country": "Belgium", "cc": "BE", "loc": 2056, "kw": ["fr", "nl", "en"], "tier": 2 },
+    { "id": "rs", "label": "Serbia", "country": "Serbia", "cc": "RS", "loc": 2688, "kw": ["en"], "tier": 2 },
+    { "id": "kr", "label": "South Korea", "country": "South Korea", "cc": "KR", "loc": 2410, "kw": ["ko", "en"], "tier": 2 },
+    { "id": "at", "label": "Austria", "country": "Austria", "cc": "AT", "loc": 2040, "kw": ["de", "en"], "tier": 2 },
+    { "id": "ch", "label": "Switzerland", "country": "Switzerland", "cc": "CH", "loc": 2756, "kw": ["de", "fr", "it", "en"], "tier": 2 },
+    { "id": "ro", "label": "Romania", "country": "Romania", "cc": "RO", "loc": 2642, "kw": ["ro", "en"], "tier": 2 },
+    { "id": "uy", "label": "Uruguay", "country": "Uruguay", "cc": "UY", "loc": 2858, "kw": ["es", "en"], "tier": 2 },
+    { "id": "ie", "label": "Ireland", "country": "Ireland", "cc": "IE", "loc": 2372, "kw": ["en"], "tier": 2 },
+    { "id": "pl", "label": "Poland", "country": "Poland", "cc": "PL", "loc": 2616, "kw": ["pl", "en"], "tier": 2 },
+    { "id": "hr", "label": "Croatia", "country": "Croatia", "cc": "HR", "loc": 2191, "kw": ["en"], "tier": 2 },
+    { "id": "ve", "label": "Venezuela", "country": "Venezuela", "cc": "VE", "loc": 2862, "kw": ["es", "en"], "tier": 2 },
+    { "id": "ec", "label": "Ecuador", "country": "Ecuador", "cc": "EC", "loc": 2218, "kw": ["es", "en"], "tier": 2 }
+  ],
+
+  "discovery": [
+    { "head": "digital cinema package", "lang": "en", "market": "us", "set": "dcp", "types": ["suggestions"], "tier": 1 },
+    { "head": "dcp film", "lang": "en", "market": "us", "set": "dcp", "types": ["suggestions", "questions"], "tier": 1 },
+    { "head": "audio description", "lang": "en", "market": "us", "set": "access", "types": ["suggestions", "questions"], "tier": 1 },
+    { "head": "closed captioning", "lang": "en", "market": "us", "set": "access", "types": ["suggestions"], "tier": 1 },
+    { "head": "print traffic", "lang": "en", "market": "gb", "set": "delivery", "types": ["suggestions"], "tier": 1 },
+    { "head": "film festival software", "lang": "en", "market": "us", "set": "delivery", "types": ["suggestions"], "tier": 1 },
+    { "head": "dcp cine", "lang": "es", "market": "es", "set": "dcp", "types": ["suggestions", "questions"], "tier": 1 },
+    { "head": "audiodescripción", "lang": "es", "market": "es", "set": "access", "types": ["suggestions"], "tier": 1 },
+    { "head": "como fazer dcp", "lang": "pt", "market": "br", "set": "dcp", "types": ["suggestions"], "tier": 1 },
+    { "head": "dcp cinema", "lang": "pt", "market": "br", "set": "dcp", "types": ["questions"], "tier": 1 },
+    { "head": "audiodescrição", "lang": "pt", "market": "br", "set": "access", "types": ["suggestions", "questions"], "tier": 1 },
+    { "head": "janela de libras", "lang": "pt", "market": "br", "set": "access", "types": ["suggestions"], "tier": 1 },
+    { "head": "legenda para surdos", "lang": "pt", "market": "br", "set": "access", "types": ["suggestions"], "tier": 1 },
+    { "head": "dcp cinéma", "lang": "fr", "market": "fr", "set": "dcp", "types": ["suggestions"], "tier": 2 },
+    { "head": "audiodescription", "lang": "fr", "market": "fr", "set": "access", "types": ["suggestions"], "tier": 2 },
+    { "head": "régie copies", "lang": "fr", "market": "fr", "set": "delivery", "types": ["suggestions"], "tier": 2 },
+    { "head": "dcp cinema", "lang": "it", "market": "it", "set": "dcp", "types": ["suggestions"], "tier": 2 },
+    { "head": "audiodescrizione", "lang": "it", "market": "it", "set": "access", "types": ["suggestions"], "tier": 2 },
+    { "head": "dcp erstellen", "lang": "de", "market": "de", "set": "dcp", "types": ["suggestions"], "tier": 2 },
+    { "head": "audiodeskription", "lang": "de", "market": "de", "set": "access", "types": ["suggestions"], "tier": 2 },
+    { "head": "barrierefreie fassung", "lang": "de", "market": "de", "set": "access", "types": ["suggestions"], "tier": 2 },
+    { "head": "audiodescripción", "lang": "es", "market": "mx", "set": "access", "types": ["suggestions"], "tier": 2 }
+  ]
+}

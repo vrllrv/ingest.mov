@@ -2,7 +2,7 @@
 
 Pulls the **"Future Festivals"** Google Sheet tab (public, CSV) → parses dates →
 geocodes addresses → writes [`../public/fest-map/data.json`](../public/fest-map/data.json),
-which the map fetches at runtime. Runs daily via
+which the map fetches at runtime. Runs weekly (Mondays 12:00 UTC, plus on demand) via
 [`.github/workflows/refresh-festmap.yml`](../.github/workflows/refresh-festmap.yml).
 
 ```
@@ -188,6 +188,101 @@ Things that are easy to get wrong:
   `10º`, `XVIII` dropped) plus the same country. A name one catalogue uses for two
   festivals never matches.
 
+## Keywords (search demand panel)
+
+`/fest-map/keypanel/` puts Google search volume for the services we sell next to the
+map's festival counts, per market: **DCP creation**, **accessibility** (captions, audio
+description, sign language), **copy & delivery software** (print traffic, DCP/KDM
+delivery, screeners), **competitor & tool brands**, and a **proxy** for how many
+filmmakers submit (platform names, submission terms). It's a go-to-market sizing tool,
+unlisted (no link from the map,
+`noindex`).
+
+```
+seeds.json (markets × keyword sets × discovery heads)
+   → keywords.mjs: Keywordtool.io API, within budget and quota floor → keywords.json
+   → + data*.json → public/fest-map/keypanel/data.json → the panel
+```
+
+```bash
+npm run keywords -- --dry-run          # the queue and request count; no network
+npm run keywords -- --build-only       # rebuild the panel data; no network
+npm run keywords                       # due jobs (needs KEYWORDTOOL_API_KEY)
+npm run keywords -- --only vol:br --budget 1
+```
+
+In Windows PowerShell, call `node ingest/keywords.mjs --dry-run` directly: PowerShell
+drops the bare `--`, and npm then eats the flags (`--budget` becomes an npm config).
+
+Runs daily in [`keywords.yml`](../.github/workflows/keywords.yml) (secret:
+`KEYWORDTOOL_API_KEY`). `refresh-festmap.yml` and `deploy.yml` run `--build-only`, so
+festival counts stay current at zero API cost. Research sessions through the
+Keywordtool MCP follow [`keywords/RESEARCH.md`](keywords/RESEARCH.md).
+
+**One volume job per market** carries every keyword in the market's languages plus the
+language-neutral `any` lists (up to 1,000 per request). `metrics_language` is left out,
+so volume counts every interface language. **Discovery jobs** are one suggestions call
+per head and type, kept at volume ≥ 10; results not in the seeds become candidates in
+the panel's Discovery tab.
+
+Things that are easy to get wrong:
+
+- **The quota is shared and rolling.** Starter is 50 requests in a rolling 24 hours,
+  across the web app, API and MCP together. Every run reads `/v2/quota` first and spends
+  `min(budget, remaining − floor)` (20 and 30 in `seeds.json`, leaving ~5 for MCP sessions
+  and 25 for everything else). **An unreadable quota spends nothing** and exits 2.
+- **Volume is a monthly average.** Asking again inside a month returns the same numbers.
+  A job is due only when never run, older than `maxAgeDays` (28), or when `seeds.json`
+  added keywords to it. Nothing due means no API call at all, not even the quota check.
+- **Adding a keyword re-measures every market that includes it.** The whole market list
+  is re-asked, so every number in a market shares one month. A new `en` or `any` keyword
+  costs ~35 requests (~2 days of budget): **promote keywords in batches.**
+- **Google groups close variants** and reports the group's numbers for each spelling.
+  A keyword with the same volume, CPC and series as an earlier one in its set is marked
+  `grouped` and counted once. Two unrelated low-volume keywords can collide; the error
+  is small.
+- **Every asked keyword gets an entry**, `null` when Google has no data. The API still
+  returns a row for those, with `volume` and every month `null` (about a third of keywords
+  in the first live run); they're stored as `null`, not counted as measured, and can't keep
+  a job due forever. Results also match on the accent-folded form, in case the API
+  echoes a keyword without its accents.
+- **Broad and ambiguous keywords are flagged, not deleted.** `flagged` in `seeds.json`
+  maps a keyword to the reason it's left out of totals; the panel still shows it. Found in
+  the first run: "digital cinema package" (90K/mo worldwide: Google merges it with every
+  meaning of "dcp"), general sign-language terms ("lengua de señas": 165K), "kdm
+  management" (KDE's login manager). Flagging costs no requests.
+- **Competitor and tool brands are their own set** (`brands`), so Eventive's viewer
+  logins don't read as demand for delivery software.
+- **Keywords are limited to 80 characters and 10 words**, lowercase, with most punctuation
+  stripped (`cleanKeyword()`).
+- **Google Ads doesn't serve every country.** Russia (`2643`) returns
+  `Location '2643' is invalid` (error 14), so it has no market; its searches in Russian
+  still count in Worldwide.
+- **Festival counts** are unique by exact normalised name + country across the five
+  catalogues (`matchKey`), so the real number is slightly lower where platforms spell a
+  name differently. *Open now* is by deadline for every source, because Festhome's
+  status text is frozen at scrape time.
+- The API response fixtures (`fixtures/kw-cases.json`) are **synthetic**, from the
+  documented shape plus the no-data row seen live. The collector doesn't keep raw
+  responses; capture one to replace them if a parser ever needs changing.
+
+To add a market: an entry in `markets` with the map's own country spelling, the Google
+Ads location id (2000 + ISO 3166 numeric: Spain 724 → `2724`) and its keyword
+languages. City locations (e.g. São Paulo) work the same way, with ids from Google Ads'
+geotargets list, but the festival counts stay national.
+
+### Before putting the map behind Cloudflare Access
+
+- One Access application on `ingest.mov/fest-map*` covers the map, the panel, every
+  `data*.json` and `POST /fest-map/refresh`. Everything fetches relative, same-origin.
+- The map and panel fetch with `redirect: 'manual'`, so an expired session shows
+  "reload to sign in" instead of a network error.
+- **Check the sheet's Apps Script:** if it calls `/fest-map/refresh` on the Worker (not
+  GitHub's dispatch API directly), it needs an Access service token or a bypass policy
+  for that one path.
+- CI deploys use the Cloudflare API token and aren't affected. The Keywordtool key is
+  only a GitHub secret, never in the Worker or a page.
+
 ## Files
 
 | File | Purpose |
@@ -198,6 +293,10 @@ Things that are easy to get wrong:
 | `contacts-parse.mjs` | Pure contact parsers, normalisers and name matching (no I/O). |
 | `contacts.mjs` | Fetch contacts for Shortfilmdepot / Festagent / Movibeta → `contacts.json`. |
 | `contacts.json` | Contacts per festival id, with per-field provenance. **Committed**; merged by the ingest. |
+| `keywords-parse.mjs` | Pure keyword-panel helpers: job queue, API response parsers, panel data (no I/O). |
+| `keywords.mjs` | Keywordtool.io collector → `keywords.json`, then `public/fest-map/keypanel/data.json`. |
+| `keywords/seeds.json` | Markets, keyword sets per language, discovery heads, collector budget. **Hand-edited.** |
+| `keywords.json` | Search volume per job, one keyword per line, plus a run log. **Committed.** |
 | `test.mjs` + `fixtures/` | Deterministic parser regression test against a committed sample (`npm run test:ingest`). |
 
 ## One-time setup
@@ -222,7 +321,7 @@ Apps Script keeps pulling from Festhome regardless.
 (Optional) override the source via the `SHEET_ID` / `CSV_URL` env in the workflow.
 
 Then **Actions → Refresh fest-map data → Run workflow** to test, or wait for the
-daily 06:00 UTC run.
+weekly Monday 12:00 UTC run.
 
 ## Run locally
 

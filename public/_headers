@@ -1,0 +1,7 @@
+# Workers static assets header rules (not served itself).
+# The keyword panel is unlisted: nothing links to it, and search engines are told
+# not to index it. It isn't named in a robots.txt, which would advertise the path.
+# When the map goes behind Cloudflare Access (an app on ingest.mov/fest-map*), these
+# stay as a second line.
+/fest-map/keypanel/*
+  X-Robots-Tag: noindex, nofollow

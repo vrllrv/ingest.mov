@@ -1,0 +1,74 @@
+{
+"clean": [
+  ["  DCP  Creation ","dcp creation"],
+  ["créer un DCP!","créer un dcp"],
+  ["dcp-o-matic","dcp-o-matic"],
+  ["¿cómo crear un dcp?","cómo crear un dcp"],
+  ["​sdh subtitles","sdh subtitles"],
+  ["-",null],
+  ["one two three four five six seven eight nine ten eleven",null],
+  ["dcp 제작","dcp 제작"],
+  ["supercalifragilisticexpialidocious supercalifragilisticexpialidocious supercalifragilistic",null]
+],
+"problems": [
+  "\"create dcp\" is in both dcp and access — counted in dcp",
+  "flagged \"not in any set\" isn't in any set — nothing to flag",
+  "discovery \"dcp\": unknown market \"nowhere\""
+],
+"jobs": [
+  ["vol:global",["dcp-o-matic","dcp creation","create dcp","digital cinema package","exportar dcp","crear dcp","criar dcp","audio description","audiodescrição"]],
+  ["vol:br",["dcp-o-matic","dcp creation","create dcp","digital cinema package","exportar dcp","criar dcp","audio description","audiodescrição"]],
+  ["vol:es",["dcp-o-matic","exportar dcp","crear dcp"]],
+  ["sug:br:suggestions:audiodescrição",{"head":"audiodescrição","type":"suggestions","cc":"BR","lang":"pt","tier":1}],
+  ["sug:br:questions:audiodescrição",{"head":"audiodescrição","type":"questions","cc":"BR","lang":"pt","tier":1}]
+],
+"queue": [
+  ["sug:br:suggestions:audiodescrição","new"],
+  ["sug:br:questions:audiodescrição","new"],
+  ["vol:br","stale"],
+  ["vol:es","keywords"]
+],
+"spendable": [
+  ["budget 20, floor 30, remaining 50",20],
+  ["budget 20, floor 30, remaining 45",15],
+  ["budget 20, floor 30, remaining 30",0],
+  ["budget 20, floor 30, remaining 12",0],
+  ["budget 20, floor 0, remaining 5",5],
+  ["budget 20, floor 30, remaining null",0]
+],
+"requests": [
+  ["vol:br",{"path":"/v2/search/volume/google","body":{"keyword":["dcp-o-matic","dcp creation","create dcp","digital cinema package","exportar dcp","criar dcp","audio description","audiodescrição"],"metrics_location":[2076],"metrics_network":"googlesearch","metrics_currency":"USD","output":"json"}}],
+  ["vol:global",{"path":"/v2/search/volume/google","body":{"keyword":["dcp-o-matic","dcp creation","create dcp","digital cinema package","exportar dcp","crear dcp","criar dcp","audio description","audiodescrição"],"metrics_network":"googlesearch","metrics_currency":"USD","output":"json"}}],
+  ["sug:br:suggestions:audiodescrição",{"path":"/v2/search/suggestions/google","body":{"keyword":"audiodescrição","category":"web","type":"suggestions","country":"BR","language":"pt","metrics":true,"metrics_location":[2076],"metrics_network":"googlesearch","metrics_currency":"USD","output":"json"}}]
+],
+"volume": [
+  ["last","2026-08"],
+  ["kw",{"dcp creation":{"v":90,"cpc":2.31,"cmp":0.41,"t":0.57,"s":[70,90,110]},"create dcp":{"v":90,"cpc":2.31,"cmp":0.41,"t":0.57,"s":[70,90,110]},"créer un dcp":{"v":20,"cpc":1.1,"cmp":0.05,"t":-0.33,"s":[30,10,20]},"dcp-o-matic":{"v":0,"cpc":null,"cmp":null,"t":null,"s":[0,0,0]},"digital cinema package":null,"dcp mastering":null}]
+],
+"suggestions": [
+  ["last","2026-08"],
+  ["dropped",1],
+  ["kw",{"audiodescrição":{"v":1900,"cpc":0.8,"cmp":0.2,"t":null,"s":[1800,2000]},"audiodescrição o que é":{"v":880,"cpc":0,"cmp":0.01,"t":null,"s":[860,900]},"audiodescrição curso":{"v":320,"cpc":1.35,"cmp":0.66,"t":null,"s":[260,390]}}]
+],
+"quota": [
+  ["nested daily + minute",{"remaining":38,"limit":50,"used":12}],
+  ["daily as limit/used only",{"remaining":30,"limit":50,"used":20}],
+  ["flat",{"remaining":43,"limit":50,"used":7}],
+  ["minute only",null],
+  ["unknown",null],
+  ["two windows, neither named",null]
+],
+"festivals": [
+  ["total",{"unique":6,"upcoming":3,"open":3,"withEmail":2,"starts":[0,1,1,0,0,0,0,0,0,2,1,0],"deadlines":[1,0,0,0,0,0,0,0,2,0,0,1]}],
+  ["Spain",{"unique":2,"upcoming":1,"open":1,"withEmail":1,"starts":[0,0,1,0,0,0,0,0,0,0,1,0],"deadlines":[1,0,0,0,0,0,0,0,1,0,0,0]}],
+  ["Brazil",{"unique":3,"upcoming":1,"open":1,"withEmail":1,"starts":[0,1,0,0,0,0,0,0,0,1,0,0],"deadlines":[0,0,0,0,0,0,0,0,0,0,0,1]}],
+  ["groups",6]
+],
+"panel": [
+  ["markets",[{"id":"global","label":"Worldwide","country":null,"tier":1,"note":null,"fetchedAt":null,"last":null,"fest":{"unique":6,"upcoming":3,"open":3,"withEmail":2,"starts":[0,1,1,0,0,0,0,0,0,2,1,0],"deadlines":[1,0,0,0,0,0,0,0,2,0,0,1]},"sets":{"dcp":{"volume":null,"keywords":7,"measured":0,"grouped":0,"flagged":0,"cpc":null,"cmp":null,"series":[]},"access":{"volume":null,"keywords":2,"measured":0,"grouped":0,"flagged":0,"cpc":null,"cmp":null,"series":[]}}},{"id":"br","label":"Brazil","country":"Brazil","tier":1,"note":null,"fetchedAt":"2026-09-15T09:00:00Z","last":"2026-08","fest":{"unique":3,"upcoming":1,"open":1,"withEmail":1,"starts":[0,1,0,0,0,0,0,0,0,1,0,0],"deadlines":[0,0,0,0,0,0,0,0,0,0,0,1]},"sets":{"dcp":{"volume":140,"keywords":6,"measured":4,"grouped":1,"flagged":1,"cpc":1.66,"cmp":0.34,"series":[110,140,170]},"access":{"volume":1900,"keywords":2,"measured":1,"grouped":0,"flagged":0,"cpc":0.8,"cmp":0.2,"series":[1800,1900,2000]}}},{"id":"es","label":"Spain","country":"Spain","tier":2,"note":null,"fetchedAt":null,"last":null,"fest":{"unique":2,"upcoming":1,"open":1,"withEmail":1,"starts":[0,0,1,0,0,0,0,0,0,0,1,0],"deadlines":[1,0,0,0,0,0,0,0,1,0,0,0]},"sets":{"dcp":{"volume":null,"keywords":3,"measured":0,"grouped":0,"flagged":0,"cpc":null,"cmp":null,"series":[]},"access":{"volume":null,"keywords":0,"measured":0,"grouped":0,"flagged":0,"cpc":null,"cmp":null,"series":[]}}}]],
+  ["keywords br",[["dcp-o-matic","dcp","any",0,null,null,null,[0,0,0],0,null],["dcp creation","dcp","en",90,2.31,0.41,0.57,[70,90,110],0,null],["create dcp","dcp","en",90,2.31,0.41,0.57,[70,90,110],1,null],["digital cinema package","dcp","en",30,1,0.1,0,[30,30,30],0,"merged with the acronym"],["exportar dcp","dcp","pt",null,null,null,null,null,0,null],["criar dcp","dcp","pt",50,0.5,0.2,0.1,[40,50,60],0,null],["audio description","access","en",null,null,null,null,null,0,null],["audiodescrição","access","pt",1900,0.8,0.2,0.11,[1800,1900,2000],0,null]]],
+  ["candidates",[{"k":"audiodescrição o que é","set":"access","lang":"pt","v":880,"cpc":0,"cmp":0.01,"market":"br","heads":["audiodescrição"]},{"k":"audiodescrição curso","set":"access","lang":"pt","v":320,"cpc":1.35,"cmp":0.66,"market":"br","heads":["audiodescrição"]}]],
+  ["progress",{"jobs":5,"done":2,"due":3,"dueNew":3,"budget":3,"floor":30,"next":["vol:global","sug:br:questions:audiodescrição","vol:es"]}],
+  ["dataMonth","2026-08"]
+]
+}

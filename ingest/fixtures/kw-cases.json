@@ -1,0 +1,102 @@
+{
+  "_note": "SYNTHETIC. Responses follow the shape documented at keywordtool.io/api (results keyed by keyword, m1 = latest month); replace with trimmed real responses after the first live run.",
+
+  "clean": ["  DCP  Creation ", "créer un DCP!", "dcp-o-matic", "¿cómo crear un dcp?", "​sdh subtitles", "-", "one two three four five six seven eight nine ten eleven", "dcp 제작", "supercalifragilisticexpialidocious supercalifragilisticexpialidocious supercalifragilistic"],
+
+  "seeds": {
+    "collector": { "budget": 3, "floor": 30, "maxAgeDays": 28 },
+    "flagged": { "digital cinema package": "merged with the acronym", "not in any set": "nothing to flag" },
+    "sets": {
+      "dcp": { "label": "DCP", "kw": { "any": ["dcp-o-matic"], "en": ["dcp creation", "create dcp", "digital cinema package"], "es": ["exportar dcp", "crear dcp"], "pt": ["exportar dcp", "criar dcp"] } },
+      "access": { "label": "Access", "kw": { "en": ["audio description", "create dcp"], "pt": ["audiodescrição"] } }
+    },
+    "markets": [
+      { "id": "global", "label": "Worldwide", "country": null, "cc": "US", "loc": null, "kw": ["en", "es", "pt"], "tier": 1 },
+      { "id": "br", "label": "Brazil", "country": "Brazil", "cc": "BR", "loc": 2076, "kw": ["pt", "en"], "tier": 1 },
+      { "id": "es", "label": "Spain", "country": "Spain", "cc": "ES", "loc": 2724, "kw": ["es"], "tier": 2 }
+    ],
+    "discovery": [
+      { "head": "audiodescrição", "lang": "pt", "market": "br", "set": "access", "types": ["suggestions", "questions"], "tier": 1 },
+      { "head": "dcp", "lang": "es", "market": "nowhere", "set": "dcp", "types": ["suggestions"] }
+    ]
+  },
+
+  "cacheForQueue": {
+    "jobs": {
+      "vol:global": { "at": "2026-09-01T09:00:00Z", "last": "2026-08", "kw": { "dcp-o-matic": null, "dcp creation": null, "create dcp": null, "digital cinema package": null, "exportar dcp": null, "crear dcp": null, "criar dcp": null, "audio description": null, "audiodescrição": null } },
+      "vol:br": { "at": "2026-08-01T09:00:00Z", "last": "2026-07", "kw": { "dcp-o-matic": null, "dcp creation": null, "create dcp": null, "digital cinema package": null, "exportar dcp": null, "criar dcp": null, "audio description": null, "audiodescrição": null } },
+      "vol:es": { "at": "2026-09-10T09:00:00Z", "last": "2026-08", "kw": { "dcp-o-matic": null } }
+    },
+    "runs": []
+  },
+  "queueNow": "2026-09-17T09:00:00Z",
+
+  "spendable": [[20, 30, 50], [20, 30, 45], [20, 30, 30], [20, 30, 12], [20, 0, 5], [20, 30, null]],
+
+  "volumeResponse": {
+    "results": {
+      "dcp creation": { "string": "dcp creation", "volume": 90, "m1": 110, "m1_month": 8, "m1_year": 2026, "m2": 90, "m2_month": 7, "m2_year": 2026, "m3": 70, "m3_month": 6, "m3_year": 2026, "trend": 0.57, "cpc": 2.314, "cmp": 0.41 },
+      "create dcp": { "string": "create dcp", "volume": 90, "m1": 110, "m1_month": 8, "m1_year": 2026, "m2": 90, "m2_month": 7, "m2_year": 2026, "m3": 70, "m3_month": 6, "m3_year": 2026, "trend": 0.57, "cpc": 2.314, "cmp": 0.41 },
+      "creer un dcp": { "string": "creer un dcp", "volume": 20, "m1": 20, "m1_month": 8, "m1_year": 2026, "m2": 10, "m2_month": 7, "m2_year": 2026, "m3": 30, "m3_month": 6, "m3_year": 2026, "trend": -0.33, "cpc": "1.1", "cmp": 0.05 },
+      "dcp mastering": { "string": "dcp mastering", "volume": null, "m1": null, "m1_month": 8, "m1_year": 2026, "m2": null, "m2_month": 7, "m2_year": 2026, "m3": null, "m3_month": 6, "m3_year": 2026, "trend": null, "cpc": null, "cmp": null },
+      "dcp-o-matic": { "string": "dcp-o-matic", "volume": 0, "m1": 0, "m1_month": 8, "m1_year": 2026, "m2": 0, "m2_month": 7, "m2_year": 2026, "m3": 0, "m3_month": 6, "m3_year": 2026, "trend": null, "cpc": null, "cmp": null }
+    },
+    "total_keywords": 4
+  },
+  "volumeAsked": ["dcp creation", "create dcp", "créer un dcp", "dcp-o-matic", "digital cinema package", "dcp mastering"],
+
+  "suggestionsResponse": {
+    "results": {
+      "audiodescrição": [
+        { "string": "audiodescrição", "volume": 1900, "m1": 2000, "m1_month": 8, "m1_year": 2026, "m2": 1800, "m2_month": 7, "m2_year": 2026, "cpc": 0.8, "cmp": 0.2 },
+        { "string": "audiodescrição o que é", "volume": 880, "m1": 900, "m1_month": 8, "m1_year": 2026, "m2": 860, "m2_month": 7, "m2_year": 2026, "cpc": 0, "cmp": 0.01 }
+      ],
+      "audiodescrição a": [
+        { "string": "Audiodescrição  O que é", "volume": 880, "m1": 900, "m1_month": 8, "m1_year": 2026, "m2": 860, "m2_month": 7, "m2_year": 2026, "cpc": 0, "cmp": 0.01 },
+        { "string": "audiodescrição de filmes", "volume": 5, "m1": 10, "m1_month": 8, "m1_year": 2026, "m2": 0, "m2_month": 7, "m2_year": 2026, "cpc": null, "cmp": null },
+        { "string": "audiodescrição curso", "volume": 320, "m1": 390, "m1_month": 8, "m1_year": 2026, "m2": 260, "m2_month": 7, "m2_year": 2026, "cpc": 1.35, "cmp": 0.66 }
+      ]
+    }
+  },
+
+  "quota": [
+    ["nested daily + minute", { "limits": { "minute": { "limit": 15, "used": 1, "remaining": 14 }, "daily": { "limit": 50, "used": 12, "remaining": 38 } } }],
+    ["daily as limit/used only", { "quota": { "daily": { "limit": 50, "used": 20 } } }],
+    ["flat", { "limit": 50, "used": 7, "remaining": 43 }],
+    ["minute only", { "per_minute": { "limit": 15, "remaining": 15 } }],
+    ["unknown", { "status": "ok" }],
+    ["two windows, neither named", { "a": { "remaining": 3 }, "b": { "remaining": 9 } }]
+  ],
+
+  "today": "2026-09-17",
+  "rows": [
+    { "src": "festhome", "id": 1, "name": "Festival de Cine X [EDICIÓN 2026]", "country": "Spain", "start": "2026-11-10", "deadline": "2026-09-30", "status": "22 hrs Deadline 01 June 2026", "email": null },
+    { "src": "mb", "id": "mb:1", "name": "Festival de Cine X", "country": "Spain", "start": "2026-11-10", "deadline": "2026-09-30", "status": "Open", "email": "x@x.es" },
+    { "src": "fa", "id": "fa:y", "name": "Festival Y", "country": "Spain", "start": "2026-03-01", "deadline": "2026-01-15", "status": "Closed", "email": null },
+    { "src": "ff", "id": "ff:z", "name": "Z Film Fest", "country": "Brazil", "start": "2027-10-02", "deadline": null, "status": "Open", "email": null },
+    { "src": "mb", "id": "mb:2", "name": "Soon Fest", "country": "Brazil", "start": null, "deadline": "2026-12-01", "status": "Soon", "email": null },
+    { "src": "festhome", "id": 2, "name": "Opens Later", "country": "Brazil", "start": "2027-02-01", "deadline": null, "status": "Opens 01 December 2026", "email": "o@o.br" },
+    { "src": "sfd", "id": "sfd:n", "name": "Nowhere Fest", "country": null, "start": "2026-10-01", "deadline": "2026-09-20", "status": "Open", "email": null }
+  ],
+
+  "panelCache": {
+    "jobs": {
+      "vol:br": { "at": "2026-09-15T09:00:00Z", "last": "2026-08", "kw": {
+        "dcp-o-matic": { "v": 0, "cpc": null, "cmp": null, "t": null, "s": [0, 0, 0] },
+        "dcp creation": { "v": 90, "cpc": 2.31, "cmp": 0.41, "t": 0.57, "s": [70, 90, 110] },
+        "create dcp": { "v": 90, "cpc": 2.31, "cmp": 0.41, "t": 0.57, "s": [70, 90, 110] },
+        "digital cinema package": { "v": 30, "cpc": 1, "cmp": 0.1, "t": 0, "s": [30, 30, 30] },
+        "exportar dcp": null,
+        "criar dcp": { "v": 50, "cpc": 0.5, "cmp": 0.2, "t": 0.1, "s": [40, 50, 60] },
+        "audio description": { "v": null, "cpc": null, "cmp": null, "t": null, "s": [null, null, null] },
+        "audiodescrição": { "v": 1900, "cpc": 0.8, "cmp": 0.2, "t": 0.11, "s": [1800, 1900, 2000] }
+      } },
+      "sug:br:suggestions:audiodescrição": { "at": "2026-09-15T09:05:00Z", "last": "2026-08", "dropped": 1, "kw": {
+        "audiodescrição": { "v": 1900, "cpc": 0.8, "cmp": 0.2, "t": null, "s": [1800, 2000] },
+        "audiodescrição curso": { "v": 320, "cpc": 1.35, "cmp": 0.66, "t": null, "s": [260, 390] },
+        "audiodescrição o que é": { "v": 880, "cpc": 0, "cmp": 0.01, "t": null, "s": [860, 900] }
+      } }
+    },
+    "runs": [{ "at": "2026-09-15T09:00:00Z", "budget": 3, "floor": 30, "before": 44, "after": 42, "spent": 2, "jobs": ["vol:br", "sug:br:suggestions:audiodescrição"], "errors": [] }]
+  }
+}

@@ -39,6 +39,10 @@ jobs:
       - name: Ingest (regenerates data + meta.json)
         run: npm run ingest
 
+      # Keyword panel festival counts against the catalogue just ingested (no API calls).
+      - name: Keyword panel counts
+        run: npm run keywords -- --build-only
+
       - name: Deploy to Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

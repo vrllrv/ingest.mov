@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "keywordtool": {
+      "type": "http",
+      "url": "https://mcp.keywordtool.io"
+    }
+  }
+}
