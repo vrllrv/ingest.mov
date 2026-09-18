@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { parseCsv, parseRows, parseFFRows, parseSFDRows, parseFARows, parseMBRows } from './parse.mjs';
 import { parseSFDFiche, parseFADetail, parseMBDescription, parseSiteSocials, buildMatchIndex, lookupMatch, accountFits } from './contacts-parse.mjs';
 import {
-  cleanKeyword, seedProblems, planJobs, dueQueue, spendable, requestFor, parseVolume, parseSuggestions, parseQuota,
+  cleanKeyword, seedProblems, planJobs, dueQueue, spendable, requestFor, suggestLanguage, parseVolume, parseSuggestions, parseQuota,
   festivalStats, buildPanel, serializeCache, serializePanel,
 } from './keywords-parse.mjs';
 
@@ -111,6 +111,9 @@ check('keywords: requests', ['vol:br', 'vol:global', 'sug:br:suggestions:audiode
   const j = kwJobs.find((x) => x.id === id);
   return [id, requestFor(j, kw.seeds.markets.find((m) => m.id === j.market))];
 }), kwExpected.requests);
+// live 2026-09-18: suggestions rejects bare "pt", so Portuguese is split by market
+check('keywords: suggestions language', [['pt', 'BR'], ['pt', 'PT'], ['pt', 'AO'], ['en', 'US'], ['es', 'MX']].map(([l, cc]) => [`${l}/${cc}`, suggestLanguage(l, cc)]),
+  [['pt/BR', 'pt-BR'], ['pt/PT', 'pt-PT'], ['pt/AO', 'pt-BR'], ['en/US', 'en'], ['es/MX', 'es']]);
 check('keywords: volume response', Object.entries(parseVolume(kw.volumeResponse, kw.volumeAsked)), kwExpected.volume);
 check('keywords: suggestions response', Object.entries(parseSuggestions(kw.suggestionsResponse, 10)), kwExpected.suggestions);
 check('keywords: quota', kw.quota.map(([name, j]) => [name, parseQuota(j)]), kwExpected.quota);

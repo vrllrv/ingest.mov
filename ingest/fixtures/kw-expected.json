@@ -39,7 +39,7 @@
 "requests": [
   ["vol:br",{"path":"/v2/search/volume/google","body":{"keyword":["dcp-o-matic","dcp creation","create dcp","digital cinema package","exportar dcp","criar dcp","audio description","audiodescrição"],"metrics_location":[2076],"metrics_network":"googlesearch","metrics_currency":"USD","output":"json"}}],
   ["vol:global",{"path":"/v2/search/volume/google","body":{"keyword":["dcp-o-matic","dcp creation","create dcp","digital cinema package","exportar dcp","crear dcp","criar dcp","audio description","audiodescrição"],"metrics_network":"googlesearch","metrics_currency":"USD","output":"json"}}],
-  ["sug:br:suggestions:audiodescrição",{"path":"/v2/search/suggestions/google","body":{"keyword":"audiodescrição","category":"web","type":"suggestions","country":"BR","language":"pt","metrics":true,"metrics_location":[2076],"metrics_network":"googlesearch","metrics_currency":"USD","output":"json"}}]
+  ["sug:br:suggestions:audiodescrição",{"path":"/v2/search/suggestions/google","body":{"keyword":"audiodescrição","category":"web","type":"suggestions","country":"BR","language":"pt-BR","metrics":true,"metrics_location":[2076],"metrics_network":"googlesearch","metrics_currency":"USD","output":"json"}}]
 ],
 "volume": [
   ["last","2026-08"],

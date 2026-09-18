@@ -200,11 +200,12 @@ async function main() {
   }
 
   if (!NO_QUOTA && run.spent) { const q = await readQuota(); run.after = q ? q.remaining : null; }
-  cache.runs.push(run);
-  run = null;
+  const done = run;
+  cache.runs.push(done);
+  run = null; // logged now, so the SIGINT handler mustn't push it again
   saveCache();
-  log(`spent ${run.spent}; ${run.jobs.length} job(s) stored${run.errors.length ? `; ${run.errors.length} error(s)` : ''}`
-    + (run.after != null ? `; ${run.after} left` : ''));
+  log(`spent ${done.spent}; ${done.jobs.length} job(s) stored${done.errors.length ? `; ${done.errors.length} error(s)` : ''}`
+    + (done.after != null ? `; ${done.after} left` : ''));
   build();
 }
 

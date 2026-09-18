@@ -136,6 +136,16 @@ export function spendable(budget, floor, remaining) {
 }
 
 // { path, body } without the apikey (the caller adds it, and never logs it).
+// The suggestions endpoint takes Google interface-language codes, which split
+// Portuguese by country: bare "pt" is rejected ("The language \"pt\" is invalid",
+// HTTP 404, live 2026-09-18; the error cost no quota) while "en" and "es" work.
+// Volume requests send no language, so they were never affected.
+const SUGGEST_LANG = { pt: { PT: 'pt-PT', default: 'pt-BR' } };
+export function suggestLanguage(lang, cc) {
+  const variants = SUGGEST_LANG[lang];
+  return variants ? variants[cc] ?? variants.default : lang;
+}
+
 export function requestFor(job, market, { network = 'googlesearch' } = {}) {
   const loc = market && market.loc ? { metrics_location: [market.loc] } : {};
   if (job.kind === 'volume') {
@@ -147,7 +157,7 @@ export function requestFor(job, market, { network = 'googlesearch' } = {}) {
   return {
     path: '/v2/search/suggestions/google',
     body: {
-      keyword: job.head, category: 'web', type: job.type, country: job.cc, language: job.lang,
+      keyword: job.head, category: 'web', type: job.type, country: job.cc, language: suggestLanguage(job.lang, job.cc),
       metrics: true, ...loc, metrics_network: network, metrics_currency: 'USD', output: 'json',
     },
   };
