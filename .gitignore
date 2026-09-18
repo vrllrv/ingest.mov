@@ -13,3 +13,9 @@ public/fest-map/meta.json
 
 # contacts.mjs writes the cache via a temp file; only left behind if a write is interrupted
 ingest/contacts.json.tmp
+
+# Business and identity documents (CPF, RG, home address). The repo is public: never commit.
+docs/
+
+# The ad playbook for the DCP test (keywords, budget, gates). Local only: the repo is public.
+ingest/keywords/VALIDATION.md

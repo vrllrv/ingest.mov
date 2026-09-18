@@ -4,5 +4,24 @@
   "compatibility_date": "2025-12-02",
   "assets": {
     "directory": "./public"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ingest_dcp_events",
+      "database_id": "2d1d0415-5ae5-43bb-bdee-c4024c74dfc1"
+    }
+  ],
+  "send_email": [
+    {
+      "name": "EMAIL"
+    }
+  ],
+  "vars": {
+    "ORDER_LINKS": {
+      "short15": "https://buy.stripe.com/test_5kQcN52943aN3b9fou9k400",
+      "short40": "https://buy.stripe.com/test_cNifZh3d86mZ2754JQ9k401"
+    },
+    "LEADS_FROM": "dcp@ingest.mov"
   }
 }

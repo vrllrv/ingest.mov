@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Thank you | ingest.mov DCP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/pages.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/dcp/">ingest.mov<span>DCP</span></a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap prose">
+      <p class="eyebrow">Thank you</p>
+      <div id="k-order" hidden>
+        <h1>Your order is in</h1>
+        <p class="lede">Stripe has emailed your receipt. We check your master within 1 business day. If it needs a new export we tell you before we start; otherwise your DCP arrives as a download link in 3 business days.</p>
+        <p>Forgot the file link at checkout, or need to change something? Reply to the receipt or write to <a href="mailto:dcp@ingest.mov">dcp@ingest.mov</a>.</p>
+      </div>
+      <div id="k-quote">
+        <h1>We have your request</h1>
+        <p class="lede">We reply with a quote within 1 business day, from <a href="mailto:dcp@ingest.mov">dcp@ingest.mov</a>. Check your spam folder if it doesn't arrive.</p>
+      </div>
+      <p><a href="/dcp/">Back to DCP creation</a></p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  if (new URLSearchParams(location.search).get('k') !== 'order') return;
+  document.getElementById('k-order').hidden = false;
+  document.getElementById('k-quote').hidden = true;
+})();
+</script>
+<!-- Cloudflare Web Analytics: cookieless page counts (see /privacy/) -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "6477218e8f504e2984dee195fffb1353"}'></script>
+</body>
+</html>
