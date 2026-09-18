@@ -2,9 +2,12 @@
 // sets in keywords/seeds.json -> ingest/keywords.json (committed, like contacts.json),
 // then public/fest-map/keypanel/data.json for the panel.
 //
-// The daily quota (Starter: 50 requests in a rolling 24h window) is SHARED with the
-// Keywordtool web app and MCP. Every run reads /v2/quota first and never takes the
-// remaining count below --floor; if the quota can't be read, it spends nothing.
+// The daily quota (Starter: 50 requests, resetting at about 14:00 UTC) is one pool
+// SHARED with the Keywordtool web app and MCP. Every run reads /v2/quota first and never
+// takes the remaining count below --floor; if the quota can't be read, it spends nothing.
+// The 15-a-minute rate limit is account-wide too, so someone else's calls can trip it
+// mid-run: on a limit, the run waits a minute and re-reads the daily quota, and carries
+// on only as far as the floor still allows (at most MAX_LIMIT_WAITS times a run).
 // Search volume is a monthly Google Ads average, so asking again within a month returns
 // the same numbers: a job is due only when never fetched, older than maxAgeDays, or
 // when seeds.json added keywords to it. Nothing due -> no API call at all.
@@ -42,6 +45,9 @@ const API = process.env.KEYWORDTOOL_API || 'https://api.keywordtool.io';
 const KEY = process.env.KEYWORDTOOL_API_KEY || '';
 const UA = 'ingest.mov-festmap/1.0 (+https://ingest.mov)';
 const GAP_MS = 5000; // the API allows 15 requests a minute
+// How long to wait out a per-minute limit; overridable so the stub tests don't wait.
+const LIMIT_WAIT_MS = Number(process.env.KEYWORDTOOL_LIMIT_WAIT_MS) || 65000;
+const MAX_LIMIT_WAITS = 3;
 
 // --- options ---
 const argv = process.argv.slice(2);
@@ -104,7 +110,8 @@ async function call(method, pathname, body) {
     clearTimeout(timer);
   }
 }
-// Codes 7 and 9 are "limit of searches" / "daily limit"; the run stops on either.
+// Codes 7 and 9 are "limit of searches" / "daily limit". Which limit it was isn't
+// trusted from the text: afterLimit() re-reads the daily quota to decide.
 const limitHit = (res) => /"code"\s*:\s*"?(7|9)\b/.test(res.text) || /daily limit|limit of searches/i.test(res.text);
 
 async function readQuota() {
@@ -112,6 +119,23 @@ async function readQuota() {
   const q = res.ok && res.json ? parseQuota(res.json) : null;
   if (!q) log(`quota: couldn't read it (HTTP ${res.status}): ${redact(res.text).slice(0, 300)}`);
   return q;
+}
+
+// After a limit: wait out the minute, re-read the daily quota, and return how many of
+// the `want` remaining jobs the floor still allows (0 = stop). A daily limit reads as
+// at or below the floor, so it stops; a per-minute one carries on.
+let limitWaits = 0;
+async function afterLimit(want) {
+  if (limitWaits >= MAX_LIMIT_WAITS) return 0;
+  limitWaits++;
+  log(`  waiting ${Math.round(LIMIT_WAIT_MS / 1000)}s, then re-reading the daily quota`);
+  await sleep(LIMIT_WAIT_MS);
+  if (NO_QUOTA) return want;
+  const q = await readQuota();
+  if (!q) return 0;
+  const allowed = spendable(want, FLOOR, q.remaining);
+  log(`  quota: ${q.remaining} left; floor ${FLOOR} -> ${allowed ? `continuing with ${allowed}` : 'stopping'}`);
+  return allowed;
 }
 
 // --- map rows for the panel ---
@@ -172,12 +196,27 @@ async function main() {
   log(`${queue.length} job(s) due; running ${Math.min(n, queue.length)}`);
   if (n <= 0) return; // nothing recorded, so keywords.json doesn't change
 
-  for (const { job, why } of queue.slice(0, n)) {
+  const todo = queue.slice(0, n);
+  for (let i = 0; i < todo.length; i++) {
+    const { job, why } = todo[i];
     const { path: p, body } = requestFor(job, markets[job.market], { network: cfg.network });
     let res = await call('POST', p, body);
-    if (res.status === 429) { log('  429 — waiting 65s'); await sleep(65000); res = await call('POST', p, body); }
+    if (res.status === 429) { log(`  429 — waiting ${Math.round(LIMIT_WAIT_MS / 1000)}s`); await sleep(LIMIT_WAIT_MS); res = await call('POST', p, body); }
     run.spent++;
-    if (limitHit(res)) { run.errors.push(`${job.id}: quota limit reached`); log(`  ${job.id}: quota limit reached — stopping`); break; }
+    if (limitHit(res)) {
+      log(`  ${job.id}: limit reached: ${redact(res.text).slice(0, 300)}`);
+      const allowed = await afterLimit(todo.length - i);
+      if (allowed > 0) {
+        todo.length = i + allowed; // the fresh quota may allow fewer jobs than planned
+        res = await call('POST', p, body);
+        run.spent++;
+      }
+      if (allowed <= 0 || limitHit(res)) {
+        run.errors.push(`${job.id}: quota limit reached`);
+        log(`  ${job.id}: quota limit reached — stopping`);
+        break;
+      }
+    }
     if (!res.ok || !res.json) {
       run.errors.push(`${job.id}: HTTP ${res.status}`);
       log(`  ${job.id}: HTTP ${res.status} ${redact(res.text).slice(0, 300)}`);

@@ -4,9 +4,12 @@ name: Collect keyword volume
 # Daily, but the API is only called when a job is due (never measured, older than
 # 28 days, or seeds.json added keywords), and the shared quota is never taken below
 # the floor in ingest/keywords/seeds.json — the web app and MCP sessions keep theirs.
+# The web app, API and MCP share one pool of 50 a day that resets at about 14:00 UTC
+# (measured 2026-09-18), so the collector runs just after the reset: it spends from a
+# fresh day and leaves the rest of it for the owner's sessions.
 on:
   schedule:
-    - cron: '0 9 * * *' # daily 09:00 UTC
+    - cron: '30 14 * * *' # daily 14:30 UTC (11:30 Brasília), after the ~14:00 quota reset
   workflow_dispatch:
     inputs:
       budget:
