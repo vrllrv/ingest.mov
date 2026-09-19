@@ -52,7 +52,7 @@ npm install
 npm run deploy
 ```
 
-Site will be live at: `https://site.ingest-mov.workers.dev`
+Site will be live at: `https://ingest.mov`. The workers.dev address and preview URLs are off (`workers_dev`/`preview_urls: false` in wrangler.json): Cloudflare Access only guards ingest.mov, so any other hostname would bypass the login on /admin and /fest-map.
 
 ## Configuration
 

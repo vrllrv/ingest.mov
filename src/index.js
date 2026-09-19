@@ -3,6 +3,7 @@
  * Serves index.html, style.css, and shader.js files
  * Files are bundled at build time by Wrangler
  */
+import { handleAdmin } from './admin.js';
 
 // Static content - bundled at build time
 // Edit the actual files (index.html, style.css, src/shader.js) and redeploy
@@ -279,6 +280,9 @@ export default {
     }
     if (request.method === 'POST' && pathname === '/stripe/webhook') {
       return handleStripeWebhook(request, env);
+    }
+    if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+      return handleAdmin(request, env, url); // private: Cloudflare Access + JWT check
     }
 
     // Map request to file

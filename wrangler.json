@@ -2,8 +2,11 @@
   "name": "site",
   "main": "src/index.js",
   "compatibility_date": "2025-12-02",
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    "binding": "ASSETS"
   },
   "d1_databases": [
     {
@@ -22,6 +25,10 @@
       "short15": "https://buy.stripe.com/test_5kQcN52943aN3b9fou9k400",
       "short40": "https://buy.stripe.com/test_cNifZh3d86mZ2754JQ9k401"
     },
-    "LEADS_FROM": "dcp@ingest.mov"
+    "LEADS_FROM": "dcp@ingest.mov",
+    "ACCESS_TEAM": "ingest-mov",
+    "ACCESS_AUD": "7fa15532efe255754739e363a9275713d46971ccb385ab67e027d514d3b72111",
+    "CF_ACCOUNT_ID": "9ebadf54c3839f299ce50b02d57a5489",
+    "WA_SITE_TAG": "6477218e8f504e2984dee195fffb1353"
   }
 }
