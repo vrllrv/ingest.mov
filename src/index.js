@@ -66,6 +66,7 @@ const clip = (v, max = 200) => (v == null ? null : String(v).trim().slice(0, max
 const attribution = (params) =>
   Object.fromEntries(Object.entries(ATTRIBUTION).map(([col, param]) => [col, clip(params.get(param))]));
 const newEventId = () => crypto.randomUUID().replace(/-/g, '').slice(0, 16);
+const BOT_UA = /bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse/i;
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
 async function insertEvent(env, row) {
@@ -92,6 +93,14 @@ async function handleOrder(request, env, url) {
   if (!dest) return new Response('Unknown order option. Go back to https://ingest.mov/dcp/ and pick a price.', { status: 400 });
 
   const id = newEventId();
+  // Crawlers follow the Order buttons (one did 2 minutes after launch), which would
+  // inflate the click count this test measures. They still get redirected; they're
+  // just not recorded. robots.txt also disallows /go/ for the well-behaved ones.
+  const ua = request.headers.get('user-agent') || '';
+  if (!ua || BOT_UA.test(ua)) {
+    dest.searchParams.set('client_reference_id', id);
+    return Response.redirect(dest.toString(), 302);
+  }
   try {
     await insertEvent(env, {
       id, at: new Date().toISOString(), kind: 'order_click', tier,

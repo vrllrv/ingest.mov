@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+# Order links redirect to Stripe and are counted as clicks; crawlers must not follow them.
+Disallow: /go/
 
 Sitemap: https://ingest.mov/sitemap.xml
