@@ -112,22 +112,33 @@ async function summary(env, url, who) {
   const live = url.searchParams.get('mode') !== 'test' ? 1 : 0;
   const start = `${from}T00:00:00.000Z`, end = `${isoDay(Date.parse(to) + DAY_MS)}T00:00:00.000Z`;
   // Launch checks and test purchases carry utm_source=test; they never count.
-  const notTest = "COALESCE(e.source, '') NOT IN ('test', 'launchcheck', 'botcheck')";
+  const notTest = (t) => `COALESCE(${t}.source, '') NOT IN ('test', 'launchcheck', 'botcheck')`;
 
-  const [byKind, byKeyword, eventDays, orderDays, spendDays, orderTotals] = await Promise.all([
-    env.DB.prepare(`SELECT kind, COUNT(*) AS n FROM events e WHERE e.at >= ? AND e.at < ? AND ${notTest} GROUP BY kind`).bind(start, end).all(),
+  const [byKind, viewTotal, byKeyword, eventDays, viewDays, orderDays, spendDays, orderTotals] = await Promise.all([
+    env.DB.prepare(`SELECT kind, COUNT(*) AS n FROM events e WHERE e.at >= ? AND e.at < ? AND ${notTest('e')} GROUP BY kind`).bind(start, end).all(),
+    env.DB.prepare(`SELECT COUNT(*) AS n FROM views v WHERE v.at >= ? AND v.at < ? AND ${notTest('v')}`).bind(start, end).all(),
     env.DB.prepare(
-      `SELECT COALESCE(e.term, '(no keyword)') AS term, e.matchtype, e.adgroup, e.country,
-              SUM(e.kind = 'order_click') AS clicks, SUM(e.kind = 'quote') AS quotes,
-              COUNT(o.id) AS paid, COALESCE(SUM(o.amount_total), 0) AS revenue_cents
-       FROM events e LEFT JOIN orders o ON o.ref = e.id AND o.livemode = ?
-       WHERE e.at >= ? AND e.at < ? AND ${notTest}
-       GROUP BY term, e.matchtype, e.adgroup, e.country
-       ORDER BY paid DESC, quotes DESC, clicks DESC LIMIT 200`
-    ).bind(live, start, end).all(),
+      `SELECT term, matchtype, adgroup, country, SUM(views) AS views, SUM(clicks) AS clicks, SUM(quotes) AS quotes,
+              SUM(paid) AS paid, SUM(revenue_cents) AS revenue_cents
+       FROM (
+         SELECT COALESCE(v.term, '(no keyword)') AS term, v.matchtype, v.adgroup, v.country,
+                1 AS views, 0 AS clicks, 0 AS quotes, 0 AS paid, 0 AS revenue_cents
+         FROM views v WHERE v.at >= ? AND v.at < ? AND ${notTest('v')}
+         UNION ALL
+         SELECT COALESCE(e.term, '(no keyword)'), e.matchtype, e.adgroup, e.country,
+                0, e.kind = 'order_click', e.kind = 'quote', o.id IS NOT NULL, COALESCE(o.amount_total, 0)
+         FROM events e LEFT JOIN orders o ON o.ref = e.id AND o.livemode = ?
+         WHERE e.at >= ? AND e.at < ? AND ${notTest('e')}
+       )
+       GROUP BY term, matchtype, adgroup, country
+       ORDER BY paid DESC, quotes DESC, clicks DESC, views DESC LIMIT 200`
+    ).bind(start, end, live, start, end).all(),
     env.DB.prepare(
       `SELECT substr(e.at, 1, 10) AS day, SUM(e.kind = 'order_click') AS clicks, SUM(e.kind = 'quote') AS quotes
-       FROM events e WHERE e.at >= ? AND e.at < ? AND ${notTest} GROUP BY day`
+       FROM events e WHERE e.at >= ? AND e.at < ? AND ${notTest('e')} GROUP BY day`
+    ).bind(start, end).all(),
+    env.DB.prepare(
+      `SELECT substr(v.at, 1, 10) AS day, COUNT(*) AS views FROM views v WHERE v.at >= ? AND v.at < ? AND ${notTest('v')} GROUP BY day`
     ).bind(start, end).all(),
     env.DB.prepare(
       `SELECT substr(at, 1, 10) AS day, COUNT(*) AS paid, SUM(amount_total) AS revenue_cents
@@ -144,24 +155,22 @@ async function summary(env, url, who) {
   const impressions = spendRows.reduce((s, r) => s + (r.impressions || 0), 0);
   const paid = orderTotals.results[0].paid, revenue = orderTotals.results[0].revenue_cents / 100;
   const funnel = {
-    orderClicks: kinds.order_click || 0, quotes: kinds.quote || 0, paid, revenue,
+    views: viewTotal.results[0].n, orderClicks: kinds.order_click || 0, quotes: kinds.quote || 0, paid, revenue,
     spend, adClicks, impressions,
     ctr: impressions ? adClicks / impressions : null,
     cpc: adClicks ? spend / adClicks : null,
   };
 
-  const [visits, panel] = await Promise.all([webVisits(env, from, to), keywordPanel(env, url)]);
-  if (visits.ok) funnel.visits = visits.days.reduce((s, d) => s + d.visits, 0);
+  const panel = await keywordPanel(env, url);
 
   // One row per day of the range, so gaps read as zeros.
   const days = [];
   const byDay = (rows) => Object.fromEntries(rows.map((r) => [r.day, r]));
-  const ev = byDay(eventDays.results), od = byDay(orderDays.results), sd = byDay(spendRows);
-  const vd = visits.ok ? Object.fromEntries(visits.days.map((d) => [d.date, d])) : {};
+  const ev = byDay(eventDays.results), vd = byDay(viewDays.results), od = byDay(orderDays.results), sd = byDay(spendRows);
   for (let t = Date.parse(from); t <= Date.parse(to) && days.length < 120; t += DAY_MS) {
     const d = isoDay(t);
     days.push({
-      day: d, visits: visits.ok ? (vd[d]?.visits ?? 0) : null, clicks: ev[d]?.clicks || 0, quotes: ev[d]?.quotes || 0,
+      day: d, views: vd[d]?.views || 0, clicks: ev[d]?.clicks || 0, quotes: ev[d]?.quotes || 0,
       paid: od[d]?.paid || 0, revenue: (od[d]?.revenue_cents || 0) / 100, spend: sd[d]?.spend ?? null,
     });
   }
@@ -171,7 +180,7 @@ async function summary(env, url, who) {
     settings: { launch_date: launch, price: num(settings.price) ?? 149, margin: num(settings.margin) },
     funnel, gates: gates({ launch, today, settings, funnel }),
     keywords: byKeyword.results.map((r) => ({ ...r, revenue: r.revenue_cents / 100 })),
-    days, spend: spendRows, visits: visits.ok ? { ok: true, seen: visits.seen } : { ok: false, reason: visits.reason }, panel,
+    days, spend: spendRows, panel,
   };
 }
 
@@ -200,77 +209,6 @@ function gates({ launch, today, settings, funnel }) {
   }
   const final = day != null && day >= TEST_DAYS;
   return { day, of: TEST_DAYS, final, status, label, P, margin: m, breakEven, leads, costPerLead, costPerOrder, notes };
-}
-
-// Rows from rumPageloadEventsAdaptiveGroups -> visits per day to the landing page
-// (ingest.mov/dcp/ only: buyers reach /dcp/thanks/ from Stripe, which counts as a new
-// visit and would count every buyer twice), plus
-// what else the site recorded, so "0 visits" can tell "nobody came" apart from "nothing
-// was recorded" (the beacon is a browser script: ad blockers and curl never count).
-// The page can carry two beacons (the snippet in the HTML, and the one Cloudflare injects
-// when automatic setup is on), each reporting to its own Web Analytics site. Summing them
-// would count every visit twice, so the landing count comes from the one site tag that
-// recorded the most landing page loads.
-export function summarizeRum(rows, host = 'ingest.mov', landing = ['/dcp', '/dcp/']) {
-  const hosts = {}, paths = {}, sites = {}, landingBySite = {};
-  let pageloads = 0;
-  for (const r of rows) {
-    const h = r.dimensions?.requestHost || '(none)', p = r.dimensions?.requestPath || '(none)', n = r.count || 0;
-    const s = r.dimensions?.siteTag || '(any)';
-    pageloads += n;
-    hosts[h] = (hosts[h] || 0) + n;
-    paths[p] = (paths[p] || 0) + n;
-    sites[s] = (sites[s] || 0) + n;
-    if (h === host && landing.includes(p)) landingBySite[s] = (landingBySite[s] || 0) + n;
-  }
-  const ranked = Object.entries(landingBySite).sort((a, b) => b[1] - a[1]);
-  const site = ranked[0]?.[0] ?? null;
-  const perDay = {};
-  for (const r of rows) {
-    if ((r.dimensions?.siteTag || '(any)') !== site) continue;
-    if (r.dimensions?.requestHost !== host || !landing.includes(r.dimensions?.requestPath)) continue;
-    const d = r.dimensions.date;
-    perDay[d] ??= { date: d, visits: 0, pageloads: 0 };
-    perDay[d].visits += r.sum?.visits || 0;
-    perDay[d].pageloads += r.count || 0;
-  }
-  const top = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => `${k} (${v})`);
-  return {
-    days: Object.values(perDay),
-    seen: { pageloads, hosts: top(hosts), paths: top(paths), sites: top(sites), site, landingSites: ranked.length },
-  };
-}
-
-// Cloudflare Web Analytics (cookieless beacon) via the GraphQL API, across the whole
-// account: the site tag the API filters on is not the token in the beacon snippet, so
-// nothing here depends on knowing it. Grouped by date, site, host and path; filtered to
-// ingest.mov/dcp in code. If the API rejects siteTag as a dimension, asks again without it.
-async function webVisits(env, from, to) {
-  const account = env.CF_ACCOUNT_ID, token = env.CF_ANALYTICS_TOKEN;
-  if (!token) return { ok: false, reason: 'Add the CF_ANALYTICS_TOKEN secret (Account Analytics: Read) to see visits.' };
-  if (!/^[0-9a-f]{32}$/.test(account || '')) return { ok: false, reason: 'CF_ACCOUNT_ID missing.' };
-  const query = (dims) => `{ viewer { accounts(filter: { accountTag: "${account}" }) {
-    rumPageloadEventsAdaptiveGroups(limit: 5000, orderBy: [date_ASC],
-      filter: { datetime_geq: "${from}T00:00:00Z", datetime_leq: "${to}T23:59:59Z" }) {
-      count sum { visits } dimensions { ${dims} }
-    } } } }`;
-  const ask = async (dims) => {
-    const res = await fetch('https://api.cloudflare.com/client/v4/graphql', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: query(dims) }),
-    });
-    return res.json();
-  };
-  try {
-    let out = await ask('date siteTag requestHost requestPath');
-    if (out.errors?.length) out = await ask('date requestHost requestPath');
-    if (out.errors?.length) return { ok: false, reason: `Analytics API: ${out.errors[0].message}` };
-    const rows = out.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups || [];
-    return { ok: true, ...summarizeRum(rows) };
-  } catch (e) {
-    return { ok: false, reason: `Analytics API unreachable: ${e.message}` };
-  }
 }
 
 // The keyword panel's own data file, read through the assets binding so it works
@@ -456,32 +394,22 @@ const APP_JS = String.raw`
 
     const f = d.funnel;
     $('funnel').replaceChildren(
-      tile('Visits /dcp', f.visits != null ? int(f.visits) : '–', 'Cloudflare Web Analytics'),
+      tile('Page views /dcp', int(f.views), 'counted by the page'),
       tile('Order clicks', int(f.orderClicks), 'went to Stripe'),
       tile('Quotes', int(f.quotes), 'form requests'),
       tile('Paid orders', int(f.paid), money(f.revenue) + ' revenue'),
       tile('Ad spend', money(f.spend, 2), int(f.adClicks) + ' clicks'),
       tile('CPC / CTR', money(f.cpc, 2), 'CTR ' + pct(f.ctr)));
-    let vnote = d.visits.ok ? '' : 'Visits: ' + d.visits.reason;
-    if (d.visits.ok && !f.visits) {
-      const seen = d.visits.seen || { pageloads: 0, hosts: [], paths: [] };
-      vnote = seen.pageloads
-        ? 'No visits on ingest.mov/dcp in this range, but Cloudflare recorded ' + seen.pageloads + ' page loads elsewhere. Hosts: ' + seen.hosts.join(', ') + '. Paths: ' + seen.paths.join(', ') + '. Sites: ' + (seen.sites || []).join(', ') + '.'
-        : 'Cloudflare recorded no page loads at all in this range. The beacon is a browser script: ad blockers and curl never count. Open /dcp/ from a phone or a private window without extensions, wait a few minutes, and update.';
-    } else if (d.visits.ok) {
-      vnote = 'Counted by a cookieless browser beacon. Ad blockers hide some visitors, so treat this as a floor.';
-      const seen = d.visits.seen || {};
-      if (seen.landingSites > 1) vnote += ' ' + seen.landingSites + ' Web Analytics sites record this page; counting only site ' + seen.site + ', so no visit is counted twice. Sites: ' + (seen.sites || []).join(', ') + '.';
-    }
-    $('visits-note').textContent = vnote;
+    $('visits-note').textContent = 'Page views: every time /dcp/ opens in a browser, reloads included. Bots, link previews and '
+      + 'prefetches never count; a browser that blocks scripts doesn\'t either, so read it as a floor. Compare with ad clicks from Google Ads.';
 
     $('keywords').replaceChildren(table([
       { h: 'Keyword', k: 'term' }, { h: 'Match', k: 'matchtype' }, { h: 'Ad group', k: 'adgroup' }, { h: 'Country', k: 'country' },
-      { h: 'Order clicks', k: 'clicks', n: 1 }, { h: 'Quotes', k: 'quotes', n: 1 }, { h: 'Paid', k: 'paid', n: 1 },
+      { h: 'Views', k: 'views', n: 1 }, { h: 'Order clicks', k: 'clicks', n: 1 }, { h: 'Quotes', k: 'quotes', n: 1 }, { h: 'Paid', k: 'paid', n: 1 },
       { h: 'Revenue', f: (r) => money(r.revenue), n: 1 }], d.keywords));
 
     $('days').replaceChildren(table([
-      { h: 'Day', k: 'day' }, { h: 'Visits', f: (r) => int(r.visits), n: 1 }, { h: 'Order clicks', k: 'clicks', n: 1 },
+      { h: 'Day', k: 'day' }, { h: 'Views', f: (r) => int(r.views), n: 1 }, { h: 'Order clicks', k: 'clicks', n: 1 },
       { h: 'Quotes', k: 'quotes', n: 1 }, { h: 'Paid', k: 'paid', n: 1 }, { h: 'Revenue', f: (r) => money(r.revenue), n: 1 },
       { h: 'Spend', f: (r) => money(r.spend, 2), n: 1 }], d.days.slice().reverse()));
 

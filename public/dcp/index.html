@@ -238,11 +238,18 @@
 
 <script>
 // Carry the ad click's attribution (Google Ads final URL suffix) onto the order
-// links and the quote form, so /go/order and /dcp/quote can log it. No cookies.
+// links and the quote form, so /go/order and /dcp/quote can log it, and count
+// this view with the same keyword (without the click ID). No cookies.
 (function () {
   var keys = ['gclid', 'utm_source', 'utm_campaign', 'utm_content', 'utm_term', 'mt'];
   var q = new URLSearchParams(location.search), carry = new URLSearchParams();
   keys.forEach(function (k) { var v = q.get(k); if (v) carry.set(k, v.slice(0, 200)); });
+  var view = new URLSearchParams(carry);
+  view.delete('gclid');
+  var count = function () { if (navigator.sendBeacon) navigator.sendBeacon('/dcp/v?' + view); };
+  // A prerendered page counts only once someone actually opens it.
+  if (document.prerendering) document.addEventListener('prerenderingchange', count, { once: true });
+  else count();
   var s = carry.toString();
   if (!s) return;
   document.querySelectorAll('a[data-order]').forEach(function (a) { a.href = a.getAttribute('href') + '&' + s; });

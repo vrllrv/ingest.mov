@@ -62,6 +62,7 @@ async function handleRefresh(env) {
 //   GET  /go/order?t=<tier>&...  -> log, 302 to the tier's payment link with
 //                                   client_reference_id = the row id (Stripe join)
 //   POST /dcp/quote              -> log, notify by email, 303 to /dcp/thanks/
+//   POST /dcp/v?utm_...          -> the page counting its own view (table `views`)
 const ATTRIBUTION = { gclid: 'gclid', source: 'utm_source', campaign: 'utm_campaign', adgroup: 'utm_content', term: 'utm_term', matchtype: 'mt' };
 const clip = (v, max = 200) => (v == null ? null : String(v).trim().slice(0, max) || null);
 const attribution = (params) =>
@@ -112,6 +113,24 @@ async function handleOrder(request, env, url) {
   }
   dest.searchParams.set('client_reference_id', id);
   return Response.redirect(dest.toString(), 302);
+}
+
+// The landing page counts its own views with navigator.sendBeacon, which runs only
+// in a browser that rendered the page: link previews and prefetches never count.
+// Only from our own page (a browser always sends Origin on a POST), never from bots.
+async function handleView(request, env, url) {
+  const ua = request.headers.get('user-agent') || '';
+  if (request.headers.get('Origin') === url.origin && ua && !BOT_UA.test(ua)) {
+    const a = attribution(url.searchParams); // stored without the click ID: a view joins nothing
+    try {
+      await env.DB.prepare(
+        'INSERT INTO views (at, country, source, campaign, adgroup, term, matchtype) VALUES (?, ?, ?, ?, ?, ?, ?)'
+      ).bind(new Date().toISOString(), request.cf?.country ?? null, a.source, a.campaign, a.adgroup, a.term, a.matchtype).run();
+    } catch (e) {
+      console.error('view insert failed', e);
+    }
+  }
+  return new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } });
 }
 
 function notifyQuote(env, row) {
@@ -277,6 +296,9 @@ export default {
     }
     if (request.method === 'POST' && pathname === '/dcp/quote') {
       return handleQuote(request, env, ctx);
+    }
+    if (request.method === 'POST' && pathname === '/dcp/v') {
+      return handleView(request, env, url);
     }
     if (request.method === 'POST' && pathname === '/stripe/webhook') {
       return handleStripeWebhook(request, env);
