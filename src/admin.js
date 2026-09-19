@@ -207,43 +207,64 @@ function gates({ launch, today, settings, funnel }) {
 // visit and would count every buyer twice), plus
 // what else the site recorded, so "0 visits" can tell "nobody came" apart from "nothing
 // was recorded" (the beacon is a browser script: ad blockers and curl never count).
+// The page can carry two beacons (the snippet in the HTML, and the one Cloudflare injects
+// when automatic setup is on), each reporting to its own Web Analytics site. Summing them
+// would count every visit twice, so the landing count comes from the one site tag that
+// recorded the most landing page loads.
 export function summarizeRum(rows, host = 'ingest.mov', landing = ['/dcp', '/dcp/']) {
-  const perDay = {}, hosts = {}, paths = {};
+  const hosts = {}, paths = {}, sites = {}, landingBySite = {};
   let pageloads = 0;
   for (const r of rows) {
     const h = r.dimensions?.requestHost || '(none)', p = r.dimensions?.requestPath || '(none)', n = r.count || 0;
+    const s = r.dimensions?.siteTag || '(any)';
     pageloads += n;
     hosts[h] = (hosts[h] || 0) + n;
     paths[p] = (paths[p] || 0) + n;
-    if (h !== host || !landing.includes(p)) continue;
+    sites[s] = (sites[s] || 0) + n;
+    if (h === host && landing.includes(p)) landingBySite[s] = (landingBySite[s] || 0) + n;
+  }
+  const ranked = Object.entries(landingBySite).sort((a, b) => b[1] - a[1]);
+  const site = ranked[0]?.[0] ?? null;
+  const perDay = {};
+  for (const r of rows) {
+    if ((r.dimensions?.siteTag || '(any)') !== site) continue;
+    if (r.dimensions?.requestHost !== host || !landing.includes(r.dimensions?.requestPath)) continue;
     const d = r.dimensions.date;
     perDay[d] ??= { date: d, visits: 0, pageloads: 0 };
     perDay[d].visits += r.sum?.visits || 0;
-    perDay[d].pageloads += n;
+    perDay[d].pageloads += r.count || 0;
   }
   const top = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => `${k} (${v})`);
-  return { days: Object.values(perDay), seen: { pageloads, hosts: top(hosts), paths: top(paths) } };
+  return {
+    days: Object.values(perDay),
+    seen: { pageloads, hosts: top(hosts), paths: top(paths), sites: top(sites), site, landingSites: ranked.length },
+  };
 }
 
-// Cloudflare Web Analytics (cookieless beacon) via the GraphQL API. The site tag is the
-// beacon token. Grouped by date, host and path; filtered to ingest.mov/dcp in code, as
-// one site tag can carry several hostnames.
+// Cloudflare Web Analytics (cookieless beacon) via the GraphQL API, across the whole
+// account: the site tag the API filters on is not the token in the beacon snippet, so
+// nothing here depends on knowing it. Grouped by date, site, host and path; filtered to
+// ingest.mov/dcp in code. If the API rejects siteTag as a dimension, asks again without it.
 async function webVisits(env, from, to) {
-  const tag = env.WA_SITE_TAG, account = env.CF_ACCOUNT_ID, token = env.CF_ANALYTICS_TOKEN;
+  const account = env.CF_ACCOUNT_ID, token = env.CF_ANALYTICS_TOKEN;
   if (!token) return { ok: false, reason: 'Add the CF_ANALYTICS_TOKEN secret (Account Analytics: Read) to see visits.' };
-  if (!/^[0-9a-f]{32}$/.test(tag || '') || !/^[0-9a-f]{32}$/.test(account || '')) return { ok: false, reason: 'WA_SITE_TAG / CF_ACCOUNT_ID missing.' };
-  const query = `{ viewer { accounts(filter: { accountTag: "${account}" }) {
+  if (!/^[0-9a-f]{32}$/.test(account || '')) return { ok: false, reason: 'CF_ACCOUNT_ID missing.' };
+  const query = (dims) => `{ viewer { accounts(filter: { accountTag: "${account}" }) {
     rumPageloadEventsAdaptiveGroups(limit: 5000, orderBy: [date_ASC],
-      filter: { siteTag: "${tag}", datetime_geq: "${from}T00:00:00Z", datetime_leq: "${to}T23:59:59Z" }) {
-      count sum { visits } dimensions { date requestHost requestPath }
+      filter: { datetime_geq: "${from}T00:00:00Z", datetime_leq: "${to}T23:59:59Z" }) {
+      count sum { visits } dimensions { ${dims} }
     } } } }`;
-  try {
+  const ask = async (dims) => {
     const res = await fetch('https://api.cloudflare.com/client/v4/graphql', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query: query(dims) }),
     });
-    const out = await res.json();
+    return res.json();
+  };
+  try {
+    let out = await ask('date siteTag requestHost requestPath');
+    if (out.errors?.length) out = await ask('date requestHost requestPath');
     if (out.errors?.length) return { ok: false, reason: `Analytics API: ${out.errors[0].message}` };
     const rows = out.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups || [];
     return { ok: true, ...summarizeRum(rows) };
@@ -445,10 +466,12 @@ const APP_JS = String.raw`
     if (d.visits.ok && !f.visits) {
       const seen = d.visits.seen || { pageloads: 0, hosts: [], paths: [] };
       vnote = seen.pageloads
-        ? 'No visits on ingest.mov/dcp in this range, but Cloudflare recorded ' + seen.pageloads + ' page loads elsewhere. Hosts: ' + seen.hosts.join(', ') + '. Paths: ' + seen.paths.join(', ') + '.'
+        ? 'No visits on ingest.mov/dcp in this range, but Cloudflare recorded ' + seen.pageloads + ' page loads elsewhere. Hosts: ' + seen.hosts.join(', ') + '. Paths: ' + seen.paths.join(', ') + '. Sites: ' + (seen.sites || []).join(', ') + '.'
         : 'Cloudflare recorded no page loads at all in this range. The beacon is a browser script: ad blockers and curl never count. Open /dcp/ from a phone or a private window without extensions, wait a few minutes, and update.';
     } else if (d.visits.ok) {
       vnote = 'Counted by a cookieless browser beacon. Ad blockers hide some visitors, so treat this as a floor.';
+      const seen = d.visits.seen || {};
+      if (seen.landingSites > 1) vnote += ' ' + seen.landingSites + ' Web Analytics sites record this page; counting only site ' + seen.site + ', so no visit is counted twice. Sites: ' + (seen.sites || []).join(', ') + '.';
     }
     $('visits-note').textContent = vnote;
 
